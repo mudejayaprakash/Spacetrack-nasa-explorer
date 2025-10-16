@@ -1,0 +1,14 @@
+{
+  "asteroidData": {
+    "labels": ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    "counts": [42,38,55,61,48,72,64,70,58,63,46,39]
+  },
+  "missionData": {
+    "labels": ["Planetary","Earth Obs","Heliophysics","Astrophysics"],
+    "values": [12,9,7,10]
+  },
+  "exoplanetData": {
+    "years": [2016,2017,2018,2019,2020,2021,2022,2023,2024],
+    "discovered": [128,154,192,210,235,280,260,300,320]
+  }
+}

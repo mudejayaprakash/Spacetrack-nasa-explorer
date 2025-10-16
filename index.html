@@ -289,7 +289,7 @@
         /* Team Members */
         .team-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
         }
 
@@ -534,9 +534,9 @@
                 <span>SpaceTrack</span>
             </div>
             <ul class="nav-links" id="navLinks">
-                <li><a href="#" onclick="showPage('home')"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="#" onclick="showPage('data')"><i class="fas fa-chart-bar"></i> Data Dashboard</a></li>
-                <li><a href="#" onclick="showPage('about')"><i class="fas fa-users"></i> About Us</a></li>
+                <li><a href="#home"  onclick="return go('home')"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#data"  onclick="return go('data')"><i class="fas fa-chart-bar"></i> Data Dashboard</a></li>
+                <li><a href="#about" onclick="return go('about')"><i class="fas fa-users"></i> About Us</a></li>
             </ul>
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
                 <i class="fas fa-bars"></i>
@@ -715,21 +715,27 @@
                 <h2 style="margin-bottom: 2rem;">Team Members</h2>
                 <div class="team-grid">
                     <div class="team-member">
-                        <div class="avatar">AS</div>
-                        <h3>Alex Starfield</h3>
-                        <p class="role">Frontend Developer</p>
+                        <div class="avatar">KE</div>
+                        <h3>Kaylee Eckelman</h3>
+                        <p class="role">Developer</p>
                         <p>Responsible for UI/UX design, React components, and data visualization implementation</p>
                     </div>
                     <div class="team-member">
-                        <div class="avatar" style="background: linear-gradient(135deg, #7c3aed, #ec4899);">SN</div>
-                        <h3>Sarah Nova</h3>
-                        <p class="role">Backend Developer</p>
+                        <div class="avatar" style="background: linear-gradient(135deg, #7c3aed, #ec4899);">MN</div>
+                        <h3>Mude Jayaprakash Naik</h3>
+                        <p class="role">Developer</p>
                         <p>Handles NASA API integration, database design, and server-side logic</p>
                     </div>
                     <div class="team-member">
-                        <div class="avatar" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">MO</div>
-                        <h3>Max Orion</h3>
-                        <p class="role">Full Stack Developer</p>
+                        <div class="avatar" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">PM</div>
+                        <h3>Pradeep Anand Mohanasundaram</h3>
+                        <p class="role">Developer</p>
+                        <p>Manages API integration, data processing, and Chart.js implementation</p>
+                    </div>
+                                        <div class="team-member">
+                        <div class="avatar" style="background: linear-gradient(135deg, hsl(300, 55%, 71%), #06b6d4);">MK</div>
+                        <h3>Mythily Kanagaraj</h3>
+                        <p class="role">Developer</p>
                         <p>Manages API integration, data processing, and Chart.js implementation</p>
                     </div>
                 </div>
@@ -793,8 +799,8 @@
                     <i class="fab fa-github" style="font-size: 3rem;"></i>
                     <div>
                         <p style="margin: 0;">Project Repository</p>
-                        <a href="https://github.com/yourteam/spacetrack-nasa-explorer" style="color: white; font-size: 1.25rem; font-weight: bold;">
-                            github.com/yourteam/spacetrack-nasa-explorer
+                        <a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer.git" style="color: white; font-size: 1.25rem; font-weight: bold;">
+                            https://github.com/mudejayaprakash/Spacetrack-nasa-explorer.git
                         </a>
                     </div>
                 </div>
@@ -845,3 +851,192 @@
                 
                 <div class="info-box">
                     <p><strong>Future Implementation:</strong> In the final project, this will be a fully functional page with NASA API integration to
+                        </div> <!-- end of all sections -->
+<script>
+  // Show only the selected section
+  function showPage(id) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Handle clicks and update URL hash
+  function go(id) {
+    showPage(id);
+    location.hash = id; // allows index.html#data
+    return false;
+  }
+
+  // When the page first loads
+  window.addEventListener('DOMContentLoaded', () => {
+    const id = (location.hash || '#home').slice(1);
+    showPage(document.getElementById(id) ? id : 'home');
+  });
+
+  // Mobile nav toggle
+  function toggleMobileMenu() {
+    document.getElementById('navLinks').classList.toggle('active');
+  }
+</script>
+<script>
+  // ---- Chart.js on-demand init ----
+  let chartsInitialized = false;
+  let asteroidChart, missionChart, exoplanetChart;
+
+  function initChartsOnce() {
+    if (chartsInitialized) return;
+    chartsInitialized = true;
+
+    // Theme helpers
+    const css = getComputedStyle(document.documentElement);
+    const clrText   = (css.getPropertyValue('--text-light') || '#f8fafc').trim();
+    const clrMuted  = (css.getPropertyValue('--text-gray')  || '#94a3b8').trim();
+    const clrIndigo = (css.getPropertyValue('--primary-color') || '#4f46e5').trim();
+    const clrPurple = (css.getPropertyValue('--secondary-color') || '#7c3aed').trim();
+    const grid      = 'rgba(148,163,184,.16)';
+    const tipBg     = 'rgba(15,23,42,.96)';
+    const tipBd     = 'rgba(124,58,237,.45)';
+
+    Chart.defaults.color = clrText;
+    Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+    Chart.defaults.plugins.legend.labels.boxWidth = 10;
+    Chart.defaults.plugins.tooltip.backgroundColor = tipBg;
+    Chart.defaults.plugins.tooltip.borderColor = tipBd;
+    Chart.defaults.plugins.tooltip.borderWidth = 1;
+
+    function vGrad(ctx, top, bottom, h=320){
+      const g = ctx.createLinearGradient(0,0,0,h);
+      g.addColorStop(0, top); g.addColorStop(1, bottom);
+      return g;
+    }
+
+    // 1) Asteroids (line)
+    const el1 = document.getElementById('asteroidChart');
+    if (el1) {
+      const ctx1 = el1.getContext('2d');
+      const labels1 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const counts1 = [42,38,55,61,48,72,64,70,58,63,46,39];
+      asteroidChart = new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: labels1,
+          datasets: [{
+            label:'NEOs detected',
+            data: counts1,
+            borderColor: clrPurple,
+            backgroundColor: vGrad(ctx1, 'rgba(124,58,237,.35)', 'rgba(124,58,237,0)'),
+            fill: true, tension: .28, pointRadius: 3, pointHoverRadius: 5
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          animation: { duration: 900, easing: 'easeOutQuart' },
+          plugins: { legend: { position:'top' }, tooltip:{ callbacks:{
+            label: c => ` ${c.parsed.y} asteroids`
+          }}},
+          scales: {
+            x: { grid:{ color:grid }, ticks:{ color:clrMuted } },
+            y: { beginAtZero:true, grid:{ color:grid }, ticks:{ color:clrMuted }, title:{ display:true, text:'Asteroids (count)' } }
+          }
+        }
+      });
+    }
+
+    // 2) Missions (doughnut + center text)
+    const el2 = document.getElementById('missionChart');
+    if (el2) {
+      const ctx2 = el2.getContext('2d');
+      const labels2 = ['Planetary','Earth Obs','Heliophysics','Astrophysics'];
+      const values2 = [12,9,7,10];
+      const colors2 = ['#7c3aed','#3b82f6','#f59e0b','#10b981'];
+
+      missionChart = new Chart(ctx2, {
+        type:'doughnut',
+        data:{ labels: labels2, datasets:[{ data: values2, backgroundColor: colors2, borderWidth:0, hoverOffset:12 }] },
+        options:{
+          responsive:true, maintainAspectRatio:false, cutout:'62%',
+          plugins:{ legend:{ position:'bottom', labels:{ color: clrMuted } } }
+        },
+        plugins:[{
+          id:'centerText',
+          afterDraw(chart){
+            const {ctx, chartArea:{}} = chart;
+            const total = values2.reduce((a,b)=>a+b,0);
+            const pt = chart.getDatasetMeta(0).data[0];
+            if (!pt) return;
+            const cx = pt.x, cy = pt.y;
+            ctx.save();
+            ctx.textAlign='center';
+            ctx.fillStyle=clrText; ctx.font='600 18px Segoe UI, sans-serif';
+            ctx.fillText(`${total}`, cx, cy - 4);
+            ctx.fillStyle=clrMuted; ctx.font='400 12px Segoe UI, sans-serif';
+            ctx.fillText('total missions', cx, cy + 14);
+            ctx.restore();
+          }
+        }]
+      });
+    }
+
+    // 3) Exoplanets (bar + line)
+    const el3 = document.getElementById('exoplanetChart');
+    if (el3) {
+      const ctx3 = el3.getContext('2d');
+      const years = [2016,2017,2018,2019,2020,2021,2022,2023,2024];
+      const discovered = [128,154,192,210,235,280,260,300,320];
+      const cumulative = discovered.reduce((a,v)=>{ a.push((a.at(-1)||0)+v); return a; },[]);
+      exoplanetChart = new Chart(ctx3,{
+        data:{
+          labels: years,
+          datasets:[
+            { type:'bar', label:'Discovered (year)', data: discovered,
+              backgroundColor:'rgba(59,130,246,.55)', borderWidth:0, yAxisID:'y',
+              borderRadius:8 },
+            { type:'line', label:'Cumulative', data: cumulative,
+              borderColor: clrIndigo, backgroundColor: vGrad(ctx3,'rgba(79,70,229,.35)','rgba(79,70,229,0)'),
+              fill:true, tension:.28, pointRadius:2, yAxisID:'y1' }
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{ position:'top' } },
+          scales:{
+            x:{ grid:{ color:grid } },
+            y:{ beginAtZero:true, grid:{ color:grid }, title:{ display:true, text:'New exoplanets' } },
+            y1:{ position:'right', grid:{ drawOnChartArea:false }, title:{ display:true, text:'Cumulative' } }
+          }
+        }
+      });
+    }
+  }
+
+  // Hook chart init into your existing navigation
+  const _origShowPage = showPage;
+  showPage = function(id){
+    _origShowPage(id);
+    if (id === 'data') {
+      initChartsOnce();
+      // give the section a tick to size, then resize charts
+      setTimeout(() => {
+        asteroidChart?.resize();
+        missionChart?.resize();
+        exoplanetChart?.resize();
+      }, 0);
+    }
+  };
+
+  // If we land directly on #data, initialize after load too
+  if ((location.hash || '#home').slice(1) === 'data') {
+    window.addEventListener('load', () => {
+      initChartsOnce();
+      setTimeout(() => {
+        asteroidChart?.resize();
+        missionChart?.resize();
+        exoplanetChart?.resize();
+      }, 0);
+    });
+  }
+</script>
+</body>
+</html>
