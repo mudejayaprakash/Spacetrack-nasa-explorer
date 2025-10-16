@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SpaceTrack – Data Dashboard</title>
+
+  <!-- Font Awesome (icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- Theme (matches your site palette) -->
+  <style>
+    :root{
+      --primary-color:#4f46e5;   /* indigo */
+      --secondary-color:#7c3aed; /* purple */
+      --dark-bg:#0f172a;
+      --card-bg:#1e293b;
+      --text-light:#f8fafc;
+      --text-gray:#94a3b8;
+    }
+
+    *{box-sizing:border-box} html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color:var(--text-light);
+      background:linear-gradient(to bottom, #0f172a, #1e1b4b, #000);
+    }
+
+    /* Top bar to match your site */
+    nav{
+      background:linear-gradient(90deg,#4338ca,#7c3aed,#000);
+      padding:12px 0; position:sticky; top:0; z-index:10;
+      box-shadow:0 4px 8px rgba(0,0,0,.35);
+    }
+    .nav-inner{
+      max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px;
+    }
+    .brand{display:flex; gap:10px; align-items:center; font-weight:700}
+    .brand i{font-size:20px}
+    .brand span{font-size:18px}
+
+    .container{max-width:1200px; margin:0 auto; padding:24px 20px}
+
+    /* Section header */
+    .section-head{display:flex; align-items:center; gap:12px; margin-bottom:20px}
+    .section-head .badge{
+      width:44px; height:44px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg, #4f46e5, #7c3aed);
+      box-shadow:0 8px 20px rgba(79,70,229,.35);
+      font-size:20px;
+    }
+
+    /* Chart card styles */
+    .chart-container{
+      background:rgba(30,41,59,.8);
+      border:1px solid rgba(79,70,229,.3);
+      border-radius:16px;
+      padding:18px;
+      margin:0 auto 22px;
+      backdrop-filter: blur(10px);
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      max-width:1100px;
+    }
+    .chart-container h2{margin:0 0 .5rem; font-size:1.15rem; display:flex; align-items:center; gap:.5rem}
+    .chart-container p{margin:0 0 1rem; color:var(--text-gray)}
+    .chart-container canvas{display:block; width:100% !important; height:320px !important}
+
+    .btn-row{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:24px}
+    .btn{background:linear-gradient(135deg, #4f46e5, #7c3aed); color:#fff; border:0; border-radius:8px; padding:10px 16px; font-weight:600; cursor:pointer}
+    .btn.secondary{background:linear-gradient(135deg,#64748b,#475569)}
+    .btn:hover{transform:translateY(-1px); box-shadow:0 8px 16px rgba(79,70,229,.35)}
+  </style>
+</head>
+<body>
+  <!-- Nav -->
+  <nav>
+    <div class="nav-inner">
+      <div class="brand">
+        <i class="fa-solid fa-rocket"></i><span>SpaceTrack</span>
+      </div>
+      <div style="opacity:.9">
+        <a href="index.html" style="color:#fff; text-decoration:none; margin-right:16px"><i class="fa-solid fa-home"></i> Home</a>
+        <a href="about.html" style="color:#fff; text-decoration:none"><i class="fa-solid fa-users"></i> About</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="section-head">
+      <div class="badge"><i class="fa-solid fa-chart-column"></i></div>
+      <div>
+        <h1 style="margin:0; font-size:1.6rem">Space Data Analytics Dashboard</h1>
+        <div style="color:var(--text-gray); font-size:.95rem">Interactive insights using Chart.js (dummy data, API-ready)</div>
+      </div>
+    </div>
+
+    <!-- Chart 1: Asteroids -->
+    <section class="chart-container">
+      <h2><i class="fa-solid fa-meteor" style="color:#f59e0b"></i> Near-Earth Asteroids Detected (2025)</h2>
+      <p>Monthly count of asteroids passing within 0.05 AU of Earth.</p>
+      <canvas id="asteroidChart"></canvas>
+    </section>
+
+    <!-- Chart 2: Mission Distribution -->
+    <section class="chart-container">
+      <h2><i class="fa-solid fa-rocket" style="color:#7c3aed"></i> NASA Mission Distribution by Type</h2>
+      <p>Breakdown of active missions by category.</p>
+      <canvas id="missionChart"></canvas>
+    </section>
+
+    <!-- Chart 3: Exoplanets -->
+    <section class="chart-container">
+      <h2><i class="fa-solid fa-globe" style="color:#3b82f6"></i> Exoplanet Discoveries Over Time</h2>
+      <p>Annual discoveries and cumulative total.</p>
+      <canvas id="exoplanetChart"></canvas>
+    </section>
+
+    <div class="btn-row">
+      <a class="btn" href="index.html"><i class="fa-solid fa-home"></i>&nbsp;Back to Home</a>
+      <a class="btn secondary" href="about.html"><i class="fa-solid fa-users"></i>&nbsp;About Us</a>
+    </div>
+  </main>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Inline charts (theme-matched, compact) -->
+  <script>
+    /* ===== Theme helpers ===== */
+    function cssVar(name, fallback){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback }
+    const clrText  = cssVar('--text-light', '#f8fafc');
+    const clrMuted = cssVar('--text-gray',  '#94a3b8');
+    const clrIndigo= cssVar('--primary-color', '#4f46e5');
+    const clrPurple= cssVar('--secondary-color','#7c3aed');
+    const grid     = 'rgba(148,163,184,.16)';
+    const tipBg    = 'rgba(15,23,42,.96)';
+    const tipBd    = 'rgba(124,58,237,.45)';
+
+    Chart.defaults.color = clrText;
+    Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+    Chart.defaults.plugins.legend.labels.boxWidth = 10;
+    Chart.defaults.plugins.tooltip.backgroundColor = tipBg;
+    Chart.defaults.plugins.tooltip.borderColor = tipBd;
+    Chart.defaults.plugins.tooltip.borderWidth = 1;
+
+    const roundedBars = { borderRadius: 8 };
+    function vGrad(ctx, top, bottom, h=320){
+      const g = ctx.createLinearGradient(0,0,0,h);
+      g.addColorStop(0, top); g.addColorStop(1, bottom);
+      return g;
+    }
+
+    /* ===== Chart 1: Asteroids (line + gradient) ===== */
+    (function(){
+      const el = document.getElementById('asteroidChart'); if(!el) return;
+      const ctx = el.getContext('2d');
+      const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const counts = [42,38,55,61,48,72,64,70,58,63,46,39];
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label:'NEOs detected',
+            data: counts,
+            borderColor: clrPurple,
+            backgroundColor: vGrad(ctx, 'rgba(124,58,237,.35)', 'rgba(124,58,237,0)'),
+            fill: true, tension: .28, pointRadius: 3, pointHoverRadius: 5
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          animation: { duration: 900, easing: 'easeOutQuart' },
+          plugins: { legend: { position:'top' }, tooltip:{ callbacks:{
+            label: c => ` ${c.parsed.y} asteroids`
+          }}},
+          scales: {
+            x: { grid:{ color:grid }, ticks:{ color:clrMuted } },
+            y: { beginAtZero:true, grid:{ color:grid }, ticks:{ color:clrMuted }, title:{ display:true, text:'Asteroids (count)' } }
+          },
+          onClick: (_, els) => {
+            if(!els?.length) return;
+            const month = labels[els[0].index];
+            window.location.href = `./crud/read.html?source=neo&month=${encodeURIComponent(month)}`;
+          }
+        }
+      });
+    })();
+
+    /* ===== Chart 2: Mission Distribution (doughnut + center total) ===== */
+    (function(){
+      const el = document.getElementById('missionChart'); if(!el) return;
+      const ctx = el.getContext('2d');
+      const labels = ['Planetary','Earth Obs','Heliophysics','Astrophysics'];
+      const values = [12,9,7,10];
+      const colors = ['#7c3aed','#3b82f6','#f59e0b','#10b981'];
+
+      const chart = new Chart(ctx, {
+        type:'doughnut',
+        data:{ labels, datasets:[{ data: values, backgroundColor: colors, borderWidth:0, hoverOffset:12 }] },
+        options:{
+          responsive:true, maintainAspectRatio:false, cutout:'62%',
+          plugins:{ legend:{ position:'bottom', labels:{ color: clrMuted } },
+            tooltip:{ callbacks:{ label: c => ` ${c.label}: ${c.parsed} missions` } } }
+        },
+        plugins:[{
+          id:'centerText',
+          afterDraw(chart){
+            const {ctx, chartArea:{ width, height }} = chart;
+            const total = values.reduce((a,b)=>a+b,0);
+            const pt = chart.getDatasetMeta(0).data[0];
+            const cx = pt.x, cy = pt.y;
+            ctx.save();
+            ctx.textAlign='center';
+            ctx.fillStyle=clrText; ctx.font='600 18px Segoe UI, sans-serif';
+            ctx.fillText(`${total}`, cx, cy - 4);
+            ctx.fillStyle=clrMuted; ctx.font='400 12px Segoe UI, sans-serif';
+            ctx.fillText('total missions', cx, cy + 14);
+            ctx.restore();
+          }
+        }]
+      });
+
+      el.onclick = (e)=>{
+        const it = chart.getElementsAtEventForMode(e,'nearest',{intersect:true},false)[0];
+        if(!it) return;
+        window.location.href = `./crud/read.html?category=${encodeURIComponent(labels[it.index])}`;
+      };
+    })();
+
+    /* ===== Chart 3: Exoplanets (bar + line cumulative) ===== */
+    (function(){
+      const el = document.getElementById('exoplanetChart'); if(!el) return;
+      const ctx = el.getContext('2d');
+      const years = [2016,2017,2018,2019,2020,2021,2022,2023,2024];
+      const discovered = [128,154,192,210,235,280,260,300,320];
+      const cumulative = discovered.reduce((a,v)=>{ a.push((a.at(-1)||0)+v); return a; },[]);
+      new Chart(ctx,{
+        data:{
+          labels: years,
+          datasets:[
+            { type:'bar', label:'Discovered (year)', data: discovered,
+              backgroundColor:'rgba(59,130,246,.55)', borderWidth:0, yAxisID:'y', ...roundedBars },
+            { type:'line', label:'Cumulative', data: cumulative,
+              borderColor: clrIndigo, backgroundColor: vGrad(ctx,'rgba(79,70,229,.35)','rgba(79,70,229,0)'),
+              fill:true, tension:.28, pointRadius:2, yAxisID:'y1' }
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{ position:'top' } },
+          scales:{
+            x:{ grid:{ color:grid }, ticks:{ color:clrMuted } },
+            y:{ beginAtZero:true, grid:{ color:grid }, ticks:{ color:clrMuted }, title:{ display:true, text:'New exoplanets' } },
+            y1:{ position:'right', grid:{ drawOnChartArea:false }, ticks:{ color:clrMuted }, title:{ display:true, text:'Cumulative' } }
+          }
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
