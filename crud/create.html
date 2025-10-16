@@ -1,71 +1,131 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Create Activity � SpaceTrack</title>
-    <link rel="stylesheet" href="../assets/css/style.css" />
-    <script src="../js/crud-sim.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create Activity • SpaceTrack</title>
+
+  <!-- Font Awesome (icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Your shared site CSS (adjust path if needed) -->
+  <link rel="stylesheet" href="../css/style.css" />
+
+  <!-- Page-specific styles to match index look if style.css is minimal -->
+  <style>
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(to bottom,#0f172a,#1e1b4b,#000);color:#f8fafc;}
+    /* Navbar (mirrors index) */
+    .site-header{background:linear-gradient(90deg,#4338ca,#7c3aed,#000);position:sticky;top:0;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.3)}
+    .nav{max-width:1200px;margin:0 auto;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+    .logo{display:flex;align-items:center;gap:.5rem;font-weight:700;text-decoration:none;color:#fff;font-size:1.4rem}
+    .nav-links{list-style:none;display:flex;gap:1.25rem;align-items:center;margin:0;padding:0}
+    .nav-links a{color:#fff;text-decoration:none;font-weight:500;padding:.45rem .6rem;border-radius:.6rem}
+    .nav-links a:hover{background:rgba(255,255,255,.08)}
+    .crud{position:relative}
+    .crud-toggle{background:rgba(255,255,255,.08);border:0;color:#fff;border-radius:.6rem;padding:.45rem .6rem;cursor:pointer}
+    .crud-menu{display:none;position:absolute;top:120%;right:0;min-width:220px;background:#1e1b4b;border:1px solid rgba(255,255,255,.15);border-radius:.6rem;padding:.25rem;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    .crud-menu a{display:block;color:#fff}
+    .crud-menu a:hover{background:rgba(255,255,255,.08)}
+    /* Layout */
+    .container{max-width:1100px;margin:0 auto;padding:2rem}
+    .card{background:rgba(30,41,59,.8);backdrop-filter:blur(10px);border-radius:1rem;padding:2rem;border:1px solid rgba(79,70,229,.3);box-shadow:0 10px 30px rgba(79,70,229,.15)}
+    .card h1{margin:0 0 .75rem 0}
+    .muted{color:#94a3b8}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+    .form-grid label{display:block;font-weight:600;margin-bottom:.4rem}
+    .input, select{width:100%;padding:.6rem .7rem;border:1px solid #334155;border-radius:.6rem;background:#0b1220;color:#f8fafc}
+    .row{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem}
+    .btn{border:0;border-radius:.7rem;padding:.7rem 1rem;cursor:pointer;font-weight:600}
+    .btn-primary{background:#2563eb;color:#fff;box-shadow:0 10px 25px rgba(37,99,235,.25)}
+    .btn-outline{background:transparent;color:#93c5fd;border:1px solid #334155}
+    .success{margin-top:1rem;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.35);color:#bbf7d0;padding:.8rem 1rem;border-radius:.6rem;display:none}
+    .breadcrumbs{margin-bottom:1rem;color:#94a3b8}
+    .breadcrumbs a{color:#93c5fd;text-decoration:none}
+    @media(max-width:760px){.form-grid{grid-template-columns:1fr}}
+  </style>
+
+  <!-- CRUD simulator -->
+  <script src="../js/crud-sim.js"></script>
 </head>
 <body>
 
-    <header class="site-header">
-        <nav class="nav">
-            <a class="logo" href="../index.html">SpaceTrack</a>
-            <ul class="nav-links">
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="../charts.html">Data Visualization</a></li>
-                <li><a href="../about.html">About Us</a></li>
-                <li class="crud">
-                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD</button>
-                    <ul class="crud-menu">
-                        <li><a href="./create.html">Create</a></li>
-                        <li><a href="./read.html">Read</a></li>
-                        <li><a href="./update.html">Update</a></li>
-                        <li><a href="./delete.html">Delete</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
-    </header>
+<header class="site-header">
+  <nav class="nav">
+    <a class="logo" href="../index.html"><i class="fas fa-rocket"></i> SpaceTrack</a>
+    <ul class="nav-links">
+      <li><a href="../index.html"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="../data-visualization.html"><i class="fas fa-chart-bar"></i> Data Dashboard</a></li>
+      <li><a href="../about.html"><i class="fas fa-users"></i> About Us</a></li>
+      <li class="crud">
+        <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD ▾</button>
+        <ul class="crud-menu">
+          <li><a href="./create.html">Create</a></li>
+          <li><a href="./read.html">Read</a></li>
+          <li><a href="./update.html">Update</a></li>
+          <li><a href="./delete.html">Delete</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</header>
 
-    <main class="container">
-        <h1>Create New Activity</h1>
-        <p class="notice">This simulates <strong>Create</strong>. In the final MVC app, <em>Save</em> will persist to a database and re-render tables & charts.</p>
+<main class="container">
 
-        <form id="createForm" class="mt-3">
-            <div class="form-row">
-                <label>
-                    Mission
-                    <select id="missionId" name="missionId" required></select>
-                </label>
-                <label>
-                    Type
-                    <select id="type" name="type" required>
-                        <option value="image">image</option>
-                        <option value="observation">observation</option>
-                        <option value="instrument">instrument</option>
-                        <option value="maneuver">maneuver</option>
-                        <option value="sample">sample</option>
-                    </select>
-                </label>
-            </div>
-            <div class="form-row">
-                <label>Date <input class="input" type="date" id="date" name="date" required></label>
-                <label>Title <input class="input" type="text" id="title" name="title" placeholder="Short description"></label>
-            </div>
-            <button class="btn btn-primary" type="submit">Save</button>
-            <a class="btn btn-outline" href="./read.html">View All</a>
-        </form>
+  <div class="breadcrumbs">
+    <a href="../index.html">Home</a> / <a href="./read.html">Activities</a> / Create
+  </div>
 
-        <p id="msg" class="mt-2" style="color:#065f46;"></p>
-    </main>
+  <div class="card">
+    <h1>Create New Activity</h1>
+    <p class="muted">This simulates <strong>Create</strong>. In the final MVC app, <em>Save</em> will persist to the database and refresh tables & charts.</p>
 
-    <script>
+    <form id="createForm" class="mt-3">
+      <div class="form-grid">
+        <div>
+          <label for="missionId">Mission</label>
+          <select id="missionId" required></select>
+        </div>
+        <div>
+          <label for="type">Type</label>
+          <select id="type" required>
+            <option value="image">image</option>
+            <option value="observation">observation</option>
+            <option value="instrument">instrument</option>
+            <option value="maneuver">maneuver</option>
+            <option value="sample">sample</option>
+          </select>
+        </div>
+        <div>
+          <label for="date">Date</label>
+          <input class="input" type="date" id="date" required />
+        </div>
+        <div>
+          <label for="title">Title</label>
+          <input class="input" type="text" id="title" placeholder="Short description" />
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Save</button>
+        <a class="btn btn-outline" href="./read.html"><i class="fas fa-table"></i> View All</a>
+      </div>
+    </form>
+
+    <div id="msg" class="success"><i class="fas fa-check-circle"></i> Created activity successfully.</div>
+  </div>
+
+</main>
+
+<script>
   // populate missions
-  const sel=document.getElementById('missionId');
-  window.CRUD.Missions.forEach(m=>{const o=document.createElement('option');o.value=m.missionId;o.textContent=m.name;sel.appendChild(o);});
-  // handle submit
+  const sel = document.getElementById('missionId');
+  window.CRUD.Missions.forEach(m=>{
+    const o=document.createElement('option');
+    o.value=m.missionId; o.textContent=m.name;
+    sel.appendChild(o);
+  });
+
+  // handle save
   document.getElementById('createForm').addEventListener('submit',(e)=>{
     e.preventDefault();
     const payload={
@@ -74,13 +134,30 @@
       date:document.getElementById('date').value,
       title:(document.getElementById('title').value||'(untitled)').trim()
     };
-    const id=window.CRUD.createActivity(payload);
+    const id = window.CRUD.createActivity(payload);
+    const msg = document.getElementById('msg');
+    msg.innerHTML = `<i class="fas fa-check-circle"></i> Created activity <strong>#${id}</strong>. (Will persist in final app.)`;
+    msg.style.display='block';
     e.target.reset();
-    document.getElementById('msg').textContent=`Created activity #${id}. (Will persist in final app.)`;
+    sel.selectedIndex = 0;
   });
-    </script>
 
-    <!-- dropdown -->
-    <script>const btn=document.querySelector('.crud-toggle');const menu=document.querySelector('.crud-menu');if(btn&&menu){btn.addEventListener('click',()=>{const open=menu.style.display==='block';menu.style.display=open?'none':'block';btn.setAttribute('aria-expanded',String(!open));});document.addEventListener('click',(e)=>{if(!menu.contains(e.target)&&!btn.contains(e.target)){menu.style.display='none';btn.setAttribute('aria-expanded','false');}});}</script>
+  // dropdown open/close
+  const btn=document.querySelector('.crud-toggle');
+  const menu=document.querySelector('.crud-menu');
+  if(btn&&menu){
+    btn.addEventListener('click', (ev)=>{
+      ev.stopPropagation();
+      const open = menu.style.display==='block';
+      menu.style.display = open ? 'none' : 'block';
+      btn.setAttribute('aria-expanded', String(!open));
+    });
+    document.addEventListener('click', ()=>{
+      menu.style.display='none';
+      btn.setAttribute('aria-expanded','false');
+    });
+  }
+</script>
+
 </body>
 </html>
