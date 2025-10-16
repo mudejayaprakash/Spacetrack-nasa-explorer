@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Read Activities • SpaceTrack</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <script src="../js/crud-sim.js"></script>
+</head>
+<body>
+
+    <header class="site-header">
+        <nav class="nav">
+            <a class="logo" href="../index.html">SpaceTrack</a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../charts.html">Data Visualization</a></li>
+                <li><a href="../about.html">About Us</a></li>
+                <li class="crud">
+                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD</button>
+                    <ul class="crud-menu">
+                        <li><a href="./create.html">Create</a></li>
+                        <li><a href="./read.html">Read</a></li>
+                        <li><a href="./update.html">Update</a></li>
+                        <li><a href="./delete.html">Delete</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>All Activities</h1>
+        <p class="notice">This demonstrates <strong>Read</strong> with a searchable list of dummy activities.</p>
+
+        <input id="search" class="input mt-2" placeholder="Search by ID, type, or title…" />
+        <div id="tableRoot" class="mt-2"></div>
+    </main>
+
+    <script>
+  const root=document.getElementById('tableRoot');
+  const search=document.getElementById('search');
+  let rows=window.CRUD.listActivities();
+
+  function filterRows(all,q){
+    const t=(q||'').toLowerCase().trim();
+    if(!t) return all;
+    return all.filter(r=> String(r.id).includes(t) || r.type.toLowerCase().includes(t) || r.title.toLowerCase().includes(t) );
+  }
+
+  function refresh(){
+    const filtered=filterRows(rows, search.value);
+    window.CRUD.renderTable(root, filtered, true);
+    // add inline action buttons
+    root.querySelectorAll('tbody tr').forEach(tr=>{
+      const id=Number(tr.getAttribute('data-id'));
+      const actions=tr.querySelector('td.right');
+      actions.innerHTML=`
+        <a class="btn btn-out

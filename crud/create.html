@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create Activity • SpaceTrack</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <script src="../js/crud-sim.js"></script>
+</head>
+<body>
+
+    <header class="site-header">
+        <nav class="nav">
+            <a class="logo" href="../index.html">SpaceTrack</a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../charts.html">Data Visualization</a></li>
+                <li><a href="../about.html">About Us</a></li>
+                <li class="crud">
+                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD</button>
+                    <ul class="crud-menu">
+                        <li><a href="./create.html">Create</a></li>
+                        <li><a href="./read.html">Read</a></li>
+                        <li><a href="./update.html">Update</a></li>
+                        <li><a href="./delete.html">Delete</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Create New Activity</h1>
+        <p class="notice">This simulates <strong>Create</strong>. In the final MVC app, <em>Save</em> will persist to a database and re-render tables & charts.</p>
+
+        <form id="createForm" class="mt-3">
+            <div class="form-row">
+                <label>
+                    Mission
+                    <select id="missionId" name="missionId" required></select>
+                </label>
+                <label>
+                    Type
+                    <select id="type" name="type" required>
+                        <option value="image">image</option>
+                        <option value="observation">observation</option>
+                        <option value="instrument">instrument</option>
+                        <option value="maneuver">maneuver</option>
+                        <option value="sample">sample</option>
+                    </select>
+                </label>
+            </div>
+            <div class="form-row">
+                <label>Date <input class="input" type="date" id="date" name="date" required></label>
+                <label>Title <input class="input" type="text" id="title" name="title" placeholder="Short description"></label>
+            </div>
+            <button class="btn btn-primary" type="submit">Save</button>
+            <a class="btn btn-outline" href="./read.html">View All</a>
+        </form>
+
+        <p id="msg" class="mt-2" style="color:#065f46;"></p>
+    </main>
+
+    <script>
+  // populate missions
+  const sel=document.getElementById('missionId');
+  window.CRUD.Missions.forEach(m=>{const o=document.createElement('option');o.value=m.missionId;o.textContent=m.name;sel.appendChild(o);});
+  // handle submit
+  document.getElementById('createForm').addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const payload={
+      missionId:Number(sel.value),
+      type:document.getElementById('type').value,
+      date:document.getElementById('date').value,
+      title:(document.getElementById('title').value||'(untitled)').trim()
+    };
+    const id=window.CRUD.createActivity(payload);
+    e.target.reset();
+    document.getElementById('msg').textContent=`Created activity #${id}. (Will persist in final app.)`;
+  });
+    </script>
+
+    <!-- dropdown -->
+    <script>const btn=document.querySelector('.crud-toggle');const menu=document.querySelector('.crud-menu');if(btn&&menu){btn.addEventListener('click',()=>{const open=menu.style.display==='block';menu.style.display=open?'none':'block';btn.setAttribute('aria-expanded',String(!open));});document.addEventListener('click',(e)=>{if(!menu.contains(e.target)&&!btn.contains(e.target)){menu.style.display='none';btn.setAttribute('aria-expanded','false');}});}</script>
+</body>
+</html>

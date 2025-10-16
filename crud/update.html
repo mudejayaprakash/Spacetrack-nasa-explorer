@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Update Activity • SpaceTrack</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <script src="../js/crud-sim.js"></script>
+</head>
+<body>
+
+    <header class="site-header">
+        <nav class="nav">
+            <a class="logo" href="../index.html">SpaceTrack</a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../charts.html">Data Visualization</a></li>
+                <li><a href="../about.html">About Us</a></li>
+                <li class="crud">
+                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD</button>
+                    <ul class="crud-menu">
+                        <li><a href="./create.html">Create</a></li>
+                        <li><a href="./read.html">Read</a></li>
+                        <li><a href="./update.html">Update</a></li>
+                        <li><a href="./delete.html">Delete</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Update Activity <span id="actId" class="badge"></span></h1>
+        <p class="notice">This simulates <strong>Update</strong>. The final MVC app will persist changes and refresh dependent views (tables/charts).</p>
+
+        <form id="updateForm" class="mt-3">
+            <div class="form-row">
+                <label>
+                    Mission
+                    <select id="missionId" required></select>
+                </label>
+                <label>
+                    Type
+                    <select id="type" required>
+                        <option value="image">image</option>
+                        <option value="observation">observation</option>
+                        <option value="instrument">instrument</option>
+                        <option value="maneuver">maneuver</option>
+                        <option value="sample">sample</option>
+                    </select>
+                </label>
+            </div>
+            <div class="form-row">
+                <label>Date <input class="input" type="date" id="date" required></label>
+                <label>Title <input class="input" type="text" id="title" required></label>
+            </div>
+            <button class="btn btn-primary" type="submit">Apply Changes</button>
+            <a class="btn btn-outline" href="./read.html">Back to List</a>
+        </form>
+
+        <p id="msg" class="mt-2"></p>
+    </main>
+
+    <script>
+  function qp(name){return new URL(location.href).searchParams.get(name);}
+  const id = Number(qp('id'));
+  const list = window.CRUD.listActivities();
+  const activity = list.find(a=>a.id===id) || list[0];
+
+  document.getElementById('actId').textContent = `#${activity.id}`;
+
+  // populate missions
+  const sel=document.getElementById('missionId');
+  window.CRUD.Missions.forEach(m=>{const o=document.createElement('option');o.value=m.missionId;o.textContent=m.name;sel.appendChild(o);});
+
+  // prefill
+  sel.value = activity.missionId;
+  document.getElementById('type').value = activity.type;
+  document.getElementById('date').value = activity.date;
+  document.getElementById('title').value = activity.title;
+
+  document.getElementById('updateForm').addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const ok = window.CRUD.updateActivity(activity.id,{
+      missionId:Number(sel.value),
+      type:document.getElementById('type').value,
+      date:document.getElementById('date').value,
+      title:(document.getElementById('title').value||'(untitled)').trim()
+    });
+    document.getElementById('msg').textContent = ok
+      ? `Updated activity #${activity.id}. (Will persist in final app.)`
+      : `Could not update activity.`;
+  });
+    </script>
+
+    <!-- dropdown -->
+    <script>const btn=document.querySelector('.crud-toggle');const menu=document.querySelector('.crud-menu');if(btn&&menu){btn.addEventListener('click',()=>{const open=menu.style.display==='block';menu.style.display=open?'none':'block';btn.setAttribute('aria-expanded',String(!open));});document.addEventListener('click',(e)=>{if(!menu.contains(e.target)&&!btn.contains(e.target)){menu.style.display='none';btn.setAttribute('aria-expanded','false');}});}</script>
+</body>
+</html>

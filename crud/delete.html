@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Delete Activity • SpaceTrack</title>
+    <link rel="stylesheet" href="../assets/css/style.css" />
+    <script src="../js/crud-sim.js"></script>
+</head>
+<body>
+
+    <header class="site-header">
+        <nav class="nav">
+            <a class="logo" href="../index.html">SpaceTrack</a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../charts.html">Data Visualization</a></li>
+                <li><a href="../about.html">About Us</a></li>
+                <li class="crud">
+                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD</button>
+                    <ul class="crud-menu">
+                        <li><a href="./create.html">Create</a></li>
+                        <li><a href="./read.html">Read</a></li>
+                        <li><a href="./update.html">Update</a></li>
+                        <li><a href="./delete.html">Delete</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>Delete Activity</h1>
+        <p class="notice">This simulates <strong>Delete</strong>. The final MVC app will remove the record from the DB and update charts/tables.</p>
+
+        <div id="summary" class="mt-2 notice"></div>
+        <div class="mt-2">
+            <button id="confirm" class="btn btn-danger">Confirm Delete</button>
+            <a class="btn btn-outline" href="./read.html">Cancel</a>
+        </div>
+
+        <p id="msg" class="mt-2"></p>
+    </main>
+
+    <script>
+  function qp(name){return new URL(location.href).searchParams.get(name);}
+  const id = Number(qp('id'));
+  const list = window.CRUD.listActivities();
+  const activity = list.find(a=>a.id===id) || list[0];
+
+  document.getElementById('summary').innerHTML = `
+    <ul class="m-0">
+      <li><strong>ID:</strong> ${activity.id}</li>
+      <li><strong>Mission:</strong> ${window.CRUD.missionName(activity.missionId)}</li>
+      <li><strong>Type:</strong> ${activity.type}</li>
+      <li><strong>Date:</strong> ${activity.date}</li>
+      <li><strong>Title:</strong> ${activity.title}</li>
+    </ul>`;
+
+  document.getElementById('confirm').addEventListener('click',()=>{
+    const ok = window.CRUD.deleteActivity(activity.id);
+    document.getElementById('msg').textContent = ok
+      ? `Deleted activity #${activity.id}. (Will persist in final app.)`
+      : `Could not delete activity.`;
+  });
+    </script>
+
+    <!-- dropdown -->
+    <script>const btn=document.querySelector('.crud-toggle');const menu=document.querySelector('.crud-menu');if(btn&&menu){btn.addEventListener('click',()=>{const open=menu.style.display==='block';menu.style.display=open?'none':'block';btn.setAttribute('aria-expanded',String(!open));});document.addEventListener('click',(e)=>{if(!menu.contains(e.target)&&!btn.contains(e.target)){menu.style.display='none';btn.setAttribute('aria-expanded','false');}});}</script>
+</body>
+</html>
