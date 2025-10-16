@@ -1,99 +1,218 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Update Activity � SpaceTrack</title>
-    <link rel="stylesheet" href="../assets/css/style.css" />
-    <script src="../js/crud-sim.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Update Activity • SpaceTrack</title>
+
+  <!-- Font Awesome (icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Shared site CSS (adjust path if needed) -->
+  <link rel="stylesheet" href="../css/style.css" />
+
+  <!-- Page-specific styles (light; relies mostly on style.css) -->
+  <style>
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(to bottom,#0f172a,#1e1b4b,#000);color:#f8fafc;}
+    /* Navbar like index */
+    .site-header{background:linear-gradient(90deg,#4338ca,#7c3aed,#000);position:sticky;top:0;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.3)}
+    .nav{max-width:1200px;margin:0 auto;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+    .logo{display:flex;align-items:center;gap:.5rem;font-weight:700;text-decoration:none;color:#fff;font-size:1.4rem}
+    .nav-links{list-style:none;display:flex;gap:1.25rem;align-items:center;margin:0;padding:0}
+    .nav-links a{color:#fff;text-decoration:none;font-weight:500;padding:.45rem .6rem;border-radius:.6rem}
+    .nav-links a:hover{background:rgba(255,255,255,.08)}
+    .crud{position:relative}
+    .crud-toggle{background:rgba(255,255,255,.08);border:0;color:#fff;border-radius:.6rem;padding:.45rem .6rem;cursor:pointer}
+    .crud-menu{display:none;position:absolute;top:120%;right:0;min-width:220px;background:#1e1b4b;border:1px solid rgba(255,255,255,.15);border-radius:.6rem;padding:.25rem;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    .crud-menu a{display:block;color:#fff}
+    .crud-menu a:hover{background:rgba(255,255,255,.08)}
+
+    .container{max-width:1100px;margin:0 auto;padding:2rem}
+    .breadcrumbs{margin-bottom:1rem;color:#94a3b8}
+    .breadcrumbs a{color:#93c5fd;text-decoration:none}
+
+    .card{background:rgba(30,41,59,.8);backdrop-filter:blur(10px);border-radius:1rem;padding:2rem;border:1px solid rgba(79,70,229,.3);box-shadow:0 10px 30px rgba(79,70,229,.15)}
+    .muted{color:#94a3b8}
+
+    form .form-row{display:flex;gap:1rem;flex-wrap:wrap;margin:.75rem 0}
+    label{display:flex;flex-direction:column;gap:.35rem;min-width:220px;flex:1}
+    select,input[type="text"],input[type="date"]{background:#0b1220;border:1px solid #334155;border-radius:.6rem;color:#f8fafc;padding:.6rem .7rem}
+    select:focus,input:focus{outline:2px solid rgba(79,70,229,.6);outline-offset:1px}
+
+    .btn{border:0;border-radius:.7rem;padding:.6rem 1rem;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
+    .btn-primary{background:#2563eb;color:#fff}
+    .btn-outline{background:transparent;color:#93c5fd;border:1px solid #334155}
+    .row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1rem}
+
+    .badge{background:#1f2937;border:1px solid #334155;color:#93c5fd;padding:.2rem .5rem;border-radius:.4rem;font-size:.95rem;margin-left:.35rem}
+    .success{margin-top:1rem;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.35);color:#bbf7d0;padding:.8rem 1rem;border-radius:.6rem;display:none}
+    .error{margin-top:1rem;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#fecaca;padding:.8rem 1rem;border-radius:.6rem;display:none}
+  </style>
+
+  <!-- CRUD simulator -->
+  <script src="../js/crud-sim.js"></script>
 </head>
 <body>
 
-    <header class="site-header">
-        <nav class="nav">
-            <a class="logo" href="../index.html">SpaceTrack</a>
-            <ul class="nav-links">
-                <li><a href="../index.html">Home</a></li>
-                <li><a href="../charts.html">Data Visualization</a></li>
-                <li><a href="../about.html">About Us</a></li>
-                <li class="crud">
-                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD</button>
-                    <ul class="crud-menu">
-                        <li><a href="./create.html">Create</a></li>
-                        <li><a href="./read.html">Read</a></li>
-                        <li><a href="./update.html">Update</a></li>
-                        <li><a href="./delete.html">Delete</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </nav>
-    </header>
+<header class="site-header">
+  <nav class="nav">
+    <a class="logo" href="../index.html"><i class="fas fa-rocket"></i> SpaceTrack</a>
+    <ul class="nav-links">
+      <li><a href="../index.html"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="../data-visualization.html"><i class="fas fa-chart-bar"></i> Data Dashboard</a></li>
+      <li><a href="../about.html"><i class="fas fa-users"></i> About Us</a></li>
+      <li class="crud">
+        <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD ▾</button>
+        <ul class="crud-menu">
+          <li><a href="./create.html">Create</a></li>
+          <li><a href="./read.html">Read</a></li>
+          <li><a href="./update.html">Update</a></li>
+          <li><a href="./delete.html">Delete</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</header>
 
-    <main class="container">
-        <h1>Update Activity <span id="actId" class="badge"></span></h1>
-        <p class="notice">This simulates <strong>Update</strong>. The final MVC app will persist changes and refresh dependent views (tables/charts).</p>
+<main class="container">
 
-        <form id="updateForm" class="mt-3">
-            <div class="form-row">
-                <label>
-                    Mission
-                    <select id="missionId" required></select>
-                </label>
-                <label>
-                    Type
-                    <select id="type" required>
-                        <option value="image">image</option>
-                        <option value="observation">observation</option>
-                        <option value="instrument">instrument</option>
-                        <option value="maneuver">maneuver</option>
-                        <option value="sample">sample</option>
-                    </select>
-                </label>
-            </div>
-            <div class="form-row">
-                <label>Date <input class="input" type="date" id="date" required></label>
-                <label>Title <input class="input" type="text" id="title" required></label>
-            </div>
-            <button class="btn btn-primary" type="submit">Apply Changes</button>
-            <a class="btn btn-outline" href="./read.html">Back to List</a>
-        </form>
+  <div class="breadcrumbs">
+    <a href="../index.html">Home</a> / <a href="./read.html">Activities</a> / Update
+  </div>
 
-        <p id="msg" class="mt-2"></p>
-    </main>
+  <div class="card">
+    <h1>Update Activity <span id="actId" class="badge"></span></h1>
+    <p class="muted">This simulates <strong>Update</strong>. In the final MVC app, changes will persist to the DB and refresh charts/tables.</p>
 
-    <script>
-  function qp(name){return new URL(location.href).searchParams.get(name);}
-  const id = Number(qp('id'));
-  const list = window.CRUD.listActivities();
-  const activity = list.find(a=>a.id===id) || list[0];
+    <form id="updateForm" class="mt-3">
+      <div class="form-row">
+        <label>
+          Mission
+          <select id="missionId" required></select>
+        </label>
+        <label>
+          Type
+          <select id="type" required>
+            <option value="image">image</option>
+            <option value="observation">observation</option>
+            <option value="instrument">instrument</option>
+            <option value="maneuver">maneuver</option>
+            <option value="sample">sample</option>
+          </select>
+        </label>
+      </div>
 
-  document.getElementById('actId').textContent = `#${activity.id}`;
+      <div class="form-row">
+        <label>Date
+          <input class="input" type="date" id="date" required>
+        </label>
+        <label>Title
+          <input class="input" type="text" id="title" required>
+        </label>
+      </div>
 
-  // populate missions
-  const sel=document.getElementById('missionId');
-  window.CRUD.Missions.forEach(m=>{const o=document.createElement('option');o.value=m.missionId;o.textContent=m.name;sel.appendChild(o);});
+      <div class="row">
+        <button class="btn btn-primary" type="submit"><i class="fas fa-check"></i> Apply Changes</button>
+        <a class="btn btn-outline" href="./read.html"><i class="fas fa-arrow-left"></i> Back to List</a>
+      </div>
+    </form>
 
-  // prefill
-  sel.value = activity.missionId;
-  document.getElementById('type').value = activity.type;
-  document.getElementById('date').value = activity.date;
-  document.getElementById('title').value = activity.title;
+    <div id="msgOk" class="success"><i class="fas fa-check-circle"></i> Updated.</div>
+    <div id="msgErr" class="error"><i class="fas fa-circle-exclamation"></i> Could not update.</div>
+  </div>
 
-  document.getElementById('updateForm').addEventListener('submit',(e)=>{
-    e.preventDefault();
-    const ok = window.CRUD.updateActivity(activity.id,{
-      missionId:Number(sel.value),
-      type:document.getElementById('type').value,
-      date:document.getElementById('date').value,
-      title:(document.getElementById('title').value||'(untitled)').trim()
-    });
-    document.getElementById('msg').textContent = ok
-      ? `Updated activity #${activity.id}. (Will persist in final app.)`
-      : `Could not update activity.`;
+</main>
+
+<script>
+  // Helper to read query param
+  function qp(name){ return new URL(location.href).searchParams.get(name); }
+
+  // Resolve activity to edit
+  const idParam = qp('id');
+  const list    = window.CRUD.listActivities();
+  let   activity = null;
+
+  if(idParam){
+    const id = Number(idParam);
+    activity = list.find(a => a.id === id) || null;
+  }
+  // Fallback to first record if no id provided
+  if(!activity && list.length){
+    activity = list[0];
+  }
+
+  const actIdEl = document.getElementById('actId');
+  const form    = document.getElementById('updateForm');
+  const msgOk   = document.getElementById('msgOk');
+  const msgErr  = document.getElementById('msgErr');
+
+  if(activity){
+    actIdEl.textContent = `#${activity.id}`;
+  }else{
+    actIdEl.textContent = '(none)';
+  }
+
+  // Populate Missions
+  const selMission = document.getElementById('missionId');
+  window.CRUD.Missions.forEach(m=>{
+    const o = document.createElement('option');
+    o.value = m.missionId;
+    o.textContent = m.name;
+    selMission.appendChild(o);
   });
-    </script>
 
-    <!-- dropdown -->
-    <script>const btn=document.querySelector('.crud-toggle');const menu=document.querySelector('.crud-menu');if(btn&&menu){btn.addEventListener('click',()=>{const open=menu.style.display==='block';menu.style.display=open?'none':'block';btn.setAttribute('aria-expanded',String(!open));});document.addEventListener('click',(e)=>{if(!menu.contains(e.target)&&!btn.contains(e.target)){menu.style.display='none';btn.setAttribute('aria-expanded','false');}});}</script>
+  // Prefill form when activity available
+  const selType  = document.getElementById('type');
+  const inputDate = document.getElementById('date');
+  const inputTitle = document.getElementById('title');
+
+  if(activity){
+    selMission.value = activity.missionId;
+    selType.value    = activity.type;
+    inputDate.value  = activity.date;
+    inputTitle.value = activity.title;
+  }else{
+    form.querySelector('button[type="submit"]').disabled = true;
+  }
+
+  // Submit -> simulate update
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    if(!activity) return;
+
+    const ok = window.CRUD.updateActivity(activity.id, {
+      missionId: Number(selMission.value),
+      type:      selType.value,
+      date:      inputDate.value,
+      title:     (inputTitle.value || '(untitled)').trim()
+    });
+
+    if(ok){
+      msgOk.innerHTML  = `<i class="fas fa-check-circle"></i> Updated activity <strong>#${activity.id}</strong>. (Will persist in final app.)`;
+      msgOk.style.display = 'block';
+      msgErr.style.display = 'none';
+    }else{
+      msgErr.style.display = 'block';
+      msgOk.style.display = 'none';
+    }
+  });
+
+  // Navbar CRUD dropdown
+  const btn = document.querySelector('.crud-toggle');
+  const menu = document.querySelector('.crud-menu');
+  if(btn && menu){
+    btn.addEventListener('click',(ev)=>{
+      ev.stopPropagation();
+      const open = menu.style.display==='block';
+      menu.style.display = open ? 'none' : 'block';
+      btn.setAttribute('aria-expanded', String(!open));
+    });
+    document.addEventListener('click', ()=>{
+      menu.style.display='none';
+      btn.setAttribute('aria-expanded','false');
+    });
+  }
+</script>
+
 </body>
 </html>
