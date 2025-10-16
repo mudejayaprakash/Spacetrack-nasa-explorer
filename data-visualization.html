@@ -126,140 +126,89 @@
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Inline charts (theme-matched, compact) -->
-  <script>
-    /* ===== Theme helpers ===== */
-    function cssVar(name, fallback){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback }
-    const clrText  = cssVar('--text-light', '#f8fafc');
-    const clrMuted = cssVar('--text-gray',  '#94a3b8');
-    const clrIndigo= cssVar('--primary-color', '#4f46e5');
-    const clrPurple= cssVar('--secondary-color','#7c3aed');
+  <!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Load charts dynamically from JSON -->
+<script>
+fetch('data.json')
+  .then(response => response.json())
+  .then(data => {
+    // Theme colors
+    const clrText  = getComputedStyle(document.documentElement).getPropertyValue('--text-light').trim() || '#f8fafc';
+    const clrMuted = getComputedStyle(document.documentElement).getPropertyValue('--text-gray').trim()  || '#94a3b8';
+    const clrIndigo= getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#4f46e5';
+    const clrPurple= getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim() || '#7c3aed';
     const grid     = 'rgba(148,163,184,.16)';
-    const tipBg    = 'rgba(15,23,42,.96)';
-    const tipBd    = 'rgba(124,58,237,.45)';
 
     Chart.defaults.color = clrText;
     Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
-    Chart.defaults.plugins.legend.labels.usePointStyle = true;
-    Chart.defaults.plugins.legend.labels.boxWidth = 10;
-    Chart.defaults.plugins.tooltip.backgroundColor = tipBg;
-    Chart.defaults.plugins.tooltip.borderColor = tipBd;
-    Chart.defaults.plugins.tooltip.borderWidth = 1;
 
-    const roundedBars = { borderRadius: 8 };
-    function vGrad(ctx, top, bottom, h=320){
-      const g = ctx.createLinearGradient(0,0,0,h);
-      g.addColorStop(0, top); g.addColorStop(1, bottom);
-      return g;
-    }
-
-    /* ===== Chart 1: Asteroids (line + gradient) ===== */
-    (function(){
-      const el = document.getElementById('asteroidChart'); if(!el) return;
-      const ctx = el.getContext('2d');
-      const labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      const counts = [42,38,55,61,48,72,64,70,58,63,46,39];
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label:'NEOs detected',
-            data: counts,
-            borderColor: clrPurple,
-            backgroundColor: vGrad(ctx, 'rgba(124,58,237,.35)', 'rgba(124,58,237,0)'),
-            fill: true, tension: .28, pointRadius: 3, pointHoverRadius: 5
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          animation: { duration: 900, easing: 'easeOutQuart' },
-          plugins: { legend: { position:'top' }, tooltip:{ callbacks:{
-            label: c => ` ${c.parsed.y} asteroids`
-          }}},
-          scales: {
-            x: { grid:{ color:grid }, ticks:{ color:clrMuted } },
-            y: { beginAtZero:true, grid:{ color:grid }, ticks:{ color:clrMuted }, title:{ display:true, text:'Asteroids (count)' } }
-          },
-          onClick: (_, els) => {
-            if(!els?.length) return;
-            const month = labels[els[0].index];
-            window.location.href = `./crud/read.html?source=neo&month=${encodeURIComponent(month)}`;
-          }
-        }
-      });
-    })();
-
-    /* ===== Chart 2: Mission Distribution (doughnut + center total) ===== */
-    (function(){
-      const el = document.getElementById('missionChart'); if(!el) return;
-      const ctx = el.getContext('2d');
-      const labels = ['Planetary','Earth Obs','Heliophysics','Astrophysics'];
-      const values = [12,9,7,10];
-      const colors = ['#7c3aed','#3b82f6','#f59e0b','#10b981'];
-
-      const chart = new Chart(ctx, {
-        type:'doughnut',
-        data:{ labels, datasets:[{ data: values, backgroundColor: colors, borderWidth:0, hoverOffset:12 }] },
-        options:{
-          responsive:true, maintainAspectRatio:false, cutout:'62%',
-          plugins:{ legend:{ position:'bottom', labels:{ color: clrMuted } },
-            tooltip:{ callbacks:{ label: c => ` ${c.label}: ${c.parsed} missions` } } }
-        },
-        plugins:[{
-          id:'centerText',
-          afterDraw(chart){
-            const {ctx, chartArea:{ width, height }} = chart;
-            const total = values.reduce((a,b)=>a+b,0);
-            const pt = chart.getDatasetMeta(0).data[0];
-            const cx = pt.x, cy = pt.y;
-            ctx.save();
-            ctx.textAlign='center';
-            ctx.fillStyle=clrText; ctx.font='600 18px Segoe UI, sans-serif';
-            ctx.fillText(`${total}`, cx, cy - 4);
-            ctx.fillStyle=clrMuted; ctx.font='400 12px Segoe UI, sans-serif';
-            ctx.fillText('total missions', cx, cy + 14);
-            ctx.restore();
-          }
+    // === Chart 1: Asteroids ===
+    const asteroid = data.asteroidData;
+    new Chart(document.getElementById('asteroidChart'), {
+      type: 'line',
+      data: {
+        labels: asteroid.labels,
+        datasets: [{
+          label: 'NEOs detected',
+          data: asteroid.counts,
+          borderColor: clrPurple,
+          backgroundColor: 'rgba(124,58,237,.35)',
+          fill: true,
+          tension: .3,
+          pointRadius: 3
         }]
-      });
-
-      el.onclick = (e)=>{
-        const it = chart.getElementsAtEventForMode(e,'nearest',{intersect:true},false)[0];
-        if(!it) return;
-        window.location.href = `./crud/read.html?category=${encodeURIComponent(labels[it.index])}`;
-      };
-    })();
-
-    /* ===== Chart 3: Exoplanets (bar + line cumulative) ===== */
-    (function(){
-      const el = document.getElementById('exoplanetChart'); if(!el) return;
-      const ctx = el.getContext('2d');
-      const years = [2016,2017,2018,2019,2020,2021,2022,2023,2024];
-      const discovered = [128,154,192,210,235,280,260,300,320];
-      const cumulative = discovered.reduce((a,v)=>{ a.push((a.at(-1)||0)+v); return a; },[]);
-      new Chart(ctx,{
-        data:{
-          labels: years,
-          datasets:[
-            { type:'bar', label:'Discovered (year)', data: discovered,
-              backgroundColor:'rgba(59,130,246,.55)', borderWidth:0, yAxisID:'y', ...roundedBars },
-            { type:'line', label:'Cumulative', data: cumulative,
-              borderColor: clrIndigo, backgroundColor: vGrad(ctx,'rgba(79,70,229,.35)','rgba(79,70,229,0)'),
-              fill:true, tension:.28, pointRadius:2, yAxisID:'y1' }
-          ]
-        },
-        options:{
-          responsive:true, maintainAspectRatio:false,
-          plugins:{ legend:{ position:'top' } },
-          scales:{
-            x:{ grid:{ color:grid }, ticks:{ color:clrMuted } },
-            y:{ beginAtZero:true, grid:{ color:grid }, ticks:{ color:clrMuted }, title:{ display:true, text:'New exoplanets' } },
-            y1:{ position:'right', grid:{ drawOnChartArea:false }, ticks:{ color:clrMuted }, title:{ display:true, text:'Cumulative' } }
-          }
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position:'top' } },
+        scales: {
+          x: { grid: { color:grid }, ticks:{ color:clrMuted } },
+          y: { grid:{ color:grid }, ticks:{ color:clrMuted } }
         }
-      });
-    })();
-  </script>
-</body>
-</html>
+      }
+    });
+
+    // === Chart 2: Missions ===
+    const mission = data.missionData;
+    new Chart(document.getElementById('missionChart'), {
+      type: 'doughnut',
+      data: {
+        labels: mission.labels,
+        datasets: [{
+          data: mission.values,
+          backgroundColor: ['#7c3aed','#3b82f6','#f59e0b','#10b981']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+
+    // === Chart 3: Exoplanets ===
+    const exo = data.exoplanetData;
+    const cumulative = exo.discovered.reduce((a,v)=>{a.push((a.at(-1)||0)+v);return a;},[]);
+    new Chart(document.getElementById('exoplanetChart'), {
+      data: {
+        labels: exo.years,
+        datasets: [
+          { type:'bar', label:'Discovered (year)', data: exo.discovered,
+            backgroundColor:'rgba(59,130,246,.55)', borderWidth:0 },
+          { type:'line', label:'Cumulative', data: cumulative,
+            borderColor: clrIndigo, fill:true, tension:.3, pointRadius:2 }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position:'top' } },
+        scales: {
+          x:{ grid:{ color:grid }, ticks:{ color:clrMuted } },
+          y:{ grid:{ color:grid }, ticks:{ color:clrMuted } }
+        }
+      }
+    });
+  })
+  .catch(err => console.error('Error loading JSON:', err));
+</script>
