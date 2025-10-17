@@ -1,163 +1,267 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Create Activity • SpaceTrack</title>
-
-  <!-- Font Awesome (icons) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- Your shared site CSS (adjust path if needed) -->
-  <link rel="stylesheet" href="../css/style.css" />
-
-  <!-- Page-specific styles to match index look if style.css is minimal -->
-  <style>
-    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(to bottom,#0f172a,#1e1b4b,#000);color:#f8fafc;}
-    /* Navbar (mirrors index) */
-    .site-header{background:linear-gradient(90deg,#4338ca,#7c3aed,#000);position:sticky;top:0;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.3)}
-    .nav{max-width:1200px;margin:0 auto;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
-    .logo{display:flex;align-items:center;gap:.5rem;font-weight:700;text-decoration:none;color:#fff;font-size:1.4rem}
-    .nav-links{list-style:none;display:flex;gap:1.25rem;align-items:center;margin:0;padding:0}
-    .nav-links a{color:#fff;text-decoration:none;font-weight:500;padding:.45rem .6rem;border-radius:.6rem}
-    .nav-links a:hover{background:rgba(255,255,255,.08)}
-    .crud{position:relative}
-    .crud-toggle{background:rgba(255,255,255,.08);border:0;color:#fff;border-radius:.6rem;padding:.45rem .6rem;cursor:pointer}
-    .crud-menu{display:none;position:absolute;top:120%;right:0;min-width:220px;background:#1e1b4b;border:1px solid rgba(255,255,255,.15);border-radius:.6rem;padding:.25rem;box-shadow:0 12px 30px rgba(0,0,0,.25)}
-    .crud-menu a{display:block;color:#fff}
-    .crud-menu a:hover{background:rgba(255,255,255,.08)}
-    /* Layout */
-    .container{max-width:1100px;margin:0 auto;padding:2rem}
-    .card{background:rgba(30,41,59,.8);backdrop-filter:blur(10px);border-radius:1rem;padding:2rem;border:1px solid rgba(79,70,229,.3);box-shadow:0 10px 30px rgba(79,70,229,.15)}
-    .card h1{margin:0 0 .75rem 0}
-    .muted{color:#94a3b8}
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
-    .form-grid label{display:block;font-weight:600;margin-bottom:.4rem}
-    .input, select{width:100%;padding:.6rem .7rem;border:1px solid #334155;border-radius:.6rem;background:#0b1220;color:#f8fafc}
-    .row{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1rem}
-    .btn{border:0;border-radius:.7rem;padding:.7rem 1rem;cursor:pointer;font-weight:600}
-    .btn-primary{background:#2563eb;color:#fff;box-shadow:0 10px 25px rgba(37,99,235,.25)}
-    .btn-outline{background:transparent;color:#93c5fd;border:1px solid #334155}
-    .success{margin-top:1rem;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.35);color:#bbf7d0;padding:.8rem 1rem;border-radius:.6rem;display:none}
-    .breadcrumbs{margin-bottom:1rem;color:#94a3b8}
-    .breadcrumbs a{color:#93c5fd;text-decoration:none}
-    @media(max-width:760px){.form-grid{grid-template-columns:1fr}}
-  </style>
-
-  <!-- CRUD simulator -->
-  <script src="../js/crud-sim.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create new space observation activity">
+    <title>Create Activity - SpaceTrack</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
+    <!-- Navigation -->
+    <header class="site-header">
+        <nav class="nav">
+            <a class="logo" href="../index.html">
+                <i class="fa-solid fa-rocket"></i>
+                <span>SpaceTrack</span>
+            </a>
 
-<header class="site-header">
-  <nav class="nav">
-    <a class="logo" href="../index.html"><i class="fas fa-rocket"></i> SpaceTrack</a>
-    <ul class="nav-links">
-      <li><a href="../index.html"><i class="fas fa-home"></i> Home</a></li>
-      <li><a href="../data-visualization.html"><i class="fas fa-chart-bar"></i> Data Dashboard</a></li>
-      <li><a href="../about.html"><i class="fas fa-users"></i> About Us</a></li>
-      <li class="crud">
-        <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD ▾</button>
-        <ul class="crud-menu">
-          <li><a href="./create.html">Create</a></li>
-          <li><a href="./read.html">Read</a></li>
-          <li><a href="./update.html">Update</a></li>
-          <li><a href="./delete.html">Delete</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-</header>
+            <button class="mobile-menu-btn" aria-label="Open menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
-<main class="container">
+            <ul class="nav-links">
+                <li><a href="../index.html"><i class="fa-solid fa-home"></i> Home</a></li>
+                <li><a href="../data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="../about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li class="crud">
+                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
+                        CRUD <i class="fa-solid fa-caret-down"></i>
+                    </button>
+                    <ul class="crud-menu">
+                        <li><a href="./create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
+                        <li><a href="./read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
+                        <li><a href="./update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
+                        <li><a href="./delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
 
-  <div class="breadcrumbs">
-    <a href="../index.html">Home</a> / <a href="./read.html">Activities</a> / Create
-  </div>
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs">
+                <a href="../index.html">Home</a> / 
+                <a href="./read.html">Activities</a> / 
+                Create
+            </div>
 
-  <div class="card">
-    <h1>Create New Activity</h1>
-    <p class="muted">This simulates <strong>Create</strong>. In the final MVC app, <em>Save</em> will persist to the database and refresh tables & charts.</p>
+            <!-- Page Content -->
+            <div class="card">
+                <h1 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="fa-solid fa-plus" style="color: var(--success);"></i>
+                    Create New Activity
+                </h1>
+                
+                <p class="muted" style="margin-bottom: 1.5rem;">
+                    This simulates the <strong>Create</strong> operation. In the final MVC application, clicking "Save" will persist the new activity to the database and automatically update all visualizations and tables with the new data.
+                </p>
 
-    <form id="createForm" class="mt-3">
-      <div class="form-grid">
-        <div>
-          <label for="missionId">Mission</label>
-          <select id="missionId" required></select>
+                <div class="info-box">
+                    <p style="margin: 0;">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <strong>Demo Mode:</strong> This is a static prototype. The form validates input and simulates data creation using JavaScript. In the production version, data will be sent to the backend API and stored in PostgreSQL.
+                    </p>
+                </div>
+
+                <!-- Create Form -->
+                <form id="createForm" style="margin-top: 2rem;">
+                    <div class="form-grid">
+                        <div>
+                            <label for="missionId">
+                                <i class="fa-solid fa-rocket"></i> Mission
+                            </label>
+                            <select id="missionId" required>
+                                <option value="">-- Select Mission --</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="type">
+                                <i class="fa-solid fa-tag"></i> Activity Type
+                            </label>
+                            <select id="type" required>
+                                <option value="">-- Select Type --</option>
+                                <option value="image">Image Capture</option>
+                                <option value="observation">Scientific Observation</option>
+                                <option value="instrument">Instrument Reading</option>
+                                <option value="maneuver">Spacecraft Maneuver</option>
+                                <option value="sample">Sample Collection</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="date">
+                                <i class="fa-solid fa-calendar"></i> Observation Date
+                            </label>
+                            <input type="date" id="date" required>
+                        </div>
+
+                        <div>
+                            <label for="title">
+                                <i class="fa-solid fa-heading"></i> Title / Description
+                            </label>
+                            <input type="text" id="title" placeholder="e.g., Jezero Crater panorama" required>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="btn-group" style="justify-content: flex-start; margin-top: 2rem;">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa-solid fa-save"></i> Save Activity
+                        </button>
+                        <button type="reset" class="btn btn-outline">
+                            <i class="fa-solid fa-rotate-left"></i> Reset Form
+                        </button>
+                        <a href="./read.html" class="btn btn-secondary">
+                            <i class="fa-solid fa-eye"></i> View All Activities
+                        </a>
+                    </div>
+                </form>
+
+                <!-- Success Message -->
+                <div id="successMsg" class="success" style="display: none; margin-top: 1.5rem;">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <div>
+                        <strong>Activity created successfully!</strong><br>
+                        <small>In the final application, this data will be stored in the database.</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to Home Button -->
+            <div class="btn-group">
+                <a class="btn btn-primary" href="../index.html">
+                    <i class="fa-solid fa-home"></i> Back to Home
+                </a>
+                <a class="btn btn-secondary" href="../data-visualization.html">
+                    <i class="fa-solid fa-chart-column"></i> View Dashboard
+                </a>
+            </div>
         </div>
-        <div>
-          <label for="type">Type</label>
-          <select id="type" required>
-            <option value="image">image</option>
-            <option value="observation">observation</option>
-            <option value="instrument">instrument</option>
-            <option value="maneuver">maneuver</option>
-            <option value="sample">sample</option>
-          </select>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
+                <ul>
+                    <li>NASA Space Data Explorer</li>
+                    <li>Mission Analytics & Visualizations</li>
+                    <li>Built for ISM 6225</li>
+                    <li>University of South Florida</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../data-visualization.html">Data Dashboard</a></li>
+                    <li><a href="../about.html">About Us</a></li>
+                    <li><a href="./read.html">View Activities</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>CRUD Operations</h4>
+                <ul>
+                    <li><a href="./create.html">Create Activity</a></li>
+                    <li><a href="./read.html">Read Activities</a></li>
+                    <li><a href="./update.html">Update Activity</a></li>
+                    <li><a href="./delete.html">Delete Activity</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://api.nasa.gov/" target="_blank">NASA Open APIs</a></li>
+                    <li><a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer" target="_blank">GitHub Repository</a></li>
+                    <li><a href="https://www.nasa.gov/" target="_blank">NASA Official Site</a></li>
+                </ul>
+            </div>
         </div>
-        <div>
-          <label for="date">Date</label>
-          <input class="input" type="date" id="date" required />
+        <div class="footer-bottom">
+            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
         </div>
-        <div>
-          <label for="title">Title</label>
-          <input class="input" type="text" id="title" placeholder="Short description" />
-        </div>
-      </div>
+    </footer>
 
-      <div class="row">
-        <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Save</button>
-        <a class="btn btn-outline" href="./read.html"><i class="fas fa-table"></i> View All</a>
-      </div>
-    </form>
+    <!-- JavaScript -->
+    <script src="../js/main.js"></script>
+    <script>
+        // Populate mission dropdown
+        document.addEventListener('DOMContentLoaded', function() {
+            const missionSelect = document.getElementById('missionId');
+            
+            if (window.CRUD && window.CRUD.Missions) {
+                window.CRUD.Missions.forEach(mission => {
+                    const option = document.createElement('option');
+                    option.value = mission.missionId;
+                    option.textContent = `${mission.name} (${mission.type})`;
+                    missionSelect.appendChild(option);
+                });
+            }
 
-    <div id="msg" class="success"><i class="fas fa-check-circle"></i> Created activity successfully.</div>
-  </div>
+            // Set today's date as default
+            const dateInput = document.getElementById('date');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+            dateInput.max = today; // Prevent future dates
+        });
 
-</main>
+        // Handle form submission
+        document.getElementById('createForm').addEventListener('submit', function(e) {
+            e.preventDefault();
 
-<script>
-  // populate missions
-  const sel = document.getElementById('missionId');
-  window.CRUD.Missions.forEach(m=>{
-    const o=document.createElement('option');
-    o.value=m.missionId; o.textContent=m.name;
-    sel.appendChild(o);
-  });
+            const formData = {
+                missionId: parseInt(document.getElementById('missionId').value),
+                type: document.getElementById('type').value,
+                date: document.getElementById('date').value,
+                title: document.getElementById('title').value.trim() || '(untitled)'
+            };
 
-  // handle save
-  document.getElementById('createForm').addEventListener('submit',(e)=>{
-    e.preventDefault();
-    const payload={
-      missionId:Number(sel.value),
-      type:document.getElementById('type').value,
-      date:document.getElementById('date').value,
-      title:(document.getElementById('title').value||'(untitled)').trim()
-    };
-    const id = window.CRUD.createActivity(payload);
-    const msg = document.getElementById('msg');
-    msg.innerHTML = `<i class="fas fa-check-circle"></i> Created activity <strong>#${id}</strong>. (Will persist in final app.)`;
-    msg.style.display='block';
-    e.target.reset();
-    sel.selectedIndex = 0;
-  });
+            // Create activity using CRUD simulator
+            if (window.CRUD && window.CRUD.createActivity) {
+                const newId = window.CRUD.createActivity(formData);
+                
+                // Show success message
+                const successMsg = document.getElementById('successMsg');
+                successMsg.innerHTML = `
+                    <i class="fa-solid fa-check-circle"></i>
+                    <div>
+                        <strong>Activity #${newId} created successfully!</strong><br>
+                        <small>In the final application, this data will be stored in the database and visible across all pages.</small>
+                    </div>
+                `;
+                successMsg.style.display = 'flex';
 
-  // dropdown open/close
-  const btn=document.querySelector('.crud-toggle');
-  const menu=document.querySelector('.crud-menu');
-  if(btn&&menu){
-    btn.addEventListener('click', (ev)=>{
-      ev.stopPropagation();
-      const open = menu.style.display==='block';
-      menu.style.display = open ? 'none' : 'block';
-      btn.setAttribute('aria-expanded', String(!open));
-    });
-    document.addEventListener('click', ()=>{
-      menu.style.display='none';
-      btn.setAttribute('aria-expanded','false');
-    });
-  }
-</script>
+                // Reset form
+                this.reset();
+                
+                // Reset date to today
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('date').value = today;
 
+                // Scroll to success message
+                successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                // Hide success message after 5 seconds
+                setTimeout(() => {
+                    successMsg.style.display = 'none';
+                }, 5000);
+            }
+        });
+    </script>
+
+    <!-- Botpress Chatbot -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
+    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
 </body>
 </html>

@@ -1,214 +1,185 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SpaceTrack – Data Dashboard</title>
-
-  <!-- Font Awesome (icons) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
-  <!-- Theme (matches your site palette) -->
-  <style>
-    :root{
-      --primary-color:#4f46e5;   /* indigo */
-      --secondary-color:#7c3aed; /* purple */
-      --dark-bg:#0f172a;
-      --card-bg:#1e293b;
-      --text-light:#f8fafc;
-      --text-gray:#94a3b8;
-    }
-
-    *{box-sizing:border-box} html,body{height:100%}
-    body{
-      margin:0;
-      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color:var(--text-light);
-      background:linear-gradient(to bottom, #0f172a, #1e1b4b, #000);
-    }
-
-    /* Top bar to match your site */
-    nav{
-      background:linear-gradient(90deg,#4338ca,#7c3aed,#000);
-      padding:12px 0; position:sticky; top:0; z-index:10;
-      box-shadow:0 4px 8px rgba(0,0,0,.35);
-    }
-    .nav-inner{
-      max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 20px;
-    }
-    .brand{display:flex; gap:10px; align-items:center; font-weight:700}
-    .brand i{font-size:20px}
-    .brand span{font-size:18px}
-
-    .container{max-width:1200px; margin:0 auto; padding:24px 20px}
-
-    /* Section header */
-    .section-head{display:flex; align-items:center; gap:12px; margin-bottom:20px}
-    .section-head .badge{
-      width:44px; height:44px; border-radius:50%;
-      display:flex; align-items:center; justify-content:center;
-      background:linear-gradient(135deg, #4f46e5, #7c3aed);
-      box-shadow:0 8px 20px rgba(79,70,229,.35);
-      font-size:20px;
-    }
-
-    /* Chart card styles */
-    .chart-container{
-      background:rgba(30,41,59,.8);
-      border:1px solid rgba(79,70,229,.3);
-      border-radius:16px;
-      padding:18px;
-      margin:0 auto 22px;
-      backdrop-filter: blur(10px);
-      box-shadow:0 10px 30px rgba(0,0,0,.25);
-      max-width:1100px;
-    }
-    .chart-container h2{margin:0 0 .5rem; font-size:1.15rem; display:flex; align-items:center; gap:.5rem}
-    .chart-container p{margin:0 0 1rem; color:var(--text-gray)}
-    .chart-container canvas{display:block; width:100% !important; height:320px !important}
-
-    .btn-row{display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:24px}
-    .btn{background:linear-gradient(135deg, #4f46e5, #7c3aed); color:#fff; border:0; border-radius:8px; padding:10px 16px; font-weight:600; cursor:pointer}
-    .btn.secondary{background:linear-gradient(135deg,#64748b,#475569)}
-    .btn:hover{transform:translateY(-1px); box-shadow:0 8px 16px rgba(79,70,229,.35)}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SpaceTrack Data Dashboard - Interactive NASA space data visualizations">
+    <title>Data Dashboard - SpaceTrack</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <!-- Nav -->
-  <nav>
-    <div class="nav-inner">
-      <div class="brand">
-        <i class="fa-solid fa-rocket"></i><span>SpaceTrack</span>
-      </div>
-      <div style="opacity:.9">
-        <a href="index.html" style="color:#fff; text-decoration:none; margin-right:16px"><i class="fa-solid fa-home"></i> Home</a>
-        <a href="about.html" style="color:#fff; text-decoration:none"><i class="fa-solid fa-users"></i> About</a>
-      </div>
-    </div>
-  </nav>
+    <!-- Navigation -->
+    <header class="site-header">
+        <nav class="nav">
+            <a class="logo" href="./index.html">
+                <i class="fa-solid fa-rocket"></i>
+                <span>SpaceTrack</span>
+            </a>
 
-  <main class="container">
-    <div class="section-head">
-      <div class="badge"><i class="fa-solid fa-chart-column"></i></div>
-      <div>
-        <h1 style="margin:0; font-size:1.6rem">Space Data Analytics Dashboard</h1>
-        <div style="color:var(--text-gray); font-size:.95rem">Interactive insights using Chart.js (dummy data, API-ready)</div>
-      </div>
-    </div>
+            <button class="mobile-menu-btn" aria-label="Open menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
-    <!-- Chart 1: Asteroids -->
-    <section class="chart-container">
-      <h2><i class="fa-solid fa-meteor" style="color:#f59e0b"></i> Near-Earth Asteroids Detected (2025)</h2>
-      <p>Monthly count of asteroids passing within 0.05 AU of Earth.</p>
-      <canvas id="asteroidChart"></canvas>
-    </section>
+            <ul class="nav-links">
+                <li><a href="./index.html"><i class="fa-solid fa-home"></i> Home</a></li>
+                <li><a href="./data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="./about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li class="crud">
+                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
+                        CRUD <i class="fa-solid fa-caret-down"></i>
+                    </button>
+                    <ul class="crud-menu">
+                        <li><a href="./crud/create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
+                        <li><a href="./crud/read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
+                        <li><a href="./crud/update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
+                        <li><a href="./crud/delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
 
-    <!-- Chart 2: Mission Distribution -->
-    <section class="chart-container">
-      <h2><i class="fa-solid fa-rocket" style="color:#7c3aed"></i> NASA Mission Distribution by Type</h2>
-      <p>Breakdown of active missions by category.</p>
-      <canvas id="missionChart"></canvas>
-    </section>
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Page Header -->
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                <div class="card-icon">
+                    <i class="fa-solid fa-chart-column"></i>
+                </div>
+                <div>
+                    <h1 style="margin: 0; font-size: 2rem;">Space Data Analytics Dashboard</h1>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1rem;">
+                        Interactive insights using Chart.js with dummy data (API-ready for final project)
+                    </p>
+                </div>
+            </div>
 
-    <!-- Chart 3: Exoplanets -->
-    <section class="chart-container">
-      <h2><i class="fa-solid fa-globe" style="color:#3b82f6"></i> Exoplanet Discoveries Over Time</h2>
-      <p>Annual discoveries and cumulative total.</p>
-      <canvas id="exoplanetChart"></canvas>
-    </section>
+            <!-- Information Box -->
+            <div class="info-box">
+                <p style="margin: 0;">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <strong>Note:</strong> Currently displaying static dummy data. In the final MVC application, these charts will be populated with real-time data from NASA APIs and your database.
+                </p>
+            </div>
 
-    <div class="btn-row">
-      <a class="btn" href="index.html"><i class="fa-solid fa-home"></i>&nbsp;Back to Home</a>
-      <a class="btn secondary" href="about.html"><i class="fa-solid fa-users"></i>&nbsp;About Us</a>
-    </div>
-  </main>
+            <!-- Chart 1: Near-Earth Asteroids -->
+            <section class="chart-container">
+                <h2>
+                    <i class="fa-solid fa-meteor" style="color: #f59e0b;"></i>
+                    Near-Earth Asteroids Detected (2025)
+                </h2>
+                <p>Monthly count of asteroids passing within 0.05 AU of Earth. Data shows detection patterns throughout the year.</p>
+                <canvas id="asteroidChart"></canvas>
+            </section>
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <!-- Chart 2: Mission Distribution -->
+            <section class="chart-container">
+                <h2>
+                    <i class="fa-solid fa-rocket" style="color: #7c3aed;"></i>
+                    NASA Mission Distribution by Type
+                </h2>
+                <p>Breakdown of active missions by category. Shows the diversity of NASA's current space exploration programs.</p>
+                <canvas id="missionChart"></canvas>
+            </section>
 
-  <!-- Chart.js -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <!-- Chart 3: Exoplanet Discoveries -->
+            <section class="chart-container">
+                <h2>
+                    <i class="fa-solid fa-globe" style="color: #3b82f6;"></i>
+                    Exoplanet Discoveries Over Time
+                </h2>
+                <p>Annual discoveries of confirmed exoplanets and cumulative total from 2016 to 2024. Demonstrates the acceleration of space discovery.</p>
+                <canvas id="exoplanetChart"></canvas>
+            </section>
 
-<!-- Load charts dynamically from JSON -->
-<script>
-fetch('data.json')
-  .then(response => response.json())
-  .then(data => {
-    // Theme colors
-    const clrText  = getComputedStyle(document.documentElement).getPropertyValue('--text-light').trim() || '#f8fafc';
-    const clrMuted = getComputedStyle(document.documentElement).getPropertyValue('--text-gray').trim()  || '#94a3b8';
-    const clrIndigo= getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#4f46e5';
-    const clrPurple= getComputedStyle(document.documentElement).getPropertyValue('--secondary-color').trim() || '#7c3aed';
-    const grid     = 'rgba(148,163,184,.16)';
+            <!-- Additional Info Card -->
+            <div class="card">
+                <h2 style="margin-bottom: 1rem;">
+                    <i class="fa-solid fa-lightbulb"></i> About These Visualizations
+                </h2>
+                <p><strong>Data Sources (Final Implementation):</strong></p>
+                <ul style="margin-top: 1rem;">
+                    <li><strong>Asteroid Data:</strong> Will be fetched from NASA's Near-Earth Object Web Service (NeoWs) API</li>
+                    <li><strong>Mission Data:</strong> Will be retrieved from NASA's mission database and stored in PostgreSQL</li>
+                    <li><strong>Exoplanet Data:</strong> Will be sourced from NASA's Exoplanet Archive API</li>
+                </ul>
+                <p style="margin-top: 1rem;"><strong>Current Implementation:</strong> All charts use dummy data from <code>data.json</code> to demonstrate visualization capabilities. The chart configurations are ready to accept real API data without modification.</p>
+            </div>
 
-    Chart.defaults.color = clrText;
-    Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+            <!-- Navigation Buttons -->
+            <div class="btn-group">
+                <a class="btn btn-primary" href="./index.html">
+                    <i class="fa-solid fa-home"></i> Back to Home
+                </a>
+                <a class="btn btn-secondary" href="./about.html">
+                    <i class="fa-solid fa-users"></i> About Us
+                </a>
+                <a class="btn btn-secondary" href="./crud/read.html">
+                    <i class="fa-solid fa-eye"></i> View Activities
+                </a>
+            </div>
+        </div>
+    </main>
 
-    // === Chart 1: Asteroids ===
-    const asteroid = data.asteroidData;
-    new Chart(document.getElementById('asteroidChart'), {
-      type: 'line',
-      data: {
-        labels: asteroid.labels,
-        datasets: [{
-          label: 'NEOs detected',
-          data: asteroid.counts,
-          borderColor: clrPurple,
-          backgroundColor: 'rgba(124,58,237,.35)',
-          fill: true,
-          tension: .3,
-          pointRadius: 3
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position:'top' } },
-        scales: {
-          x: { grid: { color:grid }, ticks:{ color:clrMuted } },
-          y: { grid:{ color:grid }, ticks:{ color:clrMuted } }
-        }
-      }
-    });
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
+                <ul>
+                    <li>NASA Space Data Explorer</li>
+                    <li>Mission Analytics & Visualizations</li>
+                    <li>Built for ISM 6225</li>
+                    <li>University of South Florida</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="./index.html">Home</a></li>
+                    <li><a href="./data-visualization.html">Data Dashboard</a></li>
+                    <li><a href="./about.html">About Us</a></li>
+                    <li><a href="./crud/read.html">View Activities</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>CRUD Operations</h4>
+                <ul>
+                    <li><a href="./crud/create.html">Create Activity</a></li>
+                    <li><a href="./crud/read.html">Read Activities</a></li>
+                    <li><a href="./crud/update.html">Update Activity</a></li>
+                    <li><a href="./crud/delete.html">Delete Activity</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://api.nasa.gov/" target="_blank">NASA Open APIs</a></li>
+                    <li><a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer" target="_blank">GitHub Repository</a></li>
+                    <li><a href="https://www.nasa.gov/" target="_blank">NASA Official Site</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+        </div>
+    </footer>
 
-    // === Chart 2: Missions ===
-    const mission = data.missionData;
-    new Chart(document.getElementById('missionChart'), {
-      type: 'doughnut',
-      data: {
-        labels: mission.labels,
-        datasets: [{
-          data: mission.values,
-          backgroundColor: ['#7c3aed','#3b82f6','#f59e0b','#10b981']
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position: 'bottom' } }
-      }
-    });
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    <script src="js/charts.js"></script>
 
-    // === Chart 3: Exoplanets ===
-    const exo = data.exoplanetData;
-    const cumulative = exo.discovered.reduce((a,v)=>{a.push((a.at(-1)||0)+v);return a;},[]);
-    new Chart(document.getElementById('exoplanetChart'), {
-      data: {
-        labels: exo.years,
-        datasets: [
-          { type:'bar', label:'Discovered (year)', data: exo.discovered,
-            backgroundColor:'rgba(59,130,246,.55)', borderWidth:0 },
-          { type:'line', label:'Cumulative', data: cumulative,
-            borderColor: clrIndigo, fill:true, tension:.3, pointRadius:2 }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { position:'top' } },
-        scales: {
-          x:{ grid:{ color:grid }, ticks:{ color:clrMuted } },
-          y:{ grid:{ color:grid }, ticks:{ color:clrMuted } }
-        }
-      }
-    });
-  })
-  .catch(err => console.error('Error loading JSON:', err));
-</script>
+    <!-- Botpress Chatbot -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
+    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+</body>
+</html>
