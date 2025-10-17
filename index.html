@@ -1,1042 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="SpaceTrack - NASA Space Data Explorer for tracking missions, asteroids, and exoplanets">
-    <title>SpaceTrack - NASA Space Data Explorer</title>
-    
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* Reset and Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-color: #4f46e5;
-            --secondary-color: #7c3aed;
-            --dark-bg: #0f172a;
-            --card-bg: #1e293b;
-            --text-light: #f8fafc;
-            --text-gray: #94a3b8;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to bottom, #0f172a, #1e1b4b, #000);
-            color: var(--text-light);
-            line-height: 1.6;
-        }
-
-        /* Navigation */
-        nav {
-            background: linear-gradient(90deg, #4338ca, #7c3aed, #000);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: white;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: #93c5fd;
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        /* Container */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Page Sections */
-        .page-section {
-            display: none;
-        }
-
-        .page-section.active {
-            display: block;
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed, #ec4899);
-            border-radius: 1rem;
-            padding: 3rem;
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '🚀';
-            position: absolute;
-            right: 2rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 8rem;
-            opacity: 0.1;
-        }
-
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .hero-stats {
-            display: flex;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .stat-badge {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-        }
-
-        /* Cards */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .card {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            padding: 2rem;
-            border: 1px solid rgba(79, 70, 229, 0.3);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
-        }
-
-        .card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .card-icon {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .card h2 {
-            font-size: 1.5rem;
-            color: var(--text-light);
-        }
-
-        .card p {
-            color: var(--text-gray);
-            margin-bottom: 1rem;
-        }
-
-        .card ul {
-            list-style: none;
-        }
-
-        .card ul li {
-            color: var(--text-gray);
-            margin-bottom: 0.5rem;
-        }
-
-        .card ul li::before {
-            content: '✓';
-            color: #7c3aed;
-            font-weight: bold;
-            margin-right: 0.5rem;
-        }
-
-        /* CRUD Buttons */
-        .crud-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .crud-btn {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border: none;
-            padding: 2rem 1rem;
-            border-radius: 1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .crud-btn.read {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-        }
-
-        .crud-btn.update {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-
-        .crud-btn.delete {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-
-        .crud-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        .crud-btn i {
-            font-size: 2rem;
-        }
-
-        /* Chart Container */
-        .chart-container {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(79, 70, 229, 0.3);
-        }
-
-        .chart-container h2 {
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .chart-container p {
-            color: var(--text-gray);
-            margin-bottom: 1rem;
-        }
-
-        canvas {
-            max-height: 400px;
-        }
-
-        /* Team Members */
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-        }
-
-        .team-member {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            padding: 2rem;
-            text-align: center;
-            border: 2px solid rgba(79, 70, 229, 0.3);
-            transition: all 0.3s;
-        }
-
-        .team-member:hover {
-            border-color: #7c3aed;
-            transform: translateY(-5px);
-        }
-
-        .avatar {
-            width: 6rem;
-            height: 6rem;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: bold;
-        }
-
-        .team-member h3 {
-            margin-bottom: 0.5rem;
-        }
-
-        .role {
-            color: #7c3aed;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        /* Data Model */
-        .data-model {
-            background: rgba(30, 41, 59, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            padding: 2rem;
-            border: 2px solid rgba(79, 70, 229, 0.5);
-        }
-
-        .model-table {
-            background: white;
-            color: #1e293b;
-            padding: 1.5rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            border-left: 4px solid #4f46e5;
-        }
-
-        .model-table h3 {
-            color: #4f46e5;
-            margin-bottom: 1rem;
-        }
-
-        .model-table ul {
-            list-style: none;
-        }
-
-        .model-table li {
-            padding: 0.25rem 0;
-        }
-
-        .relationship {
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #4f46e5;
-            margin: 1rem 0;
-        }
-
-        /* Buttons */
-        .btn {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            color: white;
-            border: none;
-            padding: 0.75rem 2rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, #64748b, #475569);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin: 2rem 0;
-            flex-wrap: wrap;
-        }
-
-        /* Footer */
-        footer {
-            background: #000;
-            padding: 3rem 2rem;
-            margin-top: 4rem;
-            border-top: 1px solid rgba(79, 70, 229, 0.3);
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-
-        .footer-section h4 {
-            margin-bottom: 1rem;
-            color: var(--text-light);
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section li {
-            color: var(--text-gray);
-            margin-bottom: 0.5rem;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(148, 163, 184, 0.2);
-            color: var(--text-gray);
-        }
-
-        /* API Integration Box */
-        .api-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .api-box {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 0.5rem;
-            padding: 1rem;
-        }
-
-        .api-box h3 {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .api-box p {
-            font-size: 0.875rem;
-            color: var(--text-gray);
-        }
-
-        /* Info Box */
-        .info-box {
-            background: rgba(59, 130, 246, 0.1);
-            border-left: 4px solid #3b82f6;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin: 1rem 0;
-        }
-
-        .info-box p {
-            margin: 0;
-            color: #93c5fd;
-        }
-
-        /* Placeholder Box */
-        .placeholder {
-            border: 2px dashed rgba(148, 163, 184, 0.3);
-            border-radius: 0.5rem;
-            padding: 3rem;
-            text-align: center;
-            color: var(--text-gray);
-        }
-
-        .placeholder i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: #4f46e5;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: #1e1b4b;
-                padding: 1rem;
-            }
-
-            .nav-links.active {
-                display: flex;
-            }
-
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .hero::before {
-                font-size: 4rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="SpaceTrack - NASA Space Data Explorer for tracking missions, asteroids, and exoplanets"/>
+  <title>SpaceTrack - NASA Space Data Explorer</title>
+
+  <!-- (Optional) Chart.js for future home widgets -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --primary:#4f46e5;--secondary:#7c3aed;--dark:#0f172a;
+      --card:#1e293b;--text:#f8fafc;--muted:#94a3b8;
+    }
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(to bottom,#0f172a,#1e1b4b,#000);color:var(--text);line-height:1.6}
+
+    /* NAV */
+    nav{background:linear-gradient(90deg,#4338ca,#7c3aed,#000);padding:1rem 0;position:sticky;top:0;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.3)}
+    .nav-container{max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+    .logo{display:flex;align-items:center;gap:.5rem;font-size:1.5rem;font-weight:700;color:#fff;text-decoration:none}
+    .nav-links{display:flex;gap:1.25rem;list-style:none;align-items:center;position:relative}
+    .nav-links a{color:#fff;text-decoration:none;font-weight:500;padding:.45rem .6rem;border-radius:.5rem;transition:color .25s,background .25s}
+    .nav-links a:hover{color:#93c5fd;background:rgba(255,255,255,.08)}
+    .mobile-menu-btn{display:none;background:none;border:none;color:#fff;font-size:1.5rem;cursor:pointer}
+    /* CRUD dropdown */
+    .nav-crud{position:relative}
+    .nav-crud>button{background:rgba(255,255,255,.08);color:#fff;border:0;border-radius:.5rem;padding:.45rem .6rem;cursor:pointer}
+    .nav-crud-menu{display:none;position:absolute;top:125%;right:0;min-width:220px;background:#1e1b4b;border:1px solid rgba(255,255,255,.15);border-radius:.6rem;padding:.25rem;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    .nav-crud-menu a{display:block}
+    .nav-crud-menu a:hover{background:rgba(255,255,255,.08)}
+
+    .container{max-width:1200px;margin:0 auto;padding:2rem}
+    .page-section.active{display:block}
+
+    /* HERO */
+    .hero{background:linear-gradient(135deg,#4f46e5,#7c3aed,#ec4899);border-radius:1rem;padding:3rem;margin-bottom:2rem;position:relative;overflow:hidden}
+    .hero::before{content:'🚀';position:absolute;right:2rem;top:50%;transform:translateY(-50%);font-size:8rem;opacity:.1}
+    .hero h1{font-size:3rem;margin-bottom:1rem}
+    .hero p{font-size:1.25rem;margin-bottom:1.5rem}
+    .hero-stats{display:flex;gap:2rem;flex-wrap:wrap}
+    .stat-badge{background:rgba(255,255,255,.2);backdrop-filter:blur(10px);padding:.5rem 1rem;border-radius:2rem}
+
+    /* CARDS */
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;margin-bottom:2rem}
+    .card{background:rgba(30,41,59,.8);backdrop-filter:blur(10px);border-radius:1rem;padding:2rem;border:1px solid rgba(79,70,229,.3);transition:transform .3s,box-shadow .3s}
+    .card:hover{transform:translateY(-5px);box-shadow:0 10px 30px rgba(79,70,229,.3)}
+    .card-header{display:flex;align-items:center;gap:1rem;margin-bottom:1rem}
+    .card-icon{background:linear-gradient(135deg,#4f46e5,#7c3aed);width:3rem;height:3rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem}
+    .card h2{font-size:1.5rem}
+    .card p,.card li{color:var(--muted)}
+    .card ul{list-style:none;margin-top:.5rem}
+    .card ul li{margin-bottom:.5rem}
+    .card ul li::before{content:'✓';color:#7c3aed;font-weight:700;margin-right:.5rem}
+
+    /* CRUD quick links */
+    .crud-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:2rem 0}
+    .crud-btn{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;padding:2rem 1rem;border-radius:1rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;font-weight:600;text-decoration:none;transition:transform .25s,box-shadow .25s}
+    .crud-btn.read{background:linear-gradient(135deg,#3b82f6,#2563eb)}
+    .crud-btn.update{background:linear-gradient(135deg,#f59e0b,#d97706)}
+    .crud-btn.delete{background:linear-gradient(135deg,#ef4444,#dc2626)}
+    .crud-btn i{font-size:2rem}
+    .crud-btn:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(0,0,0,.3)}
+
+    .btn{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;padding:.75rem 2rem;border-radius:.5rem;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
+    .btn:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(79,70,229,.4)}
+    .btn-secondary{background:linear-gradient(135deg,#64748b,#475569)}
+    .btn-group{display:flex;gap:1rem;justify-content:center;margin:2rem 0;flex-wrap:wrap}
+
+    /* FOOTER */
+    footer{background:#000;padding:3rem 2rem;margin-top:4rem;border-top:1px solid rgba(79,70,229,.3)}
+    .footer-content{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem}
+    .footer-section h4{margin-bottom:1rem}
+    .footer-section li{color:var(--muted);margin-bottom:.5rem}
+    .footer-bottom{text-align:center;margin-top:2rem;padding-top:2rem;border-top:1px solid rgba(148,163,184,.2);color:var(--muted)}
+
+    @media (max-width:768px){
+      .nav-links{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:#1e1b4b;padding:1rem}
+      .nav-links.active{display:flex}
+      .mobile-menu-btn{display:block}
+      .hero h1{font-size:2rem}
+      .hero::before{font-size:4rem}
+    }
+  </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-rocket"></i>
-                <span>SpaceTrack</span>
-            </div>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#home"  onclick="return go('home')"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="#data"  onclick="return go('data')"><i class="fas fa-chart-bar"></i> Data Dashboard</a></li>
-                <li><a href="#about" onclick="return go('about')"><i class="fas fa-users"></i> About Us</a></li>
-            </ul>
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-    </nav>
+  <!-- NAV -->
+  <nav>
+    <div class="nav-container">
+      <a class="logo" href="./index.html"><i class="fas fa-rocket"></i><span>SpaceTrack</span></a>
 
-    <!-- Home Page -->
-    <div id="home" class="page-section active">
-        <div class="container">
-            <!-- Hero Section -->
-            <div class="hero">
-                <h1>Welcome to SpaceTrack</h1>
-                <p>Your Gateway to NASA Space Data & Mission Analytics</p>
-                <div class="hero-stats">
-                    <div class="stat-badge">
-                        <i class="fas fa-meteor"></i> 5000+ Asteroids Tracked
-                    </div>
-                    <div class="stat-badge">
-                        <i class="fas fa-rocket"></i> 150+ Active Missions
-                    </div>
-                </div>
-            </div>
+      <button class="mobile-menu-btn" id="menuBtn" aria-label="Open menu"><i class="fas fa-bars"></i></button>
 
-            <!-- Info Cards -->
-            <div class="card-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <i class="fas fa-satellite"></i>
-                        </div>
-                        <h2>About the Project</h2>
-                    </div>
-                    <p>SpaceTrack is a comprehensive space data management platform that aggregates and visualizes NASA's open data, including Near-Earth Objects (NEOs), exoplanet discoveries, Mars rover missions, and International Space Station operations.</p>
-                    <p>Our platform provides real-time tracking, predictive analytics, and interactive visualizations to help researchers, educators, and space enthusiasts explore the cosmos.</p>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <h2>Key Features</h2>
-                    </div>
-                    <ul>
-                        <li>Near-Earth Object (NEO) tracking and alerts</li>
-                        <li>Exoplanet database with 5000+ confirmed planets</li>
-                        <li>Mars rover image gallery and mission data</li>
-                        <li>ISS location tracking and astronaut information</li>
-                        <li>Astronomy Picture of the Day (APOD) archive</li>
-                        <li>Space mission timeline and status updates</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- NASA APIs -->
-            <div class="card">
-                <h2 style="margin-bottom: 1rem;">NASA APIs Integration</h2>
-                <p>This project will integrate with multiple NASA Open APIs:</p>
-                <div class="api-grid">
-                    <div class="api-box">
-                        <h3>🌍 NEO API</h3>
-                        <p>Near-Earth Object tracking and potentially hazardous asteroids</p>
-                    </div>
-                    <div class="api-box">
-                        <h3>🪐 Exoplanet Archive</h3>
-                        <p>Confirmed exoplanets and their characteristics</p>
-                    </div>
-                    <div class="api-box">
-                        <h3>🔴 Mars Rover Photos</h3>
-                        <p>Images from Curiosity, Perseverance, and Spirit</p>
-                    </div>
-                    <div class="api-box">
-                        <h3>🛸 APOD</h3>
-                        <p>Astronomy Picture of the Day archive</p>
-                    </div>
-                    <div class="api-box">
-                        <h3>🌓 Earth Observatory</h3>
-                        <p>Satellite imagery of natural events</p>
-                    </div>
-                    <div class="api-box">
-                        <h3>🚀 ISS Location</h3>
-                        <p>Real-time International Space Station tracking</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CRUD Operations -->
-            <div class="card">
-                <h2>CRUD Operations - Space Data Management</h2>
-                <p>Manage your personalized space observation records and mission tracking:</p>
-                <div class="crud-grid">
-                    <button class="crud-btn" onclick="showPage('create')">
-                        <i class="fas fa-plus"></i>
-                        <span>Create</span>
-                        <small>Add Observation</small>
-                    </button>
-                    <button class="crud-btn read" onclick="showPage('read')">
-                        <i class="fas fa-eye"></i>
-                        <span>Read</span>
-                        <small>View Records</small>
-                    </button>
-                    <button class="crud-btn update" onclick="showPage('update')">
-                        <i class="fas fa-edit"></i>
-                        <span>Update</span>
-                        <small>Edit Data</small>
-                    </button>
-                    <button class="crud-btn delete" onclick="showPage('delete')">
-                        <i class="fas fa-trash"></i>
-                        <span>Delete</span>
-                        <small>Remove Entry</small>
-                    </button>
-                </div>
-            </div>
-        </div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="./index.html"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="./data-visualization.html"><i class="fas fa-chart-bar"></i> Data Dashboard</a></li>
+        <li><a href="./about.html"><i class="fas fa-users"></i> About Us</a></li>
+        <li class="nav-crud">
+          <button id="crudBtn" aria-haspopup="true" aria-expanded="false">CRUD ▾</button>
+          <div class="nav-crud-menu" id="crudMenu">
+            <a href="./crud/create.html">Create</a>
+            <a href="./crud/read.html">Read</a>
+            <a href="./crud/update.html">Update</a>
+            <a href="./crud/delete.html">Delete</a>
+          </div>
+        </li>
+      </ul>
     </div>
+  </nav>
 
-    <!-- Data Visualization Page -->
-    <div id="data" class="page-section">
-        <div class="container">
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
-                <div class="card-icon">
-                    <i class="fas fa-chart-bar"></i>
-                </div>
-                <h1>Space Data Analytics Dashboard</h1>
-            </div>
-
-            <!-- Chart 1: Asteroids -->
-            <div class="chart-container">
-                <h2>
-                    <i class="fas fa-meteor" style="color: #f59e0b;"></i>
-                    Near-Earth Asteroids Detected (2025)
-                </h2>
-                <p>Monthly count of asteroids passing within 0.05 AU of Earth</p>
-                <canvas id="asteroidChart"></canvas>
-            </div>
-
-            <!-- Chart 2: Mission Distribution -->
-            <div class="chart-container">
-                <h2>
-                    <i class="fas fa-rocket" style="color: #7c3aed;"></i>
-                    NASA Mission Distribution by Type
-                </h2>
-                <p>Breakdown of active space missions by category</p>
-                <canvas id="missionChart"></canvas>
-            </div>
-
-            <!-- Chart 3: Exoplanets -->
-            <div class="chart-container">
-                <h2>
-                    <i class="fas fa-globe" style="color: #3b82f6;"></i>
-                    Exoplanet Discoveries Over Time
-                </h2>
-                <p>Number of confirmed exoplanets discovered each year</p>
-                <canvas id="exoplanetChart"></canvas>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn" onclick="showPage('home')">
-                    <i class="fas fa-home"></i> Back to Home
-                </button>
-                <button class="btn btn-secondary" onclick="showPage('about')">
-                    <i class="fas fa-users"></i> About Us
-                </button>
-            </div>
+  <!-- HOME -->
+  <div id="home" class="page-section active">
+    <div class="container">
+      <div class="hero">
+        <h1>Welcome to SpaceTrack</h1>
+        <p>Your Gateway to NASA Space Data & Mission Analytics</p>
+        <div class="hero-stats">
+          <div class="stat-badge"><i class="fas fa-meteor"></i> 5000+ Asteroids Tracked</div>
+          <div class="stat-badge"><i class="fas fa-rocket"></i> 150+ Active Missions</div>
         </div>
-    </div>
+      </div>
 
-    <!-- About Us Page -->
-    <div id="about" class="page-section">
-        <div class="container">
-            <h1 style="margin-bottom: 2rem;">About Our Team</h1>
-
-            <!-- Team Members -->
-            <div class="card">
-                <h2 style="margin-bottom: 2rem;">Team Members</h2>
-                <div class="team-grid">
-                    <div class="team-member">
-                        <div class="avatar">KE</div>
-                        <h3>Kaylee Eckelman</h3>
-                        <p class="role">Developer</p>
-                        <p>Responsible for UI/UX design, React components, and data visualization implementation</p>
-                    </div>
-                    <div class="team-member">
-                        <div class="avatar" style="background: linear-gradient(135deg, #7c3aed, #ec4899);">MN</div>
-                        <h3>Mude Jayaprakash Naik</h3>
-                        <p class="role">Developer</p>
-                        <p>Handles NASA API integration, database design, and server-side logic</p>
-                    </div>
-                    <div class="team-member">
-                        <div class="avatar" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);">PM</div>
-                        <h3>Pradeep Anand Mohanasundaram</h3>
-                        <p class="role">Developer</p>
-                        <p>Manages API integration, data processing, and Chart.js implementation</p>
-                    </div>
-                                        <div class="team-member">
-                        <div class="avatar" style="background: linear-gradient(135deg, hsl(300, 55%, 71%), #06b6d4);">MK</div>
-                        <h3>Mythily Kanagaraj</h3>
-                        <p class="role">Developer</p>
-                        <p>Manages API integration, data processing, and Chart.js implementation</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Logical Data Model -->
-            <div class="card">
-                <h2 style="margin-bottom: 2rem;">Logical Data Model</h2>
-                <div class="data-model">
-                    <div class="model-table">
-                        <h3>🚀 Missions Table</h3>
-                        <ul>
-                            <li><strong>mission_id (PK)</strong> - INT</li>
-                            <li>mission_name - VARCHAR</li>
-                            <li>launch_date - DATE</li>
-                            <li>mission_type - VARCHAR</li>
-                            <li>status - VARCHAR</li>
-                        </ul>
-                    </div>
-
-                    <div class="relationship">↓ ONE-TO-MANY ↓</div>
-
-                    <div class="model-table" style="border-left-color: #7c3aed;">
-                        <h3 style="color: #7c3aed;">📡 Observations Table</h3>
-                        <ul>
-                            <li><strong>observation_id (PK)</strong> - INT</li>
-                            <li><strong>mission_id (FK)</strong> - INT</li>
-                            <li><strong>celestial_object_id (FK)</strong> - INT</li>
-                            <li>observation_date - DATETIME</li>
-                            <li>data_collected - JSON</li>
-                            <li>scientist_notes - TEXT</li>
-                        </ul>
-                    </div>
-
-                    <div class="relationship">↑ MANY-TO-ONE ↑</div>
-
-                    <div class="model-table" style="border-left-color: #3b82f6;">
-                        <h3 style="color: #3b82f6;">🌍 Celestial Objects Table</h3>
-                        <ul>
-                            <li><strong>celestial_object_id (PK)</strong> - INT</li>
-                            <li>object_name - VARCHAR</li>
-                            <li>object_type - VARCHAR (asteroid/planet/star/galaxy)</li>
-                            <li>distance_from_earth - DECIMAL</li>
-                            <li>discovery_date - DATE</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="info-box">
-                    <p><strong>Database Relationships:</strong><br>
-                    1. <strong>Missions → Observations:</strong> One mission can have many observations (one-to-many)<br>
-                    2. <strong>Celestial Objects → Observations:</strong> One celestial object can be observed multiple times (one-to-many)<br><br>
-                    This structure allows tracking of which missions observed which celestial objects and when, enabling comprehensive space data analysis and mission performance tracking.</p>
-                </div>
-            </div>
-
-            <!-- GitHub Link -->
-            <div class="card" style="background: linear-gradient(135deg, #4f46e5, #7c3aed);">
-                <h2 style="margin-bottom: 1rem;">GitHub Repository</h2>
-                <div style="display: flex; align-items: center; gap: 1rem;">
-                    <i class="fab fa-github" style="font-size: 3rem;"></i>
-                    <div>
-                        <p style="margin: 0;">Project Repository</p>
-                        <a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer.git" style="color: white; font-size: 1.25rem; font-weight: bold;">
-                            https://github.com/mudejayaprakash/Spacetrack-nasa-explorer.git
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn" onclick="showPage('home')">
-                    <i class="fas fa-home"></i> Back to Home
-                </button>
-                <button class="btn btn-secondary" onclick="showPage('data')">
-                    <i class="fas fa-chart-bar"></i> Data Dashboard
-                </button>
-            </div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon"><i class="fas fa-satellite"></i></div>
+            <h2>About the Project</h2>
+          </div>
+          <p>SpaceTrack is a comprehensive space data management platform that aggregates and visualizes NASA's open data, including Near-Earth Objects (NEOs), exoplanet discoveries, Mars rover missions, and International Space Station operations.</p>
+          <p>Our platform provides real-time tracking, predictive analytics, and interactive visualizations to help researchers, educators, and space enthusiasts explore the cosmos.</p>
         </div>
-    </div>
 
-    <!-- CRUD Pages -->
-    <div id="create" class="page-section">
-        <div class="container">
-            <h1>Create Operation</h1>
-            <div class="card">
-                <h2>🚀 Add New Space Observation</h2>
-                <p>This page will allow astronomers and researchers to log new space observations including celestial object details, mission parameters, observation timestamps, and scientific measurements. Data will be automatically validated and stored in our database.</p>
-                
-                <div class="info-box">
-                    <p><strong>Future Implementation:</strong> In the final project, this will be a fully functional page with NASA API integration to perform real-time create operations. Data will sync with our PostgreSQL database and update visualizations automatically.</p>
-                </div>
-
-                <div class="placeholder">
-                    <i class="fas fa-rocket"></i>
-                    <p style="font-size: 1.25rem; margin-bottom: 0.5rem;">Interactive Create Interface</p>
-                    <p>Dynamic form with real-time validation will be implemented here</p>
-                    <p style="font-size: 0.875rem; color: #64748b;">Connected to NASA APIs: NEO, Exoplanet Archive, Mars Rover Photos</p>
-                </div>
-            </div>
-            <button class="btn" onclick="showPage('home')" style="margin-top: 2rem;">
-                <i class="fas fa-home"></i> Back to Home
-            </button>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon"><i class="fas fa-star"></i></div>
+            <h2>Key Features</h2>
+          </div>
+          <ul>
+            <li>Near-Earth Object (NEO) tracking and alerts</li>
+            <li>Exoplanet database with 5000+ confirmed planets</li>
+            <li>Mars rover image gallery and mission data</li>
+            <li>ISS location tracking and astronaut information</li>
+            <li>Astronomy Picture of the Day (APOD) archive</li>
+            <li>Space mission timeline and status updates</li>
+          </ul>
         </div>
+      </div>
+
+      <div class="card">
+        <h2 style="margin-bottom:1rem;">NASA APIs Integration</h2>
+        <p>This project will integrate with multiple NASA Open APIs:</p>
+        <div class="api-grid">
+          <div class="api-box"><h3>🌍 NEO API</h3><p>Near-Earth Object tracking and potentially hazardous asteroids</p></div>
+          <div class="api-box"><h3>🪐 Exoplanet Archive</h3><p>Confirmed exoplanets and their characteristics</p></div>
+          <div class="api-box"><h3>🔴 Mars Rover Photos</h3><p>Images from Curiosity, Perseverance, and Spirit</p></div>
+          <div class="api-box"><h3>🛸 APOD</h3><p>Astronomy Picture of the Day archive</p></div>
+          <div class="api-box"><h3>🌓 Earth Observatory</h3><p>Satellite imagery of natural events</p></div>
+          <div class="api-box"><h3>🚀 ISS Location</h3><p>Real-time International Space Station tracking</p></div>
+        </div>
+      </div>
+
+      <!-- CRUD quick links -->
+      <div class="card">
+        <h2>CRUD Operations - Space Data Management</h2>
+        <p>Manage your personalized space observation records and mission tracking:</p>
+        <div class="crud-grid">
+          <a class="crud-btn" href="./crud/create.html"><i class="fas fa-plus"></i><span>Create</span><small>Add Observation</small></a>
+          <a class="crud-btn read" href="./crud/read.html"><i class="fas fa-eye"></i><span>Read</span><small>View Records</small></a>
+          <a class="crud-btn update" href="./crud/update.html"><i class="fas fa-edit"></i><span>Update</span><small>Edit Data</small></a>
+          <a class="crud-btn delete" href="./crud/delete.html"><i class="fas fa-trash"></i><span>Delete</span><small>Remove Entry</small></a>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <a class="btn" href="./data-visualization.html"><i class="fas fa-chart-bar"></i> Open Data Dashboard</a>
+        <a class="btn btn-secondary" href="./about.html"><i class="fas fa-users"></i> About Us</a>
+      </div>
     </div>
+  </div>
 
-    <div id="read" class="page-section">
-        <div class="container">
-            <h1>Read Operation</h1>
-            <div class="card">
-                <h2>📊 View Observation Records</h2>
-                <p>This page displays a comprehensive, searchable catalog of all space observations with filtering options by mission, date range, celestial object type, and observation parameters. Users can export data in multiple formats (CSV, JSON) and generate detailed reports.</p>
-                
-                <div class="info-box">
-                    <p><strong>Future Implementation:</strong> In the final project, this will be a fully functional page with NASA API integration to
-                        </div> <!-- end of all sections -->
-<script>
-  // Show only the selected section
-  function showPage(id) {
-    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-    const el = document.getElementById(id);
-    if (el) el.classList.add('active');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>SpaceTrack</h4>
+        <ul>
+          <li>NASA mission analytics & visualizations</li>
+          <li>Built for ISM6225</li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="./index.html" style="color:#93c5fd;">Home</a></li>
+          <li><a href="./data-visualization.html" style="color:#93c5fd;">Data Dashboard</a></li>
+          <li><a href="./about.html" style="color:#93c5fd;">About Us</a></li>
+          <li><a href="./crud/read.html" style="color:#93c5fd;">CRUD: Read</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">© 2025 SpaceTrack • All rights reserved</div>
+  </footer>
 
-  // Handle clicks and update URL hash
-  function go(id) {
-    showPage(id);
-    location.hash = id; // allows index.html#data
-    return false;
-  }
+  <!-- small JS: mobile menu + CRUD dropdown -->
+  <script>
+    const menuBtn=document.getElementById('menuBtn');
+    const navLinks=document.getElementById('navLinks');
+    if(menuBtn&&navLinks){menuBtn.addEventListener('click',()=>navLinks.classList.toggle('active'));}
 
-  // When the page first loads
-  window.addEventListener('DOMContentLoaded', () => {
-    const id = (location.hash || '#home').slice(1);
-    showPage(document.getElementById(id) ? id : 'home');
-  });
-
-  // Mobile nav toggle
-  function toggleMobileMenu() {
-    document.getElementById('navLinks').classList.toggle('active');
-  }
-</script>
-<script>
-  // ---- Chart.js on-demand init ----
-  let chartsInitialized = false;
-  let asteroidChart, missionChart, exoplanetChart;
-
-  function initChartsOnce() {
-    if (chartsInitialized) return;
-    chartsInitialized = true;
-
-    // Theme helpers
-    const css = getComputedStyle(document.documentElement);
-    const clrText   = (css.getPropertyValue('--text-light') || '#f8fafc').trim();
-    const clrMuted  = (css.getPropertyValue('--text-gray')  || '#94a3b8').trim();
-    const clrIndigo = (css.getPropertyValue('--primary-color') || '#4f46e5').trim();
-    const clrPurple = (css.getPropertyValue('--secondary-color') || '#7c3aed').trim();
-    const grid      = 'rgba(148,163,184,.16)';
-    const tipBg     = 'rgba(15,23,42,.96)';
-    const tipBd     = 'rgba(124,58,237,.45)';
-
-    Chart.defaults.color = clrText;
-    Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
-    Chart.defaults.plugins.legend.labels.usePointStyle = true;
-    Chart.defaults.plugins.legend.labels.boxWidth = 10;
-    Chart.defaults.plugins.tooltip.backgroundColor = tipBg;
-    Chart.defaults.plugins.tooltip.borderColor = tipBd;
-    Chart.defaults.plugins.tooltip.borderWidth = 1;
-
-    function vGrad(ctx, top, bottom, h=320){
-      const g = ctx.createLinearGradient(0,0,0,h);
-      g.addColorStop(0, top); g.addColorStop(1, bottom);
-      return g;
-    }
-
-    // 1) Asteroids (line)
-    const el1 = document.getElementById('asteroidChart');
-    if (el1) {
-      const ctx1 = el1.getContext('2d');
-      const labels1 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      const counts1 = [42,38,55,61,48,72,64,70,58,63,46,39];
-      asteroidChart = new Chart(ctx1, {
-        type: 'line',
-        data: {
-          labels: labels1,
-          datasets: [{
-            label:'NEOs detected',
-            data: counts1,
-            borderColor: clrPurple,
-            backgroundColor: vGrad(ctx1, 'rgba(124,58,237,.35)', 'rgba(124,58,237,0)'),
-            fill: true, tension: .28, pointRadius: 3, pointHoverRadius: 5
-          }]
-        },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          animation: { duration: 900, easing: 'easeOutQuart' },
-          plugins: { legend: { position:'top' }, tooltip:{ callbacks:{
-            label: c => ` ${c.parsed.y} asteroids`
-          }}},
-          scales: {
-            x: { grid:{ color:grid }, ticks:{ color:clrMuted } },
-            y: { beginAtZero:true, grid:{ color:grid }, ticks:{ color:clrMuted }, title:{ display:true, text:'Asteroids (count)' } }
-          }
-        }
+    const crudBtn=document.getElementById('crudBtn');
+    const crudMenu=document.getElementById('crudMenu');
+    if(crudBtn&&crudMenu){
+      crudBtn.addEventListener('click',(e)=>{
+        e.stopPropagation();
+        const open=crudMenu.style.display==='block';
+        crudMenu.style.display=open?'none':'block';
+        crudBtn.setAttribute('aria-expanded',String(!open));
+      });
+      document.addEventListener('click',()=>{
+        crudMenu.style.display='none';
+        crudBtn.setAttribute('aria-expanded','false');
       });
     }
-
-    // 2) Missions (doughnut + center text)
-    const el2 = document.getElementById('missionChart');
-    if (el2) {
-      const ctx2 = el2.getContext('2d');
-      const labels2 = ['Planetary','Earth Obs','Heliophysics','Astrophysics'];
-      const values2 = [12,9,7,10];
-      const colors2 = ['#7c3aed','#3b82f6','#f59e0b','#10b981'];
-
-      missionChart = new Chart(ctx2, {
-        type:'doughnut',
-        data:{ labels: labels2, datasets:[{ data: values2, backgroundColor: colors2, borderWidth:0, hoverOffset:12 }] },
-        options:{
-          responsive:true, maintainAspectRatio:false, cutout:'62%',
-          plugins:{ legend:{ position:'bottom', labels:{ color: clrMuted } } }
-        },
-        plugins:[{
-          id:'centerText',
-          afterDraw(chart){
-            const {ctx, chartArea:{}} = chart;
-            const total = values2.reduce((a,b)=>a+b,0);
-            const pt = chart.getDatasetMeta(0).data[0];
-            if (!pt) return;
-            const cx = pt.x, cy = pt.y;
-            ctx.save();
-            ctx.textAlign='center';
-            ctx.fillStyle=clrText; ctx.font='600 18px Segoe UI, sans-serif';
-            ctx.fillText(`${total}`, cx, cy - 4);
-            ctx.fillStyle=clrMuted; ctx.font='400 12px Segoe UI, sans-serif';
-            ctx.fillText('total missions', cx, cy + 14);
-            ctx.restore();
-          }
-        }]
-      });
-    }
-
-    // 3) Exoplanets (bar + line)
-    const el3 = document.getElementById('exoplanetChart');
-    if (el3) {
-      const ctx3 = el3.getContext('2d');
-      const years = [2016,2017,2018,2019,2020,2021,2022,2023,2024];
-      const discovered = [128,154,192,210,235,280,260,300,320];
-      const cumulative = discovered.reduce((a,v)=>{ a.push((a.at(-1)||0)+v); return a; },[]);
-      exoplanetChart = new Chart(ctx3,{
-        data:{
-          labels: years,
-          datasets:[
-            { type:'bar', label:'Discovered (year)', data: discovered,
-              backgroundColor:'rgba(59,130,246,.55)', borderWidth:0, yAxisID:'y',
-              borderRadius:8 },
-            { type:'line', label:'Cumulative', data: cumulative,
-              borderColor: clrIndigo, backgroundColor: vGrad(ctx3,'rgba(79,70,229,.35)','rgba(79,70,229,0)'),
-              fill:true, tension:.28, pointRadius:2, yAxisID:'y1' }
-          ]
-        },
-        options:{
-          responsive:true, maintainAspectRatio:false,
-          plugins:{ legend:{ position:'top' } },
-          scales:{
-            x:{ grid:{ color:grid } },
-            y:{ beginAtZero:true, grid:{ color:grid }, title:{ display:true, text:'New exoplanets' } },
-            y1:{ position:'right', grid:{ drawOnChartArea:false }, title:{ display:true, text:'Cumulative' } }
-          }
-        }
-      });
-    }
-  }
-
-  // Hook chart init into your existing navigation
-  const _origShowPage = showPage;
-  showPage = function(id){
-    _origShowPage(id);
-    if (id === 'data') {
-      initChartsOnce();
-      // give the section a tick to size, then resize charts
-      setTimeout(() => {
-        asteroidChart?.resize();
-        missionChart?.resize();
-        exoplanetChart?.resize();
-      }, 0);
-    }
-  };
-
-  // If we land directly on #data, initialize after load too
-  if ((location.hash || '#home').slice(1) === 'data') {
-    window.addEventListener('load', () => {
-      initChartsOnce();
-      setTimeout(() => {
-        asteroidChart?.resize();
-        missionChart?.resize();
-        exoplanetChart?.resize();
-      }, 0);
-    });
-  }
-</script>
+  </script>
 </body>
 </html>
+

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Read Activities • SpaceTrack</title>
+
+  <!-- Font Awesome (icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Shared site CSS (adjust path if needed) -->
+  <link rel="stylesheet" href="../css/style.css" />
+
+  <!-- Page-specific styles (light; relies mostly on style.css) -->
+  <style>
+    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(to bottom,#0f172a,#1e1b4b,#000);color:#f8fafc;}
+    .site-header{background:linear-gradient(90deg,#4338ca,#7c3aed,#000);position:sticky;top:0;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.3)}
+    .nav{max-width:1200px;margin:0 auto;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+    .logo{display:flex;align-items:center;gap:.5rem;font-weight:700;text-decoration:none;color:#fff;font-size:1.4rem}
+    .nav-links{list-style:none;display:flex;gap:1.25rem;align-items:center;margin:0;padding:0}
+    .nav-links a{color:#fff;text-decoration:none;font-weight:500;padding:.45rem .6rem;border-radius:.6rem}
+    .nav-links a:hover{background:rgba(255,255,255,.08)}
+    .crud{position:relative}
+    .crud-toggle{background:rgba(255,255,255,.08);border:0;color:#fff;border-radius:.6rem;padding:.45rem .6rem;cursor:pointer}
+    .crud-menu{display:none;position:absolute;top:120%;right:0;min-width:220px;background:#1e1b4b;border:1px solid rgba(255,255,255,.15);border-radius:.6rem;padding:.25rem;box-shadow:0 12px 30px rgba(0,0,0,.25)}
+    .crud-menu a{display:block;color:#fff}
+    .crud-menu a:hover{background:rgba(255,255,255,.08)}
+
+    .container{max-width:1100px;margin:0 auto;padding:2rem}
+    .breadcrumbs{margin-bottom:1rem;color:#94a3b8}
+    .breadcrumbs a{color:#93c5fd;text-decoration:none}
+
+    .card{background:rgba(30,41,59,.8);backdrop-filter:blur(10px);border-radius:1rem;padding:2rem;border:1px solid rgba(79,70,229,.3);box-shadow:0 10px 30px rgba(79,70,229,.15)}
+    .muted{color:#94a3b8}
+
+    .toolbar{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-top:1rem}
+    .input{width:260px;max-width:100%;padding:.6rem .7rem;border:1px solid #334155;border-radius:.6rem;background:#0b1220;color:#f8fafc}
+
+    .btn{border:0;border-radius:.7rem;padding:.55rem .9rem;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
+    .btn-primary{background:#2563eb;color:#fff}
+    .btn-outline{background:transparent;color:#93c5fd;border:1px solid #334155}
+    .btn-xs{padding:.35rem .55rem;border-radius:.5rem;font-size:.85rem}
+    .btn-warn{background:#f59e0b;color:#1e293b}
+    .btn-danger{background:#ef4444;color:#fff}
+
+    .table-note{margin-top:.75rem;color:#94a3b8;font-size:.95rem}
+  </style>
+
+  <!-- CRUD simulator -->
+  <script src="../js/crud-sim.js"></script>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav">
+    <a class="logo" href="../index.html"><i class="fas fa-rocket"></i> SpaceTrack</a>
+    <ul class="nav-links">
+      <li><a href="../index.html"><i class="fas fa-home"></i> Home</a></li>
+      <li><a href="../data-visualization.html"><i class="fas fa-chart-bar"></i> Data Dashboard</a></li>
+      <li><a href="../about.html"><i class="fas fa-users"></i> About Us</a></li>
+      <li class="crud">
+        <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD ▾</button>
+        <ul class="crud-menu">
+          <li><a href="./create.html">Create</a></li>
+          <li><a href="./read.html">Read</a></li>
+          <li><a href="./update.html">Update</a></li>
+          <li><a href="./delete.html">Delete</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<main class="container">
+
+  <div class="breadcrumbs">
+    <a href="../index.html">Home</a> / Activities
+  </div>
+
+  <div class="card">
+    <h1>All Activities</h1>
+    <p class="muted">This demonstrates <strong>Read</strong> with a searchable list of dummy activities.</p>
+
+    <div class="toolbar">
+      <input id="search" class="input" placeholder="Search by ID, type, or title…" />
+      <a class="btn btn-primary" href="./create.html"><i class="fas fa-plus"></i> New Activity</a>
+      <a class="btn btn-outline" href="../data-visualization.html"><i class="fas fa-chart-bar"></i> View Dashboard</a>
+    </div>
+
+    <div id="tableRoot" class="mt-2" style="margin-top:1rem;"></div>
+    <div class="table-note">Tip: Use the inline buttons to <strong>Update</strong> or <strong>Delete</strong> a row.</div>
+  </div>
+
+</main>
+
+<script>
+  const root = document.getElementById('tableRoot');
+  const search = document.getElementById('search');
+
+  // Load all rows from simulator
+  let rows = window.CRUD.listActivities();
+
+  function filterRows(all, q){
+    const t = (q || '').toLowerCase().trim();
+    if(!t) return all;
+    return all.filter(r =>
+      String(r.id).includes(t) ||
+      r.type.toLowerCase().includes(t) ||
+      (r.title || '').toLowerCase().includes(t)
+    );
+  }
+
+  function addInlineActions(){
+    // Expect window.CRUD.renderTable to create <tr data-id="..."> and have an "actions" or right-aligned cell.
+    root.querySelectorAll('tbody tr').forEach(tr=>{
+      const id = Number(tr.getAttribute('data-id'));
+      // Find last cell (actions column) – adjust selector if your helper adds a specific class
+      let actionsCell = tr.querySelector('td.right, td:last-child');
+      if(!actionsCell) return;
+
+      actionsCell.innerHTML = `
+        <a class="btn btn-xs btn-warn" href="./update.html?id=${id}" title="Update">
+          <i class="fas fa-pen"></i> Update
+        </a>
+        <a class="btn btn-xs btn-danger" href="./delete.html?id=${id}" title="Delete">
+          <i class="fas fa-trash"></i> Delete
+        </a>
+      `;
+    });
+  }
+
+  function refresh(){
+    const filtered = filterRows(rows, search.value);
+    window.CRUD.renderTable(root, filtered, true); // true -> include header etc. (per your helper)
+    addInlineActions();
+  }
+
+  // Simple debounce
+  let tId = null;
+  search.addEventListener('input', ()=>{
+    clearTimeout(tId);
+    tId = setTimeout(refresh, 180);
+  });
+
+  // Initial render
+  refresh();
+
+  // Navbar CRUD dropdown behavior
+  const btn = document.querySelector('.crud-toggle');
+  const menu = document.querySelector('.crud-menu');
+  if(btn && menu){
+    btn.addEventListener('click',(ev)=>{
+      ev.stopPropagation();
+      const open = menu.style.display==='block';
+      menu.style.display = open ? 'none' : 'block';
+      btn.setAttribute('aria-expanded', String(!open));
+    });
+    document.addEventListener('click', ()=>{
+      menu.style.display='none';
+      btn.setAttribute('aria-expanded','false');
+    });
+  }
+</script>
+
+</body>
+</html>
+

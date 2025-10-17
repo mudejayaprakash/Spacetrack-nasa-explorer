@@ -1,0 +1,207 @@
+/* ——— Base ——— */
+* {
+    box-sizing: border-box
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, Arial, sans-serif;
+    color: #0f172a
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.25rem
+}
+
+/* ——— Navbar ——— */
+.site-header {
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 10
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .75rem 1rem
+}
+
+.logo {
+    font-weight: 700;
+    text-decoration: none;
+    color: #0f172a
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    align-items: center
+}
+
+    .nav-links a {
+        color: #111827;
+        text-decoration: none;
+        padding: .5rem .7rem;
+        border-radius: .5rem
+    }
+
+        .nav-links a:hover {
+            background: #f3f4f6
+        }
+
+.crud {
+    position: relative
+}
+
+.crud-toggle {
+    border: 0;
+    background: #f3f4f6;
+    padding: .5rem .7rem;
+    border-radius: .5rem;
+    cursor: pointer
+}
+
+.crud-menu {
+    position: absolute;
+    top: 130%;
+    right: 0;
+    min-width: 220px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: .75rem;
+    padding: .25rem;
+    display: none;
+    box-shadow: 0 10px 25px rgba(0,0,0,.08)
+}
+
+    .crud-menu li {
+        list-style: none
+    }
+
+    .crud-menu a {
+        display: block;
+        padding: .6rem .8rem;
+        border-radius: .5rem
+    }
+
+        .crud-menu a:hover {
+            background: #f3f4f6
+        }
+
+@media (max-width:720px) {
+    .nav {
+        flex-wrap: wrap
+    }
+
+    .nav-links {
+        flex-wrap: wrap
+    }
+}
+
+/* ——— Forms / Buttons ——— */
+.input, select, textarea {
+    width: 100%;
+    padding: .55rem .65rem;
+    border: 1px solid #e5e7eb;
+    border-radius: .5rem
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .8rem;
+    margin: .6rem 0
+}
+
+@media (max-width:720px) {
+    .form-row {
+        grid-template-columns: 1fr
+    }
+}
+
+.btn {
+    border: 0;
+    padding: .5rem .75rem;
+    border-radius: .55rem;
+    cursor: pointer
+}
+
+.btn-primary {
+    background: #1f6feb;
+    color: #fff
+}
+
+.btn-outline {
+    background: #fff;
+    color: #1f6feb;
+    border: 1px solid #c7d2fe
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: #fff
+}
+
+/* ——— Tables ——— */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0
+}
+
+    .table th, .table td {
+        padding: .6rem .7rem;
+        border-bottom: 1px solid #e5e7eb
+    }
+
+    .table th {
+        text-align: left;
+        color: #374151;
+        font-weight: 600
+    }
+
+.right {
+    text-align: right
+}
+
+.badge {
+    display: inline-block;
+    padding: .15rem .45rem;
+    border-radius: .35rem;
+    background: #eef2ff;
+    color: #312e81;
+    font-size: .8rem
+}
+
+.notice {
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: .75rem;
+    padding: 1rem
+}
+
+/* ——— Helpers ——— */
+.m-0 {
+    margin: 0
+}
+
+.mt-1 {
+    margin-top: .25rem
+}
+
+.mt-2 {
+    margin-top: .5rem
+}
+
+.mt-3 {
+    margin-top: 1rem
+}
