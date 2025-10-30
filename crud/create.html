@@ -62,13 +62,13 @@
                 </h1>
                 
                 <p class="muted" style="margin-bottom: 1.5rem;">
-                    This simulates the <strong>Create</strong> operation. In the final MVC application, clicking "Save" will persist the new activity to the database and automatically update all visualizations and tables with the new data.
+                    Add a new space observation activity to the database. The activity will be saved to the backend server and will be immediately visible across all pages and data visualizations.
                 </p>
 
                 <div class="info-box">
                     <p style="margin: 0;">
                         <i class="fa-solid fa-circle-info"></i>
-                        <strong>Demo Mode:</strong> This is a static prototype. The form validates input and simulates data creation using JavaScript. In the production version, data will be sent to the backend API and stored in PostgreSQL.
+                        <strong>Live Application:</strong> This form connects to the Node.js backend API. When you click "Save", the data is sent to the server and persisted in the database.
                     </p>
                 </div>
 
@@ -132,7 +132,7 @@
                     <i class="fa-solid fa-check-circle"></i>
                     <div>
                         <strong>Activity created successfully!</strong><br>
-                        <small>In the final application, this data will be stored in the database.</small>
+                        <small>The data has been saved to the database.</small>
                     </div>
                 </div>
             </div>
@@ -193,22 +193,19 @@
         </div>
     </footer>
 
+    <!-- Botpress Chatbot -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
+    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+
     <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
     <script src="../js/main.js"></script>
     <script>
         // Populate mission dropdown
-        document.addEventListener('DOMContentLoaded', function() {
-            const missionSelect = document.getElementById('missionId');
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadMissions();
             
-            if (window.CRUD && window.CRUD.Missions) {
-                window.CRUD.Missions.forEach(mission => {
-                    const option = document.createElement('option');
-                    option.value = mission.missionId;
-                    option.textContent = `${mission.name} (${mission.type})`;
-                    missionSelect.appendChild(option);
-                });
-            }
-
             // Set today's date as default
             const dateInput = document.getElementById('date');
             const today = new Date().toISOString().split('T')[0];
@@ -216,52 +213,93 @@
             dateInput.max = today; // Prevent future dates
         });
 
+        // Load missions from backend API
+        async function loadMissions() {
+            try {
+                console.log('📡 Fetching missions from backend...');
+                const response = await MissionAPI.getAll();
+                
+                if (response.success) {
+                    const missionSelect = document.getElementById('missionId');
+                    response.data.forEach(mission => {
+                        const option = document.createElement('option');
+                        option.value = mission.missionId;
+                        option.textContent = `${mission.name} (${mission.type})`;
+                        missionSelect.appendChild(option);
+                    });
+                    console.log('✅ Loaded', response.data.length, 'missions');
+                } else {
+                    console.error('Failed to load missions:', response);
+                    showError('Failed to load missions from server');
+                }
+            } catch (error) {
+                console.error('Error loading missions:', error);
+                showError('Could not connect to backend');
+            }
+        }
+
         // Handle form submission
-        document.getElementById('createForm').addEventListener('submit', function(e) {
+        document.getElementById('createForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const formData = {
                 missionId: parseInt(document.getElementById('missionId').value),
                 type: document.getElementById('type').value,
                 date: document.getElementById('date').value,
-                title: document.getElementById('title').value.trim() || '(untitled)'
+                title: document.getElementById('title').value.trim() || '(untitled)',
+                description: '',
+                location: ''
             };
 
-            // Create activity using CRUD simulator
-            if (window.CRUD && window.CRUD.createActivity) {
-                const newId = window.CRUD.createActivity(formData);
+            try {
+                console.log('📤 Creating activity:', formData);
                 
-                // Show success message
-                const successMsg = document.getElementById('successMsg');
-                successMsg.innerHTML = `
-                    <i class="fa-solid fa-check-circle"></i>
-                    <div>
-                        <strong>Activity #${newId} created successfully!</strong><br>
-                        <small>In the final application, this data will be stored in the database and visible across all pages.</small>
-                    </div>
-                `;
-                successMsg.style.display = 'flex';
-
-                // Reset form
-                this.reset();
+                // Send to backend API
+                const response = await ActivityAPI.create(formData);
                 
-                // Reset date to today
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('date').value = today;
+                if (response.success) {
+                    console.log('✅ Activity created:', response.data);
+                    
+                    // Show success message
+                    const successMsg = document.getElementById('successMsg');
+                    successMsg.innerHTML = `
+                        <i class="fa-solid fa-check-circle"></i>
+                        <div>
+                            <strong>Activity #${response.data.id} created successfully!</strong><br>
+                            <small>The data has been saved to the database and is now visible across all pages.</small>
+                        </div>
+                    `;
+                    successMsg.style.display = 'flex';
 
-                // Scroll to success message
-                successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    // Reset form
+                    this.reset();
+                    
+                    // Reset date to today
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('date').value = today;
 
-                // Hide success message after 5 seconds
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 5000);
+                    // Scroll to success message
+                    successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                    // Hide success message after 5 seconds
+                    setTimeout(() => {
+                        successMsg.style.display = 'none';
+                    }, 5000);
+                } else {
+                    throw new Error(response.error || 'Failed to create activity');
+                }
+            } catch (error) {
+                console.error('❌ Error creating activity:', error);
+                alert('Failed to create activity: ' + error.message);
             }
         });
-    </script>
 
-    <!-- Botpress Chatbot -->
-    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
-    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+        // Show error message
+        function showError(message) {
+            alert(message + '\n\nPlease make sure the backend server is running on http://localhost:3000');
+        }
+
+        console.log('✅ Create page initialized - using backend API');
+    </script>
 </body>
 </html>

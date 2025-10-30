@@ -62,20 +62,20 @@
                 </h1>
                 
                 <p class="muted" style="margin-bottom: 1.5rem;">
-                    This simulates the <strong>Delete</strong> operation. In the final MVC application, confirming deletion will permanently remove the record from the database and update all visualizations and tables.
+                    Review the activity details below before confirming deletion. The record will be permanently removed from the database and cannot be recovered.
                 </p>
 
                 <div class="info-box">
                     <p style="margin: 0;">
                         <i class="fa-solid fa-circle-info"></i>
-                        <strong>Demo Mode:</strong> Review the activity details below before confirming deletion. In production, this action will be permanent and cannot be undone.
+                        <strong>Live Application:</strong> The activity data is loaded from the backend API. When you confirm deletion, the record will be permanently removed from the database.
                     </p>
                 </div>
 
                 <!-- Loading State -->
                 <div id="loadingState" style="text-align: center; padding: 3rem; display: none;">
                     <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary);"></i>
-                    <p style="margin-top: 1rem; color: var(--text-muted);">Loading activity data...</p>
+                    <p style="margin-top: 1rem; color: var(--text-muted);">Loading activity data from backend...</p>
                 </div>
 
                 <!-- Not Found State -->
@@ -83,7 +83,7 @@
                     <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem;"></i>
                     <h2 style="margin-bottom: 0.5rem;">Activity Not Found</h2>
                     <p style="color: var(--text-muted); margin-bottom: 2rem;">
-                        The activity you're looking for doesn't exist or has already been deleted.
+                        The activity you're looking for doesn't exist in the database or has already been deleted.
                     </p>
                     <a href="./read.html" class="btn btn-primary">
                         <i class="fa-solid fa-arrow-left"></i> Back to Activities List
@@ -97,7 +97,7 @@
                         <i class="fa-solid fa-triangle-exclamation"></i>
                         <div>
                             <strong>Warning: This action cannot be undone!</strong><br>
-                            <small>Please review the activity details below before confirming deletion.</small>
+                            <small>The record will be permanently removed from the database. Please review the details below before confirming.</small>
                         </div>
                     </div>
 
@@ -128,7 +128,7 @@
                     <i class="fa-solid fa-check-circle"></i>
                     <div>
                         <strong>Activity deleted successfully!</strong><br>
-                        <small>The record has been removed from the system.</small>
+                        <small>The record has been removed from the database.</small>
                     </div>
                 </div>
 
@@ -198,7 +198,13 @@
         </div>
     </footer>
 
+    <!-- Botpress Chatbot -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
+    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+
     <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
     <script src="../js/main.js"></script>
     <script>
         // Get activity ID from URL query parameter
@@ -225,29 +231,52 @@
             loadActivity();
         });
 
-        // Load the activity to delete
-        function loadActivity() {
+        // Load missions for displaying mission name
+        let missions = {};
+        async function loadMissions() {
+            try {
+                const response = await MissionAPI.getAll();
+                if (response.success) {
+                    response.data.forEach(mission => {
+                        missions[mission.missionId] = mission.name;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading missions:', error);
+            }
+        }
+
+        // Load the activity to delete from backend
+        async function loadActivity() {
             loadingState.style.display = 'block';
 
-            setTimeout(() => {
-                if (!activityIdParam || !window.CRUD) {
+            try {
+                if (!activityIdParam) {
                     showNotFound();
                     return;
                 }
 
-                const activityId = parseInt(activityIdParam);
-                currentActivity = window.CRUD.getActivity(activityId);
+                // Load missions first
+                await loadMissions();
 
-                if (!currentActivity) {
+                console.log('📡 Fetching activity #' + activityIdParam);
+                const response = await ActivityAPI.getById(activityIdParam);
+
+                if (response.success && response.data) {
+                    currentActivity = response.data;
+                    console.log('✅ Loaded activity:', currentActivity);
+
+                    // Display activity details
+                    displayActivity();
+                    loadingState.style.display = 'none';
+                    deleteConfirmation.style.display = 'block';
+                } else {
                     showNotFound();
-                    return;
                 }
-
-                // Display activity details
-                displayActivity();
-                loadingState.style.display = 'none';
-                deleteConfirmation.style.display = 'block';
-            }, 300);
+            } catch (error) {
+                console.error('❌ Error loading activity:', error);
+                showNotFound();
+            }
         }
 
         // Show not found state
@@ -267,7 +296,7 @@
             updateLink.style.display = 'inline-flex';
 
             // Get mission name
-            const missionName = window.CRUD.missionName(currentActivity.missionId);
+            const missionName = missions[currentActivity.missionId] || `Mission ${currentActivity.missionId}`;
 
             // Create summary HTML
             const summaryHTML = `
@@ -303,12 +332,20 @@
                         ${currentActivity.date}
                     </div>
                 </div>
-                <div style="display: flex; padding: 0.75rem 0;">
+                <div style="display: flex; padding: 0.75rem 0; border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
                     <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
                         <i class="fa-solid fa-heading"></i> Title:
                     </div>
                     <div style="color: var(--text-muted);">
                         ${currentActivity.title}
+                    </div>
+                </div>
+                <div style="display: flex; padding: 0.75rem 0;">
+                    <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
+                        <i class="fa-solid fa-location-dot"></i> Location:
+                    </div>
+                    <div style="color: var(--text-muted);">
+                        ${currentActivity.location || 'N/A'}
                     </div>
                 </div>
             `;
@@ -317,16 +354,17 @@
         }
 
         // Handle delete confirmation
-        confirmDeleteBtn.addEventListener('click', function() {
+        confirmDeleteBtn.addEventListener('click', async function() {
             if (isDeleted) {
                 return; // Prevent double deletion
             }
 
             // Confirm with user
+            const missionName = missions[currentActivity.missionId] || `Mission ${currentActivity.missionId}`;
             const confirmed = confirm(
                 `Are you absolutely sure you want to delete activity #${currentActivity.id}?\n\n` +
                 `Title: ${currentActivity.title}\n` +
-                `Mission: ${window.CRUD.missionName(currentActivity.missionId)}\n\n` +
+                `Mission: ${missionName}\n\n` +
                 `This action cannot be undone!`
             );
 
@@ -334,36 +372,52 @@
                 return;
             }
 
-            // Delete activity using CRUD simulator
-            const success = window.CRUD.deleteActivity(currentActivity.id);
+            try {
+                console.log('🗑️ Deleting activity #' + currentActivity.id);
+                
+                // Delete via backend API
+                const response = await ActivityAPI.delete(currentActivity.id);
 
-            if (success) {
-                isDeleted = true;
+                if (response.success) {
+                    console.log('✅ Activity deleted successfully');
+                    isDeleted = true;
 
-                // Hide confirmation section
-                deleteConfirmation.style.display = 'none';
+                    // Hide confirmation section
+                    deleteConfirmation.style.display = 'none';
 
-                // Show success message
-                successMsg.innerHTML = `
-                    <i class="fa-solid fa-check-circle"></i>
+                    // Show success message
+                    successMsg.innerHTML = `
+                        <i class="fa-solid fa-check-circle"></i>
+                        <div>
+                            <strong>Activity #${currentActivity.id} deleted successfully!</strong><br>
+                            <small>The record has been permanently removed from the database.</small>
+                        </div>
+                    `;
+                    successMsg.style.display = 'flex';
+                    errorMsg.style.display = 'none';
+
+                    // Scroll to success message
+                    successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                    // Redirect to read page after 3 seconds
+                    setTimeout(() => {
+                        window.location.href = './read.html';
+                    }, 3000);
+
+                } else {
+                    throw new Error(response.error || 'Failed to delete activity');
+                }
+            } catch (error) {
+                console.error('❌ Error deleting activity:', error);
+                
+                // Show error message
+                errorMsg.innerHTML = `
+                    <i class="fa-solid fa-circle-exclamation"></i>
                     <div>
-                        <strong>Activity #${currentActivity.id} deleted successfully!</strong><br>
-                        <small>The record has been removed. In the final application, this will update the database and all visualizations.</small>
+                        <strong>Deletion failed!</strong><br>
+                        <small>${error.message}</small>
                     </div>
                 `;
-                successMsg.style.display = 'flex';
-                errorMsg.style.display = 'none';
-
-                // Scroll to success message
-                successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-                // Redirect to read page after 3 seconds
-                setTimeout(() => {
-                    window.location.href = './read.html';
-                }, 3000);
-
-            } else {
-                // Show error message
                 errorMsg.style.display = 'flex';
                 successMsg.style.display = 'none';
 
@@ -376,10 +430,8 @@
                 }, 5000);
             }
         });
-    </script>
 
-    <!-- Botpress Chatbot -->
-    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
-    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+        console.log('✅ Delete page initialized - using backend API');
+    </script>
 </body>
 </html>

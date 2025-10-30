@@ -62,20 +62,20 @@
                 </h1>
                 
                 <p class="muted" style="margin-bottom: 1.5rem;">
-                    This simulates the <strong>Update</strong> operation. In the final MVC application, changes will be persisted to the database and automatically update all visualizations and tables with the modified data.
+                    Modify the activity details below. Changes will be sent to the backend server and persisted in the database, automatically updating all pages and visualizations.
                 </p>
 
                 <div class="info-box">
                     <p style="margin: 0;">
                         <i class="fa-solid fa-circle-info"></i>
-                        <strong>Demo Mode:</strong> The form is pre-filled with existing activity data. Modifications are saved to the in-memory simulator. In production, updates will be sent to the backend API.
+                        <strong>Live Application:</strong> The form is pre-filled with data fetched from the backend API. When you click "Apply Changes", the updates are sent to the server and saved to the database.
                     </p>
                 </div>
 
                 <!-- Loading State -->
                 <div id="loadingState" style="text-align: center; padding: 3rem; display: none;">
                     <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary);"></i>
-                    <p style="margin-top: 1rem; color: var(--text-muted);">Loading activity data...</p>
+                    <p style="margin-top: 1rem; color: var(--text-muted);">Loading activity data from backend...</p>
                 </div>
 
                 <!-- Not Found State -->
@@ -83,7 +83,7 @@
                     <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem;"></i>
                     <h2 style="margin-bottom: 0.5rem;">Activity Not Found</h2>
                     <p style="color: var(--text-muted); margin-bottom: 2rem;">
-                        The activity you're looking for doesn't exist or has been deleted.
+                        The activity you're looking for doesn't exist in the database or has been deleted.
                     </p>
                     <a href="./read.html" class="btn btn-primary">
                         <i class="fa-solid fa-arrow-left"></i> Back to Activities List
@@ -150,7 +150,7 @@
                     <i class="fa-solid fa-check-circle"></i>
                     <div>
                         <strong>Activity updated successfully!</strong><br>
-                        <small>In the final application, changes will be persisted to the database.</small>
+                        <small>Changes have been saved to the database.</small>
                     </div>
                 </div>
 
@@ -220,7 +220,13 @@
         </div>
     </footer>
 
+    <!-- Botpress Chatbot -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
+    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+
     <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
     <script src="../js/main.js"></script>
     <script>
         // Get activity ID from URL query parameter
@@ -244,32 +250,56 @@
             loadActivity();
         });
 
-        // Load the activity to update
-        function loadActivity() {
+        // Load the activity to update from backend
+        async function loadActivity() {
             loadingState.style.display = 'block';
 
-            setTimeout(() => {
-                if (!activityIdParam || !window.CRUD) {
+            try {
+                if (!activityIdParam) {
                     showNotFound();
                     return;
                 }
 
-                const activityId = parseInt(activityIdParam);
-                currentActivity = window.CRUD.getActivity(activityId);
+                console.log('📡 Fetching activity #' + activityIdParam);
+                const response = await ActivityAPI.getById(activityIdParam);
 
-                if (!currentActivity) {
+                if (response.success && response.data) {
+                    currentActivity = response.data;
+                    originalData = { ...currentActivity };
+                    console.log('✅ Loaded activity:', currentActivity);
+
+                    // Load missions and populate form
+                    await loadMissions();
+                    populateForm();
+                    
+                    loadingState.style.display = 'none';
+                    updateForm.style.display = 'block';
+                } else {
                     showNotFound();
-                    return;
                 }
+            } catch (error) {
+                console.error('❌ Error loading activity:', error);
+                showNotFound();
+            }
+        }
 
-                // Store original data for cancel functionality
-                originalData = { ...currentActivity };
-
-                // Populate form
-                populateForm();
-                loadingState.style.display = 'none';
-                updateForm.style.display = 'block';
-            }, 300);
+        // Load missions from backend
+        async function loadMissions() {
+            try {
+                const response = await MissionAPI.getAll();
+                
+                if (response.success) {
+                    const missionSelect = document.getElementById('missionId');
+                    response.data.forEach(mission => {
+                        const option = document.createElement('option');
+                        option.value = mission.missionId;
+                        option.textContent = `${mission.name} (${mission.type})`;
+                        missionSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading missions:', error);
+            }
         }
 
         // Show not found state
@@ -284,15 +314,6 @@
             activityIdBadge.textContent = `#${currentActivity.id}`;
             activityBreadcrumb.textContent = `#${currentActivity.id}`;
 
-            // Populate mission dropdown
-            const missionSelect = document.getElementById('missionId');
-            window.CRUD.Missions.forEach(mission => {
-                const option = document.createElement('option');
-                option.value = mission.missionId;
-                option.textContent = `${mission.name} (${mission.type})`;
-                missionSelect.appendChild(option);
-            });
-
             // Set form values
             document.getElementById('missionId').value = currentActivity.missionId;
             document.getElementById('type').value = currentActivity.type;
@@ -305,7 +326,7 @@
         }
 
         // Handle form submission
-        document.getElementById('updateForm').addEventListener('submit', function(e) {
+        document.getElementById('updateForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const updatedData = {
@@ -315,26 +336,34 @@
                 title: document.getElementById('title').value.trim() || '(untitled)'
             };
 
-            // Update activity using CRUD simulator
-            const success = window.CRUD.updateActivity(currentActivity.id, updatedData);
+            try {
+                console.log('📤 Updating activity #' + currentActivity.id, updatedData);
+                
+                // Send update to backend API
+                const response = await ActivityAPI.update(currentActivity.id, updatedData);
 
-            if (success) {
-                // Update current activity reference
-                currentActivity = window.CRUD.getActivity(currentActivity.id);
-                originalData = { ...currentActivity };
+                if (response.success) {
+                    console.log('✅ Activity updated:', response.data);
+                    currentActivity = response.data;
+                    originalData = { ...currentActivity };
 
-                // Show success message
-                successMsg.style.display = 'flex';
-                errorMsg.style.display = 'none';
+                    // Show success message
+                    successMsg.style.display = 'flex';
+                    errorMsg.style.display = 'none';
 
-                // Scroll to success message
-                successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    // Scroll to success message
+                    successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-                // Hide success message after 5 seconds
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 5000);
-            } else {
+                    // Hide success message after 5 seconds
+                    setTimeout(() => {
+                        successMsg.style.display = 'none';
+                    }, 5000);
+                } else {
+                    throw new Error(response.error || 'Failed to update activity');
+                }
+            } catch (error) {
+                console.error('❌ Error updating activity:', error);
+                
                 // Show error message
                 errorMsg.style.display = 'flex';
                 successMsg.style.display = 'none';
@@ -365,10 +394,8 @@
                 alert('Form reset to original values');
             }
         });
-    </script>
 
-    <!-- Botpress Chatbot -->
-    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
-    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+        console.log('✅ Update page initialized - using backend API');
+    </script>
 </body>
 </html>

@@ -60,13 +60,13 @@
                 </h1>
                 
                 <p class="muted" style="margin-bottom: 1.5rem;">
-                    This demonstrates the <strong>Read</strong> operation with a searchable list of dummy space observation activities. In the final MVC application, this data will be fetched from the database via API calls.
+                    View and manage all space observation activities stored in the database. Use the search box to filter activities, or click the action buttons to update or delete records.
                 </p>
 
                 <div class="info-box">
                     <p style="margin: 0;">
                         <i class="fa-solid fa-circle-info"></i>
-                        <strong>Demo Mode:</strong> Displaying simulated data. Use the search box to filter activities by ID, type, mission, or title. Click Update or Delete buttons to modify records.
+                        <strong>Live Application:</strong> All data is fetched from the backend API in real-time. The search functionality queries the backend server for instant results.
                     </p>
                 </div>
 
@@ -80,7 +80,7 @@
                             type="text" 
                             id="searchInput" 
                             class="input" 
-                            placeholder="Search by ID, mission, type, or title..."
+                            placeholder="Search by ID, mission, type, location, or title..."
                             style="width: 100%;">
                     </div>
                     <div style="display: flex; gap: 0.75rem; align-items: flex-end;">
@@ -105,7 +105,7 @@
                 <div class="notice" style="margin-top: 1rem;">
                     <p style="margin: 0;">
                         <i class="fa-solid fa-lightbulb"></i>
-                        <strong>Tip:</strong> Use the inline action buttons to <strong>Update</strong> or <strong>Delete</strong> individual activities. In the production version, all changes will be persisted to the database and reflected across all visualizations.
+                        <strong>Tip:</strong> Use the inline action buttons to <strong>Update</strong> or <strong>Delete</strong> individual activities. All changes are persisted to the database and reflected across the application.
                     </p>
                 </div>
             </div>
@@ -166,7 +166,13 @@
         </div>
     </footer>
 
+    <!-- Botpress Chatbot -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
+    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+
     <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
     <script src="../js/main.js"></script>
     <script>
         // State
@@ -184,38 +190,73 @@
             loadActivities();
         });
 
-        // Load all activities from CRUD simulator
-        function loadActivities() {
-            if (window.CRUD && window.CRUD.listActivities) {
-                allActivities = window.CRUD.listActivities();
-                filteredActivities = [...allActivities];
-                renderTable();
-            } else {
-                console.error('CRUD simulator not loaded');
+        // Load all activities from backend API
+        async function loadActivities() {
+            try {
+                console.log('📡 Fetching activities from backend...');
+                
+                const response = await ActivityAPI.getAll();
+                
+                if (response.success) {
+                    allActivities = response.data;
+                    filteredActivities = [...allActivities];
+                    console.log('✅ Loaded', allActivities.length, 'activities from backend');
+                    renderTable();
+                } else {
+                    console.error('Failed to load activities:', response);
+                    showError('Failed to load activities from server');
+                }
+            } catch (error) {
+                console.error('Error loading activities:', error);
+                showError('Could not connect to backend. Is the server running?');
             }
         }
 
         // Filter activities based on search query
-        function filterActivities(query) {
+        async function filterActivities(query) {
             const searchTerm = query.toLowerCase().trim();
             
             if (!searchTerm) {
                 filteredActivities = [...allActivities];
-            } else {
+                renderTable();
+                return;
+            }
+
+            try {
+                // Use backend search API
+                console.log('🔍 Searching for:', searchTerm);
+                const response = await ActivityAPI.search(searchTerm);
+                
+                if (response.success) {
+                    filteredActivities = response.data;
+                    console.log('✅ Found', filteredActivities.length, 'results');
+                    renderTable();
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                // Fallback to local filtering if backend fails
                 filteredActivities = allActivities.filter(activity => {
                     const id = String(activity.id).toLowerCase();
                     const type = activity.type.toLowerCase();
                     const title = activity.title.toLowerCase();
-                    const mission = window.CRUD.missionName(activity.missionId).toLowerCase();
+                    const location = activity.location ? activity.location.toLowerCase() : '';
                     
                     return id.includes(searchTerm) || 
                            type.includes(searchTerm) || 
                            title.includes(searchTerm) ||
-                           mission.includes(searchTerm);
+                           location.includes(searchTerm);
                 });
+                renderTable();
             }
-            
-            renderTable();
+        }
+
+        // Get mission name by ID
+        function getMissionName(missionId) {
+            // This will use the CRUD simulator from main.js as a fallback
+            if (window.CRUD && window.CRUD.missionName) {
+                return window.CRUD.missionName(missionId);
+            }
+            return `Mission ${missionId}`;
         }
 
         // Render the activities table
@@ -245,6 +286,7 @@
                                 <th>Type</th>
                                 <th>Date</th>
                                 <th>Title</th>
+                                <th>Location</th>
                                 <th class="right">Actions</th>
                             </tr>
                         </thead>
@@ -252,7 +294,7 @@
             `;
 
             filteredActivities.forEach(activity => {
-                const mission = window.CRUD.missionName(activity.missionId);
+                const mission = getMissionName(activity.missionId);
                 tableHTML += `
                     <tr data-id="${activity.id}">
                         <td><span class="badge">#${activity.id}</span></td>
@@ -260,6 +302,7 @@
                         <td><span style="text-transform: capitalize;">${activity.type}</span></td>
                         <td>${activity.date}</td>
                         <td>${activity.title}</td>
+                        <td style="font-size: 0.9rem; color: var(--text-muted);">${activity.location || '-'}</td>
                         <td class="right">
                             <a href="./update.html?id=${activity.id}" class="btn btn-xs btn-warning" title="Update activity">
                                 <i class="fa-solid fa-pen"></i> Update
@@ -279,6 +322,19 @@
             `;
 
             tableContainer.innerHTML = tableHTML;
+        }
+
+        // Show error message
+        function showError(message) {
+            tableContainer.innerHTML = `
+                <div class="error" style="text-align: center; padding: 2rem;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p style="margin: 0; font-size: 1.1rem;">${message}</p>
+                    <button onclick="loadActivities()" class="btn btn-primary" style="margin-top: 1rem;">
+                        <i class="fa-solid fa-rotate-right"></i> Retry
+                    </button>
+                </div>
+            `;
         }
 
         // Search input handler with debounce
@@ -303,10 +359,8 @@
                 filterActivities(this.value);
             }
         });
-    </script>
 
-    <!-- Botpress Chatbot -->
-    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
-    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+        console.log('✅ Read page initialized - using backend API');
+    </script>
 </body>
 </html>
