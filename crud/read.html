@@ -1,167 +1,366 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Read Activities • SpaceTrack</title>
-
-  <!-- Font Awesome (icons) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- Shared site CSS (adjust path if needed) -->
-  <link rel="stylesheet" href="../css/style.css" />
-
-  <!-- Page-specific styles (light; relies mostly on style.css) -->
-  <style>
-    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(to bottom,#0f172a,#1e1b4b,#000);color:#f8fafc;}
-    .site-header{background:linear-gradient(90deg,#4338ca,#7c3aed,#000);position:sticky;top:0;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.3)}
-    .nav{max-width:1200px;margin:0 auto;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
-    .logo{display:flex;align-items:center;gap:.5rem;font-weight:700;text-decoration:none;color:#fff;font-size:1.4rem}
-    .nav-links{list-style:none;display:flex;gap:1.25rem;align-items:center;margin:0;padding:0}
-    .nav-links a{color:#fff;text-decoration:none;font-weight:500;padding:.45rem .6rem;border-radius:.6rem}
-    .nav-links a:hover{background:rgba(255,255,255,.08)}
-    .crud{position:relative}
-    .crud-toggle{background:rgba(255,255,255,.08);border:0;color:#fff;border-radius:.6rem;padding:.45rem .6rem;cursor:pointer}
-    .crud-menu{display:none;position:absolute;top:120%;right:0;min-width:220px;background:#1e1b4b;border:1px solid rgba(255,255,255,.15);border-radius:.6rem;padding:.25rem;box-shadow:0 12px 30px rgba(0,0,0,.25)}
-    .crud-menu a{display:block;color:#fff}
-    .crud-menu a:hover{background:rgba(255,255,255,.08)}
-
-    .container{max-width:1100px;margin:0 auto;padding:2rem}
-    .breadcrumbs{margin-bottom:1rem;color:#94a3b8}
-    .breadcrumbs a{color:#93c5fd;text-decoration:none}
-
-    .card{background:rgba(30,41,59,.8);backdrop-filter:blur(10px);border-radius:1rem;padding:2rem;border:1px solid rgba(79,70,229,.3);box-shadow:0 10px 30px rgba(79,70,229,.15)}
-    .muted{color:#94a3b8}
-
-    .toolbar{display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-top:1rem}
-    .input{width:260px;max-width:100%;padding:.6rem .7rem;border:1px solid #334155;border-radius:.6rem;background:#0b1220;color:#f8fafc}
-
-    .btn{border:0;border-radius:.7rem;padding:.55rem .9rem;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
-    .btn-primary{background:#2563eb;color:#fff}
-    .btn-outline{background:transparent;color:#93c5fd;border:1px solid #334155}
-    .btn-xs{padding:.35rem .55rem;border-radius:.5rem;font-size:.85rem}
-    .btn-warn{background:#f59e0b;color:#1e293b}
-    .btn-danger{background:#ef4444;color:#fff}
-
-    .table-note{margin-top:.75rem;color:#94a3b8;font-size:.95rem}
-  </style>
-
-  <!-- CRUD simulator -->
-  <script src="../js/crud-sim.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View all space observation activities">
+    <title>View Activities - SpaceTrack</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
+    <!-- Navigation -->
+    <header class="site-header">
+        <nav class="nav">
+            <a class="logo" href="../index.html">
+                <i class="fa-solid fa-rocket"></i>
+                <span>SpaceTrack</span>
+            </a>
 
-<header class="site-header">
-  <nav class="nav">
-    <a class="logo" href="../index.html"><i class="fas fa-rocket"></i> SpaceTrack</a>
-    <ul class="nav-links">
-      <li><a href="../index.html"><i class="fas fa-home"></i> Home</a></li>
-      <li><a href="../data-visualization.html"><i class="fas fa-chart-bar"></i> Data Dashboard</a></li>
-      <li><a href="../about.html"><i class="fas fa-users"></i> About Us</a></li>
-      <li class="crud">
-        <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD ▾</button>
-        <ul class="crud-menu">
-          <li><a href="./create.html">Create</a></li>
-          <li><a href="./read.html">Read</a></li>
-          <li><a href="./update.html">Update</a></li>
-          <li><a href="./delete.html">Delete</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-</header>
+            <button class="mobile-menu-btn" aria-label="Open menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
-<main class="container">
+            <ul class="nav-links">
+                <li><a href="../index.html"><i class="fa-solid fa-home"></i> Home</a></li>
+                <li><a href="../data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="../about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li class="crud">
+                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
+                        CRUD <i class="fa-solid fa-caret-down"></i>
+                    </button>
+                    <ul class="crud-menu">
+                        <li><a href="./create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
+                        <li><a href="./read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
+                        <li><a href="./update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
+                        <li><a href="./delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
 
-  <div class="breadcrumbs">
-    <a href="../index.html">Home</a> / Activities
-  </div>
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs">
+                <a href="../index.html">Home</a> / Activities
+            </div>
 
-  <div class="card">
-    <h1>All Activities</h1>
-    <p class="muted">This demonstrates <strong>Read</strong> with a searchable list of dummy activities.</p>
+            <!-- Page Content -->
+            <div class="card">
+                <h1 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="fa-solid fa-eye" style="color: var(--info);"></i>
+                    All Space Activities
+                </h1>
+                
+                <p class="muted" style="margin-bottom: 1.5rem;">
+                    View and manage all space observation activities stored in the database. Use the search box to filter activities, or click the action buttons to update or delete records.
+                </p>
 
-    <div class="toolbar">
-      <input id="search" class="input" placeholder="Search by ID, type, or title…" />
-      <a class="btn btn-primary" href="./create.html"><i class="fas fa-plus"></i> New Activity</a>
-      <a class="btn btn-outline" href="../data-visualization.html"><i class="fas fa-chart-bar"></i> View Dashboard</a>
-    </div>
+                <div class="info-box">
+                    <p style="margin: 0;">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <strong>Live Application:</strong> All data is fetched from the backend API in real-time. The search functionality queries the backend server for instant results.
+                    </p>
+                </div>
 
-    <div id="tableRoot" class="mt-2" style="margin-top:1rem;"></div>
-    <div class="table-note">Tip: Use the inline buttons to <strong>Update</strong> or <strong>Delete</strong> a row.</div>
-  </div>
+                <!-- Toolbar -->
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <label for="searchInput" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                            <i class="fa-solid fa-magnifying-glass"></i> Search Activities
+                        </label>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            class="input" 
+                            placeholder="Search by ID, mission, type, location, or title..."
+                            style="width: 100%;">
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; align-items: flex-end;">
+                        <a href="./create.html" class="btn btn-success">
+                            <i class="fa-solid fa-plus"></i> New Activity
+                        </a>
+                        <button id="clearSearch" class="btn btn-outline">
+                            <i class="fa-solid fa-rotate-left"></i> Clear
+                        </button>
+                    </div>
+                </div>
 
-</main>
+                <!-- Results Info -->
+                <div id="resultsInfo" style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.95rem;">
+                    <i class="fa-solid fa-list"></i> Showing <strong id="resultCount">0</strong> activities
+                </div>
 
-<script>
-  const root = document.getElementById('tableRoot');
-  const search = document.getElementById('search');
+                <!-- Table Container -->
+                <div id="tableContainer"></div>
 
-  // Load all rows from simulator
-  let rows = window.CRUD.listActivities();
+                <!-- Table Note -->
+                <div class="notice" style="margin-top: 1rem;">
+                    <p style="margin: 0;">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        <strong>Tip:</strong> Use the inline action buttons to <strong>Update</strong> or <strong>Delete</strong> individual activities. All changes are persisted to the database and reflected across the application.
+                    </p>
+                </div>
+            </div>
 
-  function filterRows(all, q){
-    const t = (q || '').toLowerCase().trim();
-    if(!t) return all;
-    return all.filter(r =>
-      String(r.id).includes(t) ||
-      r.type.toLowerCase().includes(t) ||
-      (r.title || '').toLowerCase().includes(t)
-    );
-  }
+            <!-- Back to Home Button -->
+            <div class="btn-group">
+                <a class="btn btn-primary" href="../index.html">
+                    <i class="fa-solid fa-home"></i> Back to Home
+                </a>
+                <a class="btn btn-secondary" href="../data-visualization.html">
+                    <i class="fa-solid fa-chart-column"></i> View Dashboard
+                </a>
+            </div>
+        </div>
+    </main>
 
-  function addInlineActions(){
-    // Expect window.CRUD.renderTable to create <tr data-id="..."> and have an "actions" or right-aligned cell.
-    root.querySelectorAll('tbody tr').forEach(tr=>{
-      const id = Number(tr.getAttribute('data-id'));
-      // Find last cell (actions column) – adjust selector if your helper adds a specific class
-      let actionsCell = tr.querySelector('td.right, td:last-child');
-      if(!actionsCell) return;
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
+                <ul>
+                    <li>NASA Space Data Explorer</li>
+                    <li>Mission Analytics & Visualizations</li>
+                    <li>Built for ISM 6225</li>
+                    <li>University of South Florida</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../data-visualization.html">Data Dashboard</a></li>
+                    <li><a href="../about.html">About Us</a></li>
+                    <li><a href="./read.html">View Activities</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>CRUD Operations</h4>
+                <ul>
+                    <li><a href="./create.html">Create Activity</a></li>
+                    <li><a href="./read.html">Read Activities</a></li>
+                    <li><a href="./update.html">Update Activity</a></li>
+                    <li><a href="./delete.html">Delete Activity</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://api.nasa.gov/" target="_blank">NASA Open APIs</a></li>
+                    <li><a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer" target="_blank">GitHub Repository</a></li>
+                    <li><a href="https://www.nasa.gov/" target="_blank">NASA Official Site</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+        </div>
+    </footer>
 
-      actionsCell.innerHTML = `
-        <a class="btn btn-xs btn-warn" href="./update.html?id=${id}" title="Update">
-          <i class="fas fa-pen"></i> Update
-        </a>
-        <a class="btn btn-xs btn-danger" href="./delete.html?id=${id}" title="Delete">
-          <i class="fas fa-trash"></i> Delete
-        </a>
-      `;
-    });
-  }
+    <!-- Botpress Chatbot -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
+    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
 
-  function refresh(){
-    const filtered = filterRows(rows, search.value);
-    window.CRUD.renderTable(root, filtered, true); // true -> include header etc. (per your helper)
-    addInlineActions();
-  }
+    <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // State
+        let allActivities = [];
+        let filteredActivities = [];
 
-  // Simple debounce
-  let tId = null;
-  search.addEventListener('input', ()=>{
-    clearTimeout(tId);
-    tId = setTimeout(refresh, 180);
-  });
+        // DOM Elements
+        const searchInput = document.getElementById('searchInput');
+        const clearBtn = document.getElementById('clearSearch');
+        const tableContainer = document.getElementById('tableContainer');
+        const resultCount = document.getElementById('resultCount');
 
-  // Initial render
-  refresh();
+        // Load activities on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadActivities();
+        });
 
-  // Navbar CRUD dropdown behavior
-  const btn = document.querySelector('.crud-toggle');
-  const menu = document.querySelector('.crud-menu');
-  if(btn && menu){
-    btn.addEventListener('click',(ev)=>{
-      ev.stopPropagation();
-      const open = menu.style.display==='block';
-      menu.style.display = open ? 'none' : 'block';
-      btn.setAttribute('aria-expanded', String(!open));
-    });
-    document.addEventListener('click', ()=>{
-      menu.style.display='none';
-      btn.setAttribute('aria-expanded','false');
-    });
-  }
-</script>
+        // Load all activities from backend API
+        async function loadActivities() {
+            try {
+                console.log('📡 Fetching activities from backend...');
+                
+                const response = await ActivityAPI.getAll();
+                
+                if (response.success) {
+                    allActivities = response.data;
+                    filteredActivities = [...allActivities];
+                    console.log('✅ Loaded', allActivities.length, 'activities from backend');
+                    renderTable();
+                } else {
+                    console.error('Failed to load activities:', response);
+                    showError('Failed to load activities from server');
+                }
+            } catch (error) {
+                console.error('Error loading activities:', error);
+                showError('Could not connect to backend. Is the server running?');
+            }
+        }
 
+        // Filter activities based on search query
+        async function filterActivities(query) {
+            const searchTerm = query.toLowerCase().trim();
+            
+            if (!searchTerm) {
+                filteredActivities = [...allActivities];
+                renderTable();
+                return;
+            }
+
+            try {
+                // Use backend search API
+                console.log('🔍 Searching for:', searchTerm);
+                const response = await ActivityAPI.search(searchTerm);
+                
+                if (response.success) {
+                    filteredActivities = response.data;
+                    console.log('✅ Found', filteredActivities.length, 'results');
+                    renderTable();
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                // Fallback to local filtering if backend fails
+                filteredActivities = allActivities.filter(activity => {
+                    const id = String(activity.id).toLowerCase();
+                    const type = activity.type.toLowerCase();
+                    const title = activity.title.toLowerCase();
+                    const location = activity.location ? activity.location.toLowerCase() : '';
+                    
+                    return id.includes(searchTerm) || 
+                           type.includes(searchTerm) || 
+                           title.includes(searchTerm) ||
+                           location.includes(searchTerm);
+                });
+                renderTable();
+            }
+        }
+
+        // Get mission name by ID
+        function getMissionName(missionId) {
+            // This will use the CRUD simulator from main.js as a fallback
+            if (window.CRUD && window.CRUD.missionName) {
+                return window.CRUD.missionName(missionId);
+            }
+            return `Mission ${missionId}`;
+        }
+
+        // Render the activities table
+        function renderTable() {
+            resultCount.textContent = filteredActivities.length;
+
+            if (filteredActivities.length === 0) {
+                tableContainer.innerHTML = `
+                    <div class="notice" style="text-align: center; padding: 3rem;">
+                        <i class="fa-solid fa-inbox" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                        <p style="margin: 0; font-size: 1.1rem;">No activities found</p>
+                        <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">
+                            ${searchInput.value ? 'Try adjusting your search criteria' : 'Create your first activity to get started'}
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            let tableHTML = `
+                <div class="table-wrapper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Mission</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Title</th>
+                                <th>Location</th>
+                                <th class="right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            filteredActivities.forEach(activity => {
+                const mission = getMissionName(activity.missionId);
+                tableHTML += `
+                    <tr data-id="${activity.id}">
+                        <td><span class="badge">#${activity.id}</span></td>
+                        <td>${mission}</td>
+                        <td><span style="text-transform: capitalize;">${activity.type}</span></td>
+                        <td>${activity.date}</td>
+                        <td>${activity.title}</td>
+                        <td style="font-size: 0.9rem; color: var(--text-muted);">${activity.location || '-'}</td>
+                        <td class="right">
+                            <a href="./update.html?id=${activity.id}" class="btn btn-xs btn-warning" title="Update activity">
+                                <i class="fa-solid fa-pen"></i> Update
+                            </a>
+                            <a href="./delete.html?id=${activity.id}" class="btn btn-xs btn-danger" title="Delete activity">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            tableContainer.innerHTML = tableHTML;
+        }
+
+        // Show error message
+        function showError(message) {
+            tableContainer.innerHTML = `
+                <div class="error" style="text-align: center; padding: 2rem;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p style="margin: 0; font-size: 1.1rem;">${message}</p>
+                    <button onclick="loadActivities()" class="btn btn-primary" style="margin-top: 1rem;">
+                        <i class="fa-solid fa-rotate-right"></i> Retry
+                    </button>
+                </div>
+            `;
+        }
+
+        // Search input handler with debounce
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                filterActivities(this.value);
+            }, 300);
+        });
+
+        // Clear search button
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            filterActivities('');
+            searchInput.focus();
+        });
+
+        // Handle Enter key in search
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                filterActivities(this.value);
+            }
+        });
+
+        console.log('✅ Read page initialized - using backend API');
+    </script>
 </body>
 </html>
-

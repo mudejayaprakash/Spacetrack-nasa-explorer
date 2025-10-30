@@ -1,168 +1,437 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Delete Activity • SpaceTrack</title>
-
-  <!-- Font Awesome (icons) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- Your shared site CSS (adjust path if needed) -->
-  <link rel="stylesheet" href="../css/style.css" />
-
-  <!-- Page-specific styles (kept light; relies on shared style.css) -->
-  <style>
-    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(to bottom,#0f172a,#1e1b4b,#000);color:#f8fafc;}
-    /* Navbar (mirrors index) */
-    .site-header{background:linear-gradient(90deg,#4338ca,#7c3aed,#000);position:sticky;top:0;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.3)}
-    .nav{max-width:1200px;margin:0 auto;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
-    .logo{display:flex;align-items:center;gap:.5rem;font-weight:700;text-decoration:none;color:#fff;font-size:1.4rem}
-    .nav-links{list-style:none;display:flex;gap:1.25rem;align-items:center;margin:0;padding:0}
-    .nav-links a{color:#fff;text-decoration:none;font-weight:500;padding:.45rem .6rem;border-radius:.6rem}
-    .nav-links a:hover{background:rgba(255,255,255,.08)}
-    .crud{position:relative}
-    .crud-toggle{background:rgba(255,255,255,.08);border:0;color:#fff;border-radius:.6rem;padding:.45rem .6rem;cursor:pointer}
-    .crud-menu{display:none;position:absolute;top:120%;right:0;min-width:220px;background:#1e1b4b;border:1px solid rgba(255,255,255,.15);border-radius:.6rem;padding:.25rem;box-shadow:0 12px 30px rgba(0,0,0,.25)}
-    .crud-menu a{display:block;color:#fff}
-    .crud-menu a:hover{background:rgba(255,255,255,.08)}
-
-    /* Layout */
-    .container{max-width:1100px;margin:0 auto;padding:2rem}
-    .breadcrumbs{margin-bottom:1rem;color:#94a3b8}
-    .breadcrumbs a{color:#93c5fd;text-decoration:none}
-
-    .card{background:rgba(30,41,59,.8);backdrop-filter:blur(10px);border-radius:1rem;padding:2rem;border:1px solid rgba(79,70,229,.3);box-shadow:0 10px 30px rgba(79,70,229,.15)}
-    .card h1{margin:0 0 .75rem 0}
-    .muted{color:#94a3b8}
-    .summary{background:#0b1220;border:1px solid #334155;border-radius:.7rem;padding:1rem;margin-top:1rem}
-    .summary ul{list-style:none;margin:0;padding:0}
-    .summary li{padding:.35rem 0;border-bottom:1px dashed rgba(148,163,184,.2)}
-    .summary li:last-child{border-bottom:0}
-
-    .row{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.25rem}
-    .btn{border:0;border-radius:.7rem;padding:.7rem 1rem;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
-    .btn-danger{background:#ef4444;color:#fff;box-shadow:0 10px 25px rgba(239,68,68,.25)}
-    .btn-outline{background:transparent;color:#93c5fd;border:1px solid #334155}
-    .success{margin-top:1rem;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.35);color:#bbf7d0;padding:.8rem 1rem;border-radius:.6rem;display:none}
-    .error{margin-top:1rem;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#fecaca;padding:.8rem 1rem;border-radius:.6rem;display:none}
-  </style>
-
-  <!-- CRUD simulator -->
-  <script src="../js/crud-sim.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Delete space observation activity">
+    <title>Delete Activity - SpaceTrack</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
+    <!-- Navigation -->
+    <header class="site-header">
+        <nav class="nav">
+            <a class="logo" href="../index.html">
+                <i class="fa-solid fa-rocket"></i>
+                <span>SpaceTrack</span>
+            </a>
 
-<header class="site-header">
-  <nav class="nav">
-    <a class="logo" href="../index.html"><i class="fas fa-rocket"></i> SpaceTrack</a>
-    <ul class="nav-links">
-      <li><a href="../index.html"><i class="fas fa-home"></i> Home</a></li>
-      <li><a href="../data-visualization.html"><i class="fas fa-chart-bar"></i> Data Dashboard</a></li>
-      <li><a href="../about.html"><i class="fas fa-users"></i> About Us</a></li>
-      <li class="crud">
-        <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD ▾</button>
-        <ul class="crud-menu">
-          <li><a href="./create.html">Create</a></li>
-          <li><a href="./read.html">Read</a></li>
-          <li><a href="./update.html">Update</a></li>
-          <li><a href="./delete.html">Delete</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-</header>
+            <button class="mobile-menu-btn" aria-label="Open menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
-<main class="container">
+            <ul class="nav-links">
+                <li><a href="../index.html"><i class="fa-solid fa-home"></i> Home</a></li>
+                <li><a href="../data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="../about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li class="crud">
+                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
+                        CRUD <i class="fa-solid fa-caret-down"></i>
+                    </button>
+                    <ul class="crud-menu">
+                        <li><a href="./create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
+                        <li><a href="./read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
+                        <li><a href="./update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
+                        <li><a href="./delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
 
-  <div class="breadcrumbs">
-    <a href="../index.html">Home</a> / <a href="./read.html">Activities</a> / Delete
-  </div>
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs">
+                <a href="../index.html">Home</a> / 
+                <a href="./read.html">Activities</a> / 
+                Delete <span id="activityBadge"></span>
+            </div>
 
-  <div class="card">
-    <h1>Delete Activity</h1>
-    <p class="muted">This simulates <strong>Delete</strong>. In the final MVC app, <em>Confirm Delete</em> will remove the record from the database and refresh tables & charts.</p>
+            <!-- Page Content -->
+            <div class="card">
+                <h1 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="fa-solid fa-trash" style="color: var(--danger);"></i>
+                    Delete Activity <span id="activityId" class="badge"></span>
+                </h1>
+                
+                <p class="muted" style="margin-bottom: 1.5rem;">
+                    Review the activity details below before confirming deletion. The record will be permanently removed from the database and cannot be recovered.
+                </p>
 
-    <div id="summary" class="summary"></div>
+                <div class="info-box">
+                    <p style="margin: 0;">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <strong>Live Application:</strong> The activity data is loaded from the backend API. When you confirm deletion, the record will be permanently removed from the database.
+                    </p>
+                </div>
 
-    <div class="row">
-      <button id="confirm" class="btn btn-danger"><i class="fas fa-trash"></i> Confirm Delete</button>
-      <a class="btn btn-outline" href="./read.html"><i class="fas fa-arrow-left"></i> Cancel</a>
-    </div>
+                <!-- Loading State -->
+                <div id="loadingState" style="text-align: center; padding: 3rem; display: none;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary);"></i>
+                    <p style="margin-top: 1rem; color: var(--text-muted);">Loading activity data from backend...</p>
+                </div>
 
-    <div id="msgOk" class="success"><i class="fas fa-check-circle"></i> Deleted.</div>
-    <div id="msgErr" class="error"><i class="fas fa-circle-exclamation"></i> Could not delete.</div>
-  </div>
+                <!-- Not Found State -->
+                <div id="notFoundState" style="text-align: center; padding: 3rem; display: none;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem;"></i>
+                    <h2 style="margin-bottom: 0.5rem;">Activity Not Found</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                        The activity you're looking for doesn't exist in the database or has already been deleted.
+                    </p>
+                    <a href="./read.html" class="btn btn-primary">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Activities List
+                    </a>
+                </div>
 
-</main>
+                <!-- Delete Confirmation -->
+                <div id="deleteConfirmation" style="display: none;">
+                    <!-- Warning Message -->
+                    <div class="error" style="margin-top: 2rem; margin-bottom: 2rem;">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <div>
+                            <strong>Warning: This action cannot be undone!</strong><br>
+                            <small>The record will be permanently removed from the database. Please review the details below before confirming.</small>
+                        </div>
+                    </div>
 
-<script>
-  // Helpers
-  function qp(name){ return new URL(location.href).searchParams.get(name); }
+                    <!-- Activity Summary -->
+                    <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: var(--text-light);">
+                            <i class="fa-solid fa-circle-info"></i> Activity Details
+                        </h3>
+                        <div id="activitySummary" style="display: grid; gap: 1rem;"></div>
+                    </div>
 
-  // Load activity
-  const idParam = qp('id');
-  const list = window.CRUD.listActivities();
-  let activity = null;
+                    <!-- Action Buttons -->
+                    <div class="btn-group" style="justify-content: flex-start;">
+                        <button id="confirmDeleteBtn" class="btn btn-danger">
+                            <i class="fa-solid fa-trash"></i> Confirm Delete
+                        </button>
+                        <a href="./read.html" class="btn btn-outline">
+                            <i class="fa-solid fa-xmark"></i> Cancel
+                        </a>
+                        <a href="./update.html" id="updateLink" class="btn btn-secondary" style="display: none;">
+                            <i class="fa-solid fa-pen"></i> Update Instead
+                        </a>
+                    </div>
+                </div>
 
-  if(idParam){
-    const id = Number(idParam);
-    activity = list.find(a => a.id === id) || null;
-  }
-  // Fallback to the first activity if id is missing/invalid
-  if(!activity && list.length){
-    activity = list[0];
-  }
+                <!-- Success Message -->
+                <div id="successMsg" class="success" style="display: none; margin-top: 1.5rem;">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <div>
+                        <strong>Activity deleted successfully!</strong><br>
+                        <small>The record has been removed from the database.</small>
+                    </div>
+                </div>
 
-  const summaryEl = document.getElementById('summary');
-  const okEl = document.getElementById('msgOk');
-  const errEl = document.getElementById('msgErr');
-  const confirmBtn = document.getElementById('confirm');
+                <!-- Error Message -->
+                <div id="errorMsg" class="error" style="display: none; margin-top: 1.5rem;">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div>
+                        <strong>Deletion failed!</strong><br>
+                        <small>Could not delete the activity. Please try again.</small>
+                    </div>
+                </div>
+            </div>
 
-  if(activity){
-    summaryEl.innerHTML = `
-      <ul>
-        <li><strong>ID:</strong> ${activity.id}</li>
-        <li><strong>Mission:</strong> ${window.CRUD.missionName(activity.missionId)}</li>
-        <li><strong>Type:</strong> ${activity.type}</li>
-        <li><strong>Date:</strong> ${activity.date}</li>
-        <li><strong>Title:</strong> ${activity.title}</li>
-      </ul>`;
-  }else{
-    summaryEl.innerHTML = `<p class="muted">No activity selected. Return to <a href="./read.html">Read</a> and choose an item.</p>`;
-    confirmBtn.disabled = true;
-  }
+            <!-- Back to Home Button -->
+            <div class="btn-group">
+                <a class="btn btn-primary" href="../index.html">
+                    <i class="fa-solid fa-home"></i> Back to Home
+                </a>
+                <a class="btn btn-secondary" href="../data-visualization.html">
+                    <i class="fa-solid fa-chart-column"></i> View Dashboard
+                </a>
+            </div>
+        </div>
+    </main>
 
-  confirmBtn.addEventListener('click', ()=>{
-    if(!activity) return;
-    const success = window.CRUD.deleteActivity(activity.id);
-    if(success){
-      okEl.innerHTML = `<i class="fas fa-check-circle"></i> Deleted activity <strong>#${activity.id}</strong>. (Will persist in final app.)`;
-      okEl.style.display = 'block';
-      errEl.style.display = 'none';
-    }else{
-      errEl.style.display = 'block';
-      okEl.style.display = 'none';
-    }
-  });
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
+                <ul>
+                    <li>NASA Space Data Explorer</li>
+                    <li>Mission Analytics & Visualizations</li>
+                    <li>Built for ISM 6225</li>
+                    <li>University of South Florida</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../data-visualization.html">Data Dashboard</a></li>
+                    <li><a href="../about.html">About Us</a></li>
+                    <li><a href="./read.html">View Activities</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>CRUD Operations</h4>
+                <ul>
+                    <li><a href="./create.html">Create Activity</a></li>
+                    <li><a href="./read.html">Read Activities</a></li>
+                    <li><a href="./update.html">Update Activity</a></li>
+                    <li><a href="./delete.html">Delete Activity</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://api.nasa.gov/" target="_blank">NASA Open APIs</a></li>
+                    <li><a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer" target="_blank">GitHub Repository</a></li>
+                    <li><a href="https://www.nasa.gov/" target="_blank">NASA Official Site</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+        </div>
+    </footer>
 
-  // Navbar CRUD dropdown
-  const btn=document.querySelector('.crud-toggle');
-  const menu=document.querySelector('.crud-menu');
-  if(btn && menu){
-    btn.addEventListener('click',(ev)=>{
-      ev.stopPropagation();
-      const open = menu.style.display==='block';
-      menu.style.display = open ? 'none' : 'block';
-      btn.setAttribute('aria-expanded', String(!open));
-    });
-    document.addEventListener('click', ()=>{
-      menu.style.display='none';
-      btn.setAttribute('aria-expanded','false');
-    });
-  }
-</script>
+    <!-- Botpress Chatbot -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
+    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
 
+    <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Get activity ID from URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const activityIdParam = urlParams.get('id');
+        
+        let currentActivity = null;
+        let isDeleted = false;
+
+        // DOM Elements
+        const loadingState = document.getElementById('loadingState');
+        const notFoundState = document.getElementById('notFoundState');
+        const deleteConfirmation = document.getElementById('deleteConfirmation');
+        const activityIdBadge = document.getElementById('activityId');
+        const activityBreadcrumb = document.getElementById('activityBadge');
+        const activitySummary = document.getElementById('activitySummary');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const updateLink = document.getElementById('updateLink');
+        const successMsg = document.getElementById('successMsg');
+        const errorMsg = document.getElementById('errorMsg');
+
+        // Load activity on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadActivity();
+        });
+
+        // Load missions for displaying mission name
+        let missions = {};
+        async function loadMissions() {
+            try {
+                const response = await MissionAPI.getAll();
+                if (response.success) {
+                    response.data.forEach(mission => {
+                        missions[mission.missionId] = mission.name;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading missions:', error);
+            }
+        }
+
+        // Load the activity to delete from backend
+        async function loadActivity() {
+            loadingState.style.display = 'block';
+
+            try {
+                if (!activityIdParam) {
+                    showNotFound();
+                    return;
+                }
+
+                // Load missions first
+                await loadMissions();
+
+                console.log('📡 Fetching activity #' + activityIdParam);
+                const response = await ActivityAPI.getById(activityIdParam);
+
+                if (response.success && response.data) {
+                    currentActivity = response.data;
+                    console.log('✅ Loaded activity:', currentActivity);
+
+                    // Display activity details
+                    displayActivity();
+                    loadingState.style.display = 'none';
+                    deleteConfirmation.style.display = 'block';
+                } else {
+                    showNotFound();
+                }
+            } catch (error) {
+                console.error('❌ Error loading activity:', error);
+                showNotFound();
+            }
+        }
+
+        // Show not found state
+        function showNotFound() {
+            loadingState.style.display = 'none';
+            notFoundState.style.display = 'block';
+        }
+
+        // Display activity details
+        function displayActivity() {
+            // Set activity ID badge
+            activityIdBadge.textContent = `#${currentActivity.id}`;
+            activityBreadcrumb.textContent = `#${currentActivity.id}`;
+
+            // Set update link
+            updateLink.href = `./update.html?id=${currentActivity.id}`;
+            updateLink.style.display = 'inline-flex';
+
+            // Get mission name
+            const missionName = missions[currentActivity.missionId] || `Mission ${currentActivity.missionId}`;
+
+            // Create summary HTML
+            const summaryHTML = `
+                <div style="display: flex; padding: 0.75rem 0; border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
+                    <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
+                        <i class="fa-solid fa-hashtag"></i> Activity ID:
+                    </div>
+                    <div style="color: var(--text-muted);">
+                        <span class="badge">#${currentActivity.id}</span>
+                    </div>
+                </div>
+                <div style="display: flex; padding: 0.75rem 0; border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
+                    <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
+                        <i class="fa-solid fa-rocket"></i> Mission:
+                    </div>
+                    <div style="color: var(--text-muted);">
+                        ${missionName}
+                    </div>
+                </div>
+                <div style="display: flex; padding: 0.75rem 0; border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
+                    <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
+                        <i class="fa-solid fa-tag"></i> Type:
+                    </div>
+                    <div style="color: var(--text-muted); text-transform: capitalize;">
+                        ${currentActivity.type}
+                    </div>
+                </div>
+                <div style="display: flex; padding: 0.75rem 0; border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
+                    <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
+                        <i class="fa-solid fa-calendar"></i> Date:
+                    </div>
+                    <div style="color: var(--text-muted);">
+                        ${currentActivity.date}
+                    </div>
+                </div>
+                <div style="display: flex; padding: 0.75rem 0; border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
+                    <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
+                        <i class="fa-solid fa-heading"></i> Title:
+                    </div>
+                    <div style="color: var(--text-muted);">
+                        ${currentActivity.title}
+                    </div>
+                </div>
+                <div style="display: flex; padding: 0.75rem 0;">
+                    <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
+                        <i class="fa-solid fa-location-dot"></i> Location:
+                    </div>
+                    <div style="color: var(--text-muted);">
+                        ${currentActivity.location || 'N/A'}
+                    </div>
+                </div>
+            `;
+
+            activitySummary.innerHTML = summaryHTML;
+        }
+
+        // Handle delete confirmation
+        confirmDeleteBtn.addEventListener('click', async function() {
+            if (isDeleted) {
+                return; // Prevent double deletion
+            }
+
+            // Confirm with user
+            const missionName = missions[currentActivity.missionId] || `Mission ${currentActivity.missionId}`;
+            const confirmed = confirm(
+                `Are you absolutely sure you want to delete activity #${currentActivity.id}?\n\n` +
+                `Title: ${currentActivity.title}\n` +
+                `Mission: ${missionName}\n\n` +
+                `This action cannot be undone!`
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            try {
+                console.log('🗑️ Deleting activity #' + currentActivity.id);
+                
+                // Delete via backend API
+                const response = await ActivityAPI.delete(currentActivity.id);
+
+                if (response.success) {
+                    console.log('✅ Activity deleted successfully');
+                    isDeleted = true;
+
+                    // Hide confirmation section
+                    deleteConfirmation.style.display = 'none';
+
+                    // Show success message
+                    successMsg.innerHTML = `
+                        <i class="fa-solid fa-check-circle"></i>
+                        <div>
+                            <strong>Activity #${currentActivity.id} deleted successfully!</strong><br>
+                            <small>The record has been permanently removed from the database.</small>
+                        </div>
+                    `;
+                    successMsg.style.display = 'flex';
+                    errorMsg.style.display = 'none';
+
+                    // Scroll to success message
+                    successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                    // Redirect to read page after 3 seconds
+                    setTimeout(() => {
+                        window.location.href = './read.html';
+                    }, 3000);
+
+                } else {
+                    throw new Error(response.error || 'Failed to delete activity');
+                }
+            } catch (error) {
+                console.error('❌ Error deleting activity:', error);
+                
+                // Show error message
+                errorMsg.innerHTML = `
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div>
+                        <strong>Deletion failed!</strong><br>
+                        <small>${error.message}</small>
+                    </div>
+                `;
+                errorMsg.style.display = 'flex';
+                successMsg.style.display = 'none';
+
+                // Scroll to error message
+                errorMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                // Hide error message after 5 seconds
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 5000);
+            }
+        });
+
+        console.log('✅ Delete page initialized - using backend API');
+    </script>
 </body>
 </html>
-

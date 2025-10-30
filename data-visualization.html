@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SpaceTrack Data Dashboard - Interactive NASA space data visualizations">
+    <title>Data Dashboard - SpaceTrack</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <header class="site-header">
+        <nav class="nav">
+            <a class="logo" href="./index.html">
+                <i class="fa-solid fa-rocket"></i>
+                <span>SpaceTrack</span>
+            </a>
+
+            <button class="mobile-menu-btn" aria-label="Open menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <ul class="nav-links">
+                <li><a href="./index.html"><i class="fa-solid fa-home"></i> Home</a></li>
+                <li><a href="./data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="./about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li class="crud">
+                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
+                        CRUD <i class="fa-solid fa-caret-down"></i>
+                    </button>
+                    <ul class="crud-menu">
+                        <li><a href="./crud/create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
+                        <li><a href="./crud/read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
+                        <li><a href="./crud/update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
+                        <li><a href="./crud/delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Page Header -->
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                <div class="card-icon">
+                    <i class="fa-solid fa-chart-column"></i>
+                </div>
+                <div>
+                    <h1 style="margin: 0; font-size: 2rem;">Space Data Analytics Dashboard</h1>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1rem;">
+                        Real-time insights from NASA missions and space observation activities
+                    </p>
+                </div>
+            </div>
+
+            <!-- Information Box -->
+            <div class="info-box">
+                <p style="margin: 0;">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <strong>Live Application:</strong> All charts and statistics are generated from real data fetched
+                    from the backend API. The visualizations update automatically based on the current database state.
+                </p>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" style="text-align: center; padding: 3rem; display: none;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary);"></i>
+                <p style="margin-top: 1rem; color: var(--text-muted);">Loading data from backend...</p>
+            </div>
+
+            <!-- Stats Cards
+            <div class="stats-grid" id="statsCards">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
+                        <i class="fa-solid fa-satellite-dish"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Total Activities</div>
+                        <div class="stat-value" id="totalActivities">0</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                        <i class="fa-solid fa-rocket"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Active Missions</div>
+                        <div class="stat-value" id="activeMissions">0</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                        <i class="fa-solid fa-image"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Images Captured</div>
+                        <div class="stat-value" id="totalImages">0</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
+                        <i class="fa-solid fa-flask"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-label">Observations</div>
+                        <div class="stat-value" id="totalObservations">0</div>
+                    </div>
+                </div>
+            </div> -->
+
+            <!-- Stats Cards - Compact Version -->
+            <div class="stats-compact">
+                <div class="stat-item">
+                    <i class="fa-solid fa-satellite-dish stat-icon-compact" style="color: #3b82f6;"></i>
+                    <div class="stat-content-compact">
+                        <div class="stat-value-compact" id="totalActivities">0</div>
+                        <div class="stat-label-compact">Activities</div>
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <i class="fa-solid fa-rocket stat-icon-compact" style="color: #10b981;"></i>
+                    <div class="stat-content-compact">
+                        <div class="stat-value-compact" id="activeMissions">0</div>
+                        <div class="stat-label-compact">Active Missions</div>
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <i class="fa-solid fa-image stat-icon-compact" style="color: #f59e0b;"></i>
+                    <div class="stat-content-compact">
+                        <div class="stat-value-compact" id="totalImages">0</div>
+                        <div class="stat-label-compact">Images</div>
+                    </div>
+                </div>
+
+                <div class="stat-item">
+                    <i class="fa-solid fa-flask stat-icon-compact" style="color: #8b5cf6;"></i>
+                    <div class="stat-content-compact">
+                        <div class="stat-value-compact" id="totalObservations">0</div>
+                        <div class="stat-label-compact">Observations</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart 1: Activity Types Distribution -->
+            <section class="chart-container">
+                <h2>
+                    <i class="fa-solid fa-chart-pie" style="color: #3b82f6;"></i>
+                    Activity Types Distribution
+                </h2>
+                <p>Breakdown of space observation activities by type. Shows the diversity of mission operations.</p>
+                <canvas id="activityTypesChart"></canvas>
+            </section>
+
+            <!-- Chart 2: Activities by Mission -->
+            <section class="chart-container">
+                <h2>
+                    <i class="fa-solid fa-rocket" style="color: #10b981;"></i>
+                    Activities by Mission
+                </h2>
+                <p>Number of observation activities recorded for each NASA mission. Highlights the most active missions.
+                </p>
+                <canvas id="missionActivitiesChart"></canvas>
+            </section>
+
+            <!-- Chart 3: Activity Timeline -->
+            <section class="chart-container">
+                <h2>
+                    <i class="fa-solid fa-chart-line" style="color: #f59e0b;"></i>
+                    Activity Timeline (2025)
+                </h2>
+                <p>Monthly trend of space observation activities throughout 2025. Shows mission activity patterns over
+                    time.</p>
+                <canvas id="timelineChart"></canvas>
+            </section>
+
+            <!-- Recent Activities Table -->
+            <div class="card">
+                <h2 style="margin-bottom: 1.5rem;">
+                    <i class="fa-solid fa-clock-rotate-left" style="color: #8b5cf6;"></i>
+                    Recent Activities
+                </h2>
+                <div class="table-wrapper">
+                    <table class="table" id="recentActivitiesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>Mission</th>
+                                <th>Type</th>
+                                <th>Title</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 2rem;">
+                                    <i class="fa-solid fa-spinner fa-spin"></i> Loading activities...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Additional Info Card -->
+            <div class="card">
+                <h2 style="margin-bottom: 1rem;">
+                    <i class="fa-solid fa-lightbulb"></i> About These Visualizations
+                </h2>
+                <p><strong>Data Sources:</strong></p>
+                <ul style="margin-top: 1rem;">
+                    <li><strong>Activity Data:</strong> Real-time data fetched from Node.js/Express backend API</li>
+                    <li><strong>Mission Data:</strong> Retrieved from backend database with mission details</li>
+                    <li><strong>Statistics:</strong> Dynamically calculated from current database state</li>
+                </ul>
+                <p style="margin-top: 1rem;">
+                    <strong>Live Integration:</strong> All charts automatically update when you create, update, or
+                    delete activities.
+                    The dashboard reflects the real-time state of the application database.
+                </p>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="btn-group">
+                <a class="btn btn-primary" href="./index.html">
+                    <i class="fa-solid fa-home"></i> Back to Home
+                </a>
+                <a class="btn btn-success" href="./crud/create.html">
+                    <i class="fa-solid fa-plus"></i> Add New Activity
+                </a>
+                <a class="btn btn-secondary" href="./crud/read.html">
+                    <i class="fa-solid fa-eye"></i> View All Activities
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
+                <ul>
+                    <li>NASA Space Data Explorer</li>
+                    <li>Mission Analytics & Visualizations</li>
+                    <li>Built for ISM 6225</li>
+                    <li>University of South Florida</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="./index.html">Home</a></li>
+                    <li><a href="./data-visualization.html">Data Dashboard</a></li>
+                    <li><a href="./about.html">About Us</a></li>
+                    <li><a href="./crud/read.html">View Activities</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>CRUD Operations</h4>
+                <ul>
+                    <li><a href="./crud/create.html">Create Activity</a></li>
+                    <li><a href="./crud/read.html">Read Activities</a></li>
+                    <li><a href="./crud/update.html">Update Activity</a></li>
+                    <li><a href="./crud/delete.html">Delete Activity</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://api.nasa.gov/" target="_blank">NASA Open APIs</a></li>
+                    <li><a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer" target="_blank">GitHub
+                            Repository</a></li>
+                    <li><a href="https://www.nasa.gov/" target="_blank">NASA Official Site</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+        </div>
+    </footer>
+
+    <!-- Botpress Chatbot -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
+    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+
+    <!-- JavaScript -->
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // Load real data from backend
+        let activities = [];
+        let missions = [];
+
+        // Chart instances
+        let activityTypesChart;
+        let missionActivitiesChart;
+        let timelineChart;
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', async function () {
+            document.getElementById('loadingState').style.display = 'block';
+            await loadData();
+            document.getElementById('loadingState').style.display = 'none';
+
+            if (activities.length > 0) {
+                renderCharts();
+                populateStats();
+                populateRecentActivities();
+            } else {
+                showError();
+            }
+        });
+
+        // Load activities and missions from backend
+        async function loadData() {
+            try {
+                console.log('📡 Loading data from backend...');
+
+                // Load activities
+                const activitiesResponse = await ActivityAPI.getAll();
+                if (activitiesResponse.success) {
+                    activities = activitiesResponse.data;
+                    console.log('✅ Loaded', activities.length, 'activities');
+                }
+
+                // Load missions
+                const missionsResponse = await MissionAPI.getAll();
+                if (missionsResponse.success) {
+                    missions = missionsResponse.data;
+                    console.log('✅ Loaded', missions.length, 'missions');
+                }
+            } catch (error) {
+                console.error('❌ Error loading data:', error);
+                alert('Could not load data from backend. Please ensure the server is running on http://localhost:3000');
+            }
+        }
+
+        // Get mission name by ID
+        function getMissionName(missionId) {
+            const mission = missions.find(m => m.missionId === missionId);
+            return mission ? mission.name : `Mission ${missionId}`;
+        }
+
+        // Populate statistics cards
+        function populateStats() {
+            document.getElementById('totalActivities').textContent = activities.length;
+
+            const activeMissionsCount = missions.filter(m => m.status === 'Active').length;
+            document.getElementById('activeMissions').textContent = activeMissionsCount;
+
+            const imageCount = activities.filter(a => a.type === 'image').length;
+            document.getElementById('totalImages').textContent = imageCount;
+
+            const observationCount = activities.filter(a => a.type === 'observation').length;
+            document.getElementById('totalObservations').textContent = observationCount;
+        }
+
+        // Render all charts
+        function renderCharts() {
+            renderActivityTypesChart();
+            renderMissionActivitiesChart();
+            renderTimelineChart();
+        }
+
+        // Activity Types Pie Chart
+        function renderActivityTypesChart() {
+            const typeCounts = {};
+            activities.forEach(activity => {
+                typeCounts[activity.type] = (typeCounts[activity.type] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('activityTypesChart').getContext('2d');
+            activityTypesChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(typeCounts).map(type => type.charAt(0).toUpperCase() + type.slice(1)),
+                    datasets: [{
+                        data: Object.values(typeCounts),
+                        backgroundColor: [
+                            '#3b82f6',
+                            '#10b981',
+                            '#f59e0b',
+                            '#8b5cf6',
+                            '#ef4444'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94a3b8', padding: 15, font: { size: 12 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Mission Activities Bar Chart
+        function renderMissionActivitiesChart() {
+            const missionCounts = {};
+            activities.forEach(activity => {
+                const missionName = getMissionName(activity.missionId);
+                missionCounts[missionName] = (missionCounts[missionName] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('missionActivitiesChart').getContext('2d');
+            missionActivitiesChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(missionCounts),
+                    datasets: [{
+                        label: 'Number of Activities',
+                        data: Object.values(missionCounts),
+                        backgroundColor: '#10b981',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#94a3b8', stepSize: 1 },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8', font: { size: 10 } },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Timeline Line Chart
+        function renderTimelineChart() {
+            const monthCounts = {
+                'Jan': 0, 'Feb': 0, 'Mar': 0, 'Apr': 0,
+                'May': 0, 'Jun': 0, 'Jul': 0, 'Aug': 0,
+                'Sep': 0, 'Oct': 0, 'Nov': 0, 'Dec': 0
+            };
+
+            activities.forEach(activity => {
+                const date = new Date(activity.date);
+                if (date.getFullYear() === 2025) {
+                    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                    const month = monthNames[date.getMonth()];
+                    monthCounts[month]++;
+                }
+            });
+
+            const ctx = document.getElementById('timelineChart').getContext('2d');
+            timelineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Object.keys(monthCounts),
+                    datasets: [{
+                        label: 'Activities per Month',
+                        data: Object.values(monthCounts),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#3b82f6'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#94a3b8', font: { size: 12 } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#94a3b8', stepSize: 1 },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#94a3b8' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Populate recent activities table
+        function populateRecentActivities() {
+            const tbody = document.querySelector('#recentActivitiesTable tbody');
+            const recentActivities = [...activities]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+
+            tbody.innerHTML = recentActivities.map(activity => `
+                <tr>
+                    <td><span class="badge">#${activity.id}</span></td>
+                    <td>${activity.date}</td>
+                    <td>${getMissionName(activity.missionId)}</td>
+                    <td style="text-transform: capitalize;">${activity.type}</td>
+                    <td>${activity.title}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Show error message
+        function showError() {
+            document.getElementById('statsCards').innerHTML = `
+                <div class="error" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <p style="margin: 0;">Could not load data from backend</p>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">
+                        Please ensure the backend server is running on http://localhost:3000
+                    </p>
+                </div>
+            `;
+        }
+
+        console.log('✅ Data Visualization page initialized - using backend API');
+    </script>
+</body>
+
+</html>

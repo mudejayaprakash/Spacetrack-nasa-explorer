@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="About SpaceTrack - Meet our team and explore our data model">
+    <title>About Us - SpaceTrack</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <header class="site-header">
+        <nav class="nav">
+            <a class="logo" href="./index.html">
+                <i class="fa-solid fa-rocket"></i>
+                <span>SpaceTrack</span>
+            </a>
+
+            <button class="mobile-menu-btn" aria-label="Open menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <ul class="nav-links">
+                <li><a href="./index.html"><i class="fa-solid fa-home"></i> Home</a></li>
+                <li><a href="./data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="./about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li class="crud">
+                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
+                        CRUD <i class="fa-solid fa-caret-down"></i>
+                    </button>
+                    <ul class="crud-menu">
+                        <li><a href="./crud/create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
+                        <li><a href="./crud/read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
+                        <li><a href="./crud/update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
+                        <li><a href="./crud/delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Page Header -->
+            <div style="margin-bottom: 2rem;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-users"></i> About Our Team
+                </h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem;">
+                    Meet the developers behind SpaceTrack - NASA Space Data Explorer
+                </p>
+            </div>
+
+            <!-- Team Members Section -->
+            <div class="card">
+                <h2 style="margin-bottom: 2rem;">
+                    <i class="fa-solid fa-user-astronaut"></i> Team Members
+                </h2>
+                
+                <div class="team-grid">
+                    <!-- Team Member 1: Mude Jayaprakash Naik -->
+                    <div class="team-member">
+                        <img src="images/mude.jpeg" alt="Mude Jayaprakash Naik" class="team-photo">
+                        <h3>Mude Jayaprakash Naik</h3>
+                        <p class="role">Full Stack Developer</p>
+                        <!-- ADD YOUR ENROLLMENT NUMBER BELOW -->
+                        <p class="enrollment">U Number: U74012463</p>
+                        <!-- ADD YOUR CONTRIBUTIONS BELOW -->
+                        <div class="contributions">
+                            <strong>Contributions:</strong>
+                            <p>Created Chatbot, Logic Data Model and coordinated team collaboration through GitHub and debugged code.</p>
+                        </div>
+                    </div>
+
+                    <!-- Team Member 2: Kaylee Eckelman -->
+                    <div class="team-member">
+                        <img src="images/kaylee.jpeg" alt="Kaylee Eckelman" class="team-photo">
+                        <h3>Kaylee Eckelman</h3>
+                        <p class="role">Data Visualization Specialist</p>
+                        <!-- ADD YOUR ENROLLMENT NUMBER BELOW -->
+                        <p class="enrollment">U Number: U53871537</p>
+                        <!-- ADD YOUR CONTRIBUTIONS BELOW -->
+                        <div class="contributions">
+                            <strong>Contributions:</strong>
+                            <p>Created dummy datasets, and developed interactive data visualizations using Chart.js.</p>
+                        </div>
+                    </div>
+
+                    <!-- Team Member 3: Pradeep Anand Mohanasundaram -->
+                    <div class="team-member">
+                        <img src="images/pradeep.jpeg" alt="Pradeep Anand Mohanasundaram" class="team-photo">
+                        <h3>Pradeep Anand Mohanasundaram</h3>
+                        <p class="role">Backend Developer & QA</p>
+                        <!-- ADD YOUR ENROLLMENT NUMBER BELOW -->
+                        <p class="enrollment">U Number: U58770856</p>
+                        <!-- ADD YOUR CONTRIBUTIONS BELOW -->
+                        <div class="contributions">
+                            <strong>Contributions:</strong>
+                            <p>Implemented CRUD operations, and enhanced UI design, and ensured accessibility across all pages.</p>
+                        </div>
+                    </div>
+
+                    <!-- Team Member 4: Mythily Kanagaraj -->
+                    <div class="team-member">
+                        <img src="images/mythily.jpeg" alt="Mythily Kanagaraj" class="team-photo">
+                        <h3>Mythily Kanagaraj</h3>
+                        <p class="role">Frontend Developer & UI/UX Designer</p>
+                        <!-- ADD YOUR ENROLLMENT NUMBER BELOW -->
+                        <p class="enrollment">U Number: U15860523</p>
+                        <!-- ADD YOUR CONTRIBUTIONS BELOW -->
+                        <div class="contributions">
+                            <strong>Contributions:</strong>
+                            <p>Created UI design. Managed Github and merged codes from collaborators.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logical Data Model Section -->
+            <div class="card">
+                <h2 style="margin-bottom: 2rem;">
+                    <i class="fa-solid fa-diagram-project"></i> Logical Data Model
+                </h2>
+                
+                <p style="margin-bottom: 1.5rem;">
+                    Our database architecture follows a relational model with clearly defined relationships between entities. The model demonstrates two one-to-many relationships essential for tracking space missions and observations.
+                </p>
+
+                <div class="data-model">
+                    <!-- Data Model Image -->
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <img src="images/data-model.jpg" alt="Logical Data Model Diagram" style="max-width: 100%; height: auto; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);">
+                    </div>
+
+                  
+
+                <!-- Relationship Explanation -->
+                <div class="info-box" style="margin-top: 2rem;">
+                    <p style="margin: 0;">
+                        <strong><i class="fa-solid fa-circle-info"></i> Database Relationships Explained:</strong>
+                    </p>
+                    <ul style="margin-top: 1rem; margin-bottom: 0;">
+                        <li><strong>Missions to Observations (One-to-Many):</strong> A single mission can generate multiple observations over time. For example, the Perseverance Mars mission has created hundreds of observations including images, rock samples, and atmospheric readings.</li>
+                        <li><strong>Celestial Objects to Observations (Many-to-Many):</strong> A single celestial object can be observed multiple times by different missions or the same mission at different times. For instance, Mars has been observed by Hubble, multiple Mars rovers, and orbital missions.</li>
+                    </ul>
+                </div>
+
+                <!-- Application Context -->
+                <div class="notice" style="margin-top: 1.5rem;">
+                    <p style="margin: 0;"><strong>How This Fits Our Application:</strong></p>
+                    <p style="margin-top: 0.5rem;">
+                        This relational structure enables SpaceTrack to efficiently track which missions observed which celestial objects and when. Users can query observations by mission, by celestial object, or by date range. The CRUD operations in our application directly interact with these tables, allowing users to create new observations, view existing records, update observation details, and remove outdated entries.
+                    </p>
+                </div>
+            </div>
+
+            <!-- GitHub Repository Section -->
+            <div class="card" style="background: linear-gradient(135deg, #4f46e5, #7c3aed); border: none;">
+                <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="fa-brands fa-github" style="font-size: 2.5rem;"></i>
+                    GitHub Repository
+                </h2>
+                <p style="font-size: 1.1rem; margin-bottom: 1rem;">
+                    Access our complete source code, documentation, and project history on GitHub.
+                </p>
+                <a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer" 
+                   target="_blank" 
+                   class="btn btn-secondary" 
+                   style="background: rgba(255, 255, 255, 0.2); border: 2px solid #fff; font-size: 1.1rem; padding: 1rem 2rem;">
+                    <i class="fa-brands fa-github"></i> View on GitHub
+                </a>
+                <p style="margin-top: 1rem; font-size: 0.95rem; opacity: 0.9;">
+                    Repository includes all HTML, CSS, JavaScript files, data models, API documentation, and commit history showcasing team contributions.
+                </p>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="btn-group">
+                <a class="btn btn-primary" href="./index.html">
+                    <i class="fa-solid fa-home"></i> Back to Home
+                </a>
+                <a class="btn btn-secondary" href="./data-visualization.html">
+                    <i class="fa-solid fa-chart-column"></i> Data Dashboard
+                </a>
+                <a class="btn btn-secondary" href="./crud/read.html">
+                    <i class="fa-solid fa-eye"></i> View Activities
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
+                <ul>
+                    <li>NASA Space Data Explorer</li>
+                    <li>Mission Analytics & Visualizations</li>
+                    <li>Built for ISM 6225</li>
+                    <li>University of South Florida</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="./index.html">Home</a></li>
+                    <li><a href="./data-visualization.html">Data Dashboard</a></li>
+                    <li><a href="./about.html">About Us</a></li>
+                    <li><a href="./crud/read.html">View Activities</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>CRUD Operations</h4>
+                <ul>
+                    <li><a href="./crud/create.html">Create Activity</a></li>
+                    <li><a href="./crud/read.html">Read Activities</a></li>
+                    <li><a href="./crud/update.html">Update Activity</a></li>
+                    <li><a href="./crud/delete.html">Delete Activity</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://api.nasa.gov/" target="_blank">NASA Open APIs</a></li>
+                    <li><a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer" target="_blank">GitHub Repository</a></li>
+                    <li><a href="https://www.nasa.gov/" target="_blank">NASA Official Site</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+
+    <!-- Botpress Chatbot -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
+    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+</body>
+</html>

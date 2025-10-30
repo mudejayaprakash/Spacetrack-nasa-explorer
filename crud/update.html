@@ -1,218 +1,401 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Update Activity • SpaceTrack</title>
-
-  <!-- Font Awesome (icons) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- Shared site CSS (adjust path if needed) -->
-  <link rel="stylesheet" href="../css/style.css" />
-
-  <!-- Page-specific styles (light; relies mostly on style.css) -->
-  <style>
-    body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(to bottom,#0f172a,#1e1b4b,#000);color:#f8fafc;}
-    /* Navbar like index */
-    .site-header{background:linear-gradient(90deg,#4338ca,#7c3aed,#000);position:sticky;top:0;z-index:1000;box-shadow:0 4px 6px rgba(0,0,0,.3)}
-    .nav{max-width:1200px;margin:0 auto;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;gap:1rem}
-    .logo{display:flex;align-items:center;gap:.5rem;font-weight:700;text-decoration:none;color:#fff;font-size:1.4rem}
-    .nav-links{list-style:none;display:flex;gap:1.25rem;align-items:center;margin:0;padding:0}
-    .nav-links a{color:#fff;text-decoration:none;font-weight:500;padding:.45rem .6rem;border-radius:.6rem}
-    .nav-links a:hover{background:rgba(255,255,255,.08)}
-    .crud{position:relative}
-    .crud-toggle{background:rgba(255,255,255,.08);border:0;color:#fff;border-radius:.6rem;padding:.45rem .6rem;cursor:pointer}
-    .crud-menu{display:none;position:absolute;top:120%;right:0;min-width:220px;background:#1e1b4b;border:1px solid rgba(255,255,255,.15);border-radius:.6rem;padding:.25rem;box-shadow:0 12px 30px rgba(0,0,0,.25)}
-    .crud-menu a{display:block;color:#fff}
-    .crud-menu a:hover{background:rgba(255,255,255,.08)}
-
-    .container{max-width:1100px;margin:0 auto;padding:2rem}
-    .breadcrumbs{margin-bottom:1rem;color:#94a3b8}
-    .breadcrumbs a{color:#93c5fd;text-decoration:none}
-
-    .card{background:rgba(30,41,59,.8);backdrop-filter:blur(10px);border-radius:1rem;padding:2rem;border:1px solid rgba(79,70,229,.3);box-shadow:0 10px 30px rgba(79,70,229,.15)}
-    .muted{color:#94a3b8}
-
-    form .form-row{display:flex;gap:1rem;flex-wrap:wrap;margin:.75rem 0}
-    label{display:flex;flex-direction:column;gap:.35rem;min-width:220px;flex:1}
-    select,input[type="text"],input[type="date"]{background:#0b1220;border:1px solid #334155;border-radius:.6rem;color:#f8fafc;padding:.6rem .7rem}
-    select:focus,input:focus{outline:2px solid rgba(79,70,229,.6);outline-offset:1px}
-
-    .btn{border:0;border-radius:.7rem;padding:.6rem 1rem;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none}
-    .btn-primary{background:#2563eb;color:#fff}
-    .btn-outline{background:transparent;color:#93c5fd;border:1px solid #334155}
-    .row{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1rem}
-
-    .badge{background:#1f2937;border:1px solid #334155;color:#93c5fd;padding:.2rem .5rem;border-radius:.4rem;font-size:.95rem;margin-left:.35rem}
-    .success{margin-top:1rem;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.35);color:#bbf7d0;padding:.8rem 1rem;border-radius:.6rem;display:none}
-    .error{margin-top:1rem;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#fecaca;padding:.8rem 1rem;border-radius:.6rem;display:none}
-  </style>
-
-  <!-- CRUD simulator -->
-  <script src="../js/crud-sim.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Update space observation activity">
+    <title>Update Activity - SpaceTrack</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
+    <!-- Navigation -->
+    <header class="site-header">
+        <nav class="nav">
+            <a class="logo" href="../index.html">
+                <i class="fa-solid fa-rocket"></i>
+                <span>SpaceTrack</span>
+            </a>
 
-<header class="site-header">
-  <nav class="nav">
-    <a class="logo" href="../index.html"><i class="fas fa-rocket"></i> SpaceTrack</a>
-    <ul class="nav-links">
-      <li><a href="../index.html"><i class="fas fa-home"></i> Home</a></li>
-      <li><a href="../data-visualization.html"><i class="fas fa-chart-bar"></i> Data Dashboard</a></li>
-      <li><a href="../about.html"><i class="fas fa-users"></i> About Us</a></li>
-      <li class="crud">
-        <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">CRUD ▾</button>
-        <ul class="crud-menu">
-          <li><a href="./create.html">Create</a></li>
-          <li><a href="./read.html">Read</a></li>
-          <li><a href="./update.html">Update</a></li>
-          <li><a href="./delete.html">Delete</a></li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-</header>
+            <button class="mobile-menu-btn" aria-label="Open menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
-<main class="container">
+            <ul class="nav-links">
+                <li><a href="../index.html"><i class="fa-solid fa-home"></i> Home</a></li>
+                <li><a href="../data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="../about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li class="crud">
+                    <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
+                        CRUD <i class="fa-solid fa-caret-down"></i>
+                    </button>
+                    <ul class="crud-menu">
+                        <li><a href="./create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
+                        <li><a href="./read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
+                        <li><a href="./update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
+                        <li><a href="./delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
 
-  <div class="breadcrumbs">
-    <a href="../index.html">Home</a> / <a href="./read.html">Activities</a> / Update
-  </div>
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Breadcrumbs -->
+            <div class="breadcrumbs">
+                <a href="../index.html">Home</a> / 
+                <a href="./read.html">Activities</a> / 
+                Update <span id="activityBadge"></span>
+            </div>
 
-  <div class="card">
-    <h1>Update Activity <span id="actId" class="badge"></span></h1>
-    <p class="muted">This simulates <strong>Update</strong>. In the final MVC app, changes will persist to the DB and refresh charts/tables.</p>
+            <!-- Page Content -->
+            <div class="card">
+                <h1 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+                    <i class="fa-solid fa-pen" style="color: var(--warning);"></i>
+                    Update Activity <span id="activityId" class="badge"></span>
+                </h1>
+                
+                <p class="muted" style="margin-bottom: 1.5rem;">
+                    Modify the activity details below. Changes will be sent to the backend server and persisted in the database, automatically updating all pages and visualizations.
+                </p>
 
-    <form id="updateForm" class="mt-3">
-      <div class="form-row">
-        <label>
-          Mission
-          <select id="missionId" required></select>
-        </label>
-        <label>
-          Type
-          <select id="type" required>
-            <option value="image">image</option>
-            <option value="observation">observation</option>
-            <option value="instrument">instrument</option>
-            <option value="maneuver">maneuver</option>
-            <option value="sample">sample</option>
-          </select>
-        </label>
-      </div>
+                <div class="info-box">
+                    <p style="margin: 0;">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <strong>Live Application:</strong> The form is pre-filled with data fetched from the backend API. When you click "Apply Changes", the updates are sent to the server and saved to the database.
+                    </p>
+                </div>
 
-      <div class="form-row">
-        <label>Date
-          <input class="input" type="date" id="date" required>
-        </label>
-        <label>Title
-          <input class="input" type="text" id="title" required>
-        </label>
-      </div>
+                <!-- Loading State -->
+                <div id="loadingState" style="text-align: center; padding: 3rem; display: none;">
+                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary);"></i>
+                    <p style="margin-top: 1rem; color: var(--text-muted);">Loading activity data from backend...</p>
+                </div>
 
-      <div class="row">
-        <button class="btn btn-primary" type="submit"><i class="fas fa-check"></i> Apply Changes</button>
-        <a class="btn btn-outline" href="./read.html"><i class="fas fa-arrow-left"></i> Back to List</a>
-      </div>
-    </form>
+                <!-- Not Found State -->
+                <div id="notFoundState" style="text-align: center; padding: 3rem; display: none;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem;"></i>
+                    <h2 style="margin-bottom: 0.5rem;">Activity Not Found</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">
+                        The activity you're looking for doesn't exist in the database or has been deleted.
+                    </p>
+                    <a href="./read.html" class="btn btn-primary">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Activities List
+                    </a>
+                </div>
 
-    <div id="msgOk" class="success"><i class="fas fa-check-circle"></i> Updated.</div>
-    <div id="msgErr" class="error"><i class="fas fa-circle-exclamation"></i> Could not update.</div>
-  </div>
+                <!-- Update Form -->
+                <form id="updateForm" style="margin-top: 2rem; display: none;">
+                    <div class="form-grid">
+                        <div>
+                            <label for="missionId">
+                                <i class="fa-solid fa-rocket"></i> Mission
+                            </label>
+                            <select id="missionId" required>
+                                <option value="">-- Select Mission --</option>
+                            </select>
+                        </div>
 
-</main>
+                        <div>
+                            <label for="type">
+                                <i class="fa-solid fa-tag"></i> Activity Type
+                            </label>
+                            <select id="type" required>
+                                <option value="">-- Select Type --</option>
+                                <option value="image">Image Capture</option>
+                                <option value="observation">Scientific Observation</option>
+                                <option value="instrument">Instrument Reading</option>
+                                <option value="maneuver">Spacecraft Maneuver</option>
+                                <option value="sample">Sample Collection</option>
+                            </select>
+                        </div>
 
-<script>
-  // Helper to read query param
-  function qp(name){ return new URL(location.href).searchParams.get(name); }
+                        <div>
+                            <label for="date">
+                                <i class="fa-solid fa-calendar"></i> Observation Date
+                            </label>
+                            <input type="date" id="date" required>
+                        </div>
 
-  // Resolve activity to edit
-  const idParam = qp('id');
-  const list    = window.CRUD.listActivities();
-  let   activity = null;
+                        <div>
+                            <label for="title">
+                                <i class="fa-solid fa-heading"></i> Title / Description
+                            </label>
+                            <input type="text" id="title" placeholder="e.g., Jezero Crater panorama" required>
+                        </div>
+                    </div>
 
-  if(idParam){
-    const id = Number(idParam);
-    activity = list.find(a => a.id === id) || null;
-  }
-  // Fallback to first record if no id provided
-  if(!activity && list.length){
-    activity = list[0];
-  }
+                    <!-- Form Actions -->
+                    <div class="btn-group" style="justify-content: flex-start; margin-top: 2rem;">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fa-solid fa-check"></i> Apply Changes
+                        </button>
+                        <button type="button" id="cancelBtn" class="btn btn-outline">
+                            <i class="fa-solid fa-xmark"></i> Cancel
+                        </button>
+                        <a href="./read.html" class="btn btn-secondary">
+                            <i class="fa-solid fa-eye"></i> View All Activities
+                        </a>
+                    </div>
+                </form>
 
-  const actIdEl = document.getElementById('actId');
-  const form    = document.getElementById('updateForm');
-  const msgOk   = document.getElementById('msgOk');
-  const msgErr  = document.getElementById('msgErr');
+                <!-- Success Message -->
+                <div id="successMsg" class="success" style="display: none; margin-top: 1.5rem;">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <div>
+                        <strong>Activity updated successfully!</strong><br>
+                        <small>Changes have been saved to the database.</small>
+                    </div>
+                </div>
 
-  if(activity){
-    actIdEl.textContent = `#${activity.id}`;
-  }else{
-    actIdEl.textContent = '(none)';
-  }
+                <!-- Error Message -->
+                <div id="errorMsg" class="error" style="display: none; margin-top: 1.5rem;">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <div>
+                        <strong>Update failed!</strong><br>
+                        <small>Could not update the activity. Please try again.</small>
+                    </div>
+                </div>
+            </div>
 
-  // Populate Missions
-  const selMission = document.getElementById('missionId');
-  window.CRUD.Missions.forEach(m=>{
-    const o = document.createElement('option');
-    o.value = m.missionId;
-    o.textContent = m.name;
-    selMission.appendChild(o);
-  });
+            <!-- Back to Home Button -->
+            <div class="btn-group">
+                <a class="btn btn-primary" href="../index.html">
+                    <i class="fa-solid fa-home"></i> Back to Home
+                </a>
+                <a class="btn btn-secondary" href="../data-visualization.html">
+                    <i class="fa-solid fa-chart-column"></i> View Dashboard
+                </a>
+            </div>
+        </div>
+    </main>
 
-  // Prefill form when activity available
-  const selType  = document.getElementById('type');
-  const inputDate = document.getElementById('date');
-  const inputTitle = document.getElementById('title');
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
+                <ul>
+                    <li>NASA Space Data Explorer</li>
+                    <li>Mission Analytics & Visualizations</li>
+                    <li>Built for ISM 6225</li>
+                    <li>University of South Florida</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../data-visualization.html">Data Dashboard</a></li>
+                    <li><a href="../about.html">About Us</a></li>
+                    <li><a href="./read.html">View Activities</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>CRUD Operations</h4>
+                <ul>
+                    <li><a href="./create.html">Create Activity</a></li>
+                    <li><a href="./read.html">Read Activities</a></li>
+                    <li><a href="./update.html">Update Activity</a></li>
+                    <li><a href="./delete.html">Delete Activity</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://api.nasa.gov/" target="_blank">NASA Open APIs</a></li>
+                    <li><a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer" target="_blank">GitHub Repository</a></li>
+                    <li><a href="https://www.nasa.gov/" target="_blank">NASA Official Site</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+        </div>
+    </footer>
 
-  if(activity){
-    selMission.value = activity.missionId;
-    selType.value    = activity.type;
-    inputDate.value  = activity.date;
-    inputTitle.value = activity.title;
-  }else{
-    form.querySelector('button[type="submit"]').disabled = true;
-  }
+    <!-- Botpress Chatbot -->
+    <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
+    <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
 
-  // Submit -> simulate update
-  form.addEventListener('submit', (e)=>{
-    e.preventDefault();
-    if(!activity) return;
+    <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Get activity ID from URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const activityIdParam = urlParams.get('id');
+        
+        let currentActivity = null;
+        let originalData = null;
 
-    const ok = window.CRUD.updateActivity(activity.id, {
-      missionId: Number(selMission.value),
-      type:      selType.value,
-      date:      inputDate.value,
-      title:     (inputTitle.value || '(untitled)').trim()
-    });
+        // DOM Elements
+        const loadingState = document.getElementById('loadingState');
+        const notFoundState = document.getElementById('notFoundState');
+        const updateForm = document.getElementById('updateForm');
+        const activityIdBadge = document.getElementById('activityId');
+        const activityBreadcrumb = document.getElementById('activityBadge');
+        const successMsg = document.getElementById('successMsg');
+        const errorMsg = document.getElementById('errorMsg');
 
-    if(ok){
-      msgOk.innerHTML  = `<i class="fas fa-check-circle"></i> Updated activity <strong>#${activity.id}</strong>. (Will persist in final app.)`;
-      msgOk.style.display = 'block';
-      msgErr.style.display = 'none';
-    }else{
-      msgErr.style.display = 'block';
-      msgOk.style.display = 'none';
-    }
-  });
+        // Load activity on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadActivity();
+        });
 
-  // Navbar CRUD dropdown
-  const btn = document.querySelector('.crud-toggle');
-  const menu = document.querySelector('.crud-menu');
-  if(btn && menu){
-    btn.addEventListener('click',(ev)=>{
-      ev.stopPropagation();
-      const open = menu.style.display==='block';
-      menu.style.display = open ? 'none' : 'block';
-      btn.setAttribute('aria-expanded', String(!open));
-    });
-    document.addEventListener('click', ()=>{
-      menu.style.display='none';
-      btn.setAttribute('aria-expanded','false');
-    });
-  }
-</script>
+        // Load the activity to update from backend
+        async function loadActivity() {
+            loadingState.style.display = 'block';
 
+            try {
+                if (!activityIdParam) {
+                    showNotFound();
+                    return;
+                }
+
+                console.log('📡 Fetching activity #' + activityIdParam);
+                const response = await ActivityAPI.getById(activityIdParam);
+
+                if (response.success && response.data) {
+                    currentActivity = response.data;
+                    originalData = { ...currentActivity };
+                    console.log('✅ Loaded activity:', currentActivity);
+
+                    // Load missions and populate form
+                    await loadMissions();
+                    populateForm();
+                    
+                    loadingState.style.display = 'none';
+                    updateForm.style.display = 'block';
+                } else {
+                    showNotFound();
+                }
+            } catch (error) {
+                console.error('❌ Error loading activity:', error);
+                showNotFound();
+            }
+        }
+
+        // Load missions from backend
+        async function loadMissions() {
+            try {
+                const response = await MissionAPI.getAll();
+                
+                if (response.success) {
+                    const missionSelect = document.getElementById('missionId');
+                    response.data.forEach(mission => {
+                        const option = document.createElement('option');
+                        option.value = mission.missionId;
+                        option.textContent = `${mission.name} (${mission.type})`;
+                        missionSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading missions:', error);
+            }
+        }
+
+        // Show not found state
+        function showNotFound() {
+            loadingState.style.display = 'none';
+            notFoundState.style.display = 'block';
+        }
+
+        // Populate form with activity data
+        function populateForm() {
+            // Set activity ID badge
+            activityIdBadge.textContent = `#${currentActivity.id}`;
+            activityBreadcrumb.textContent = `#${currentActivity.id}`;
+
+            // Set form values
+            document.getElementById('missionId').value = currentActivity.missionId;
+            document.getElementById('type').value = currentActivity.type;
+            document.getElementById('date').value = currentActivity.date;
+            document.getElementById('title').value = currentActivity.title;
+
+            // Set max date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').max = today;
+        }
+
+        // Handle form submission
+        document.getElementById('updateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const updatedData = {
+                missionId: parseInt(document.getElementById('missionId').value),
+                type: document.getElementById('type').value,
+                date: document.getElementById('date').value,
+                title: document.getElementById('title').value.trim() || '(untitled)'
+            };
+
+            try {
+                console.log('📤 Updating activity #' + currentActivity.id, updatedData);
+                
+                // Send update to backend API
+                const response = await ActivityAPI.update(currentActivity.id, updatedData);
+
+                if (response.success) {
+                    console.log('✅ Activity updated:', response.data);
+                    currentActivity = response.data;
+                    originalData = { ...currentActivity };
+
+                    // Show success message
+                    successMsg.style.display = 'flex';
+                    errorMsg.style.display = 'none';
+
+                    // Scroll to success message
+                    successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                    // Hide success message after 5 seconds
+                    setTimeout(() => {
+                        successMsg.style.display = 'none';
+                    }, 5000);
+                } else {
+                    throw new Error(response.error || 'Failed to update activity');
+                }
+            } catch (error) {
+                console.error('❌ Error updating activity:', error);
+                
+                // Show error message
+                errorMsg.style.display = 'flex';
+                successMsg.style.display = 'none';
+
+                // Scroll to error message
+                errorMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                // Hide error message after 5 seconds
+                setTimeout(() => {
+                    errorMsg.style.display = 'none';
+                }, 5000);
+            }
+        });
+
+        // Cancel button - restore original data
+        document.getElementById('cancelBtn').addEventListener('click', function() {
+            if (originalData) {
+                document.getElementById('missionId').value = originalData.missionId;
+                document.getElementById('type').value = originalData.type;
+                document.getElementById('date').value = originalData.date;
+                document.getElementById('title').value = originalData.title;
+
+                // Hide any messages
+                successMsg.style.display = 'none';
+                errorMsg.style.display = 'none';
+
+                // Show feedback
+                alert('Form reset to original values');
+            }
+        });
+
+        console.log('✅ Update page initialized - using backend API');
+    </script>
 </body>
 </html>
