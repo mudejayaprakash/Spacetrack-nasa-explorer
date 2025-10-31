@@ -1,22 +1,531 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="SpaceTrack Data Dashboard - Interactive NASA space data visualizations">
-    <title>Data Dashboard - SpaceTrack</title>
-
+    <meta name="description" content="Your personal stargazing dashboard - SpaceTrack">
+    <title>Dashboard - SpaceTrack</title>
+    
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-    <!-- Shared Stylesheet -->
-    <link rel="stylesheet" href="css/styles.css">
-
+    
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+    
+    <!-- Shared Stylesheet -->
+    <link rel="stylesheet" href="./css/styles.css">
+    
+    <style>
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
 
+        /* Page Header */
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Stats Cards */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card-dash {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card-dash:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .stat-value-dash {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #818cf8;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label-dash {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Featured Gallery - HORIZONTAL CAROUSEL */
+        .featured-section {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .featured-section h2 {
+            margin: 0 0 1rem 0;
+            font-size: 1.3rem;
+            color: #f1f5f9;
+        }
+
+        /* Carousel Container */
+        .gallery-container {
+            position: relative;
+            overflow: hidden;
+            padding: 0 3rem;
+        }
+
+        .gallery-grid {
+            display: flex;
+            gap: 1rem;
+            transition: transform 0.4s ease-in-out;
+        }
+
+        .gallery-item {
+            flex: 0 0 calc(25% - 0.75rem);
+            min-width: calc(25% - 0.75rem);
+            background: #0f172a;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #1e293b;
+        }
+
+        .gallery-info {
+            padding: 0.75rem;
+        }
+
+        .gallery-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .gallery-meta {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gallery-rating {
+            color: #fbbf24;
+        }
+
+        /* Carousel Navigation Buttons */
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid rgba(99, 102, 241, 0.5);
+            color: #6366f1;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s;
+            font-size: 1.2rem;
+        }
+
+        .carousel-nav:hover:not(.disabled) {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: #6366f1;
+            color: #a5b4fc;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-nav.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .carousel-nav-left {
+            left: 0;
+        }
+
+        .carousel-nav-right {
+            right: 0;
+        }
+
+        .view-all-btn {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.6rem 1.5rem;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .view-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        @media (max-width: 1200px) {
+            .gallery-item {
+                flex: 0 0 calc(33.333% - 0.75rem);
+                min-width: calc(33.333% - 0.75rem);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gallery-item {
+                flex: 0 0 calc(50% - 0.5rem);
+                min-width: calc(50% - 0.5rem);
+            }
+            .gallery-container {
+                padding: 0 2.5rem;
+            }
+            .carousel-nav {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-box {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .chart-box h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Equipment Chart - Split Layout */
+        .equipment-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .equipment-chart-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .equipment-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 0.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .legend-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 0.375rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            transition: all 0.2s;
+        }
+
+        .legend-item:hover {
+            background: rgba(30, 41, 59, 0.8);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .legend-label {
+            flex: 1;
+            font-size: 0.85rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .legend-count {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 600;
+            min-width: 30px;
+            text-align: right;
+        }
+
+        /* Full Width Sections */
+        .full-width-section {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .full-width-section h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Activity Heatmap - WITH CLEAR LABELS AND LEGEND */
+        .heatmap-wrapper {
+            background: #0f172a;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .heatmap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .heatmap-title {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .legend-label-text {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .heatmap-color-scale {
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+        }
+
+        .heatmap-color-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+
+        .heatmap-scale-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin: 0 0.5rem;
+        }
+
+        .heatmap-container {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .heatmap-months {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding-right: 0.75rem;
+            min-width: 45px;
+        }
+
+        .month-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-align: right;
+            font-weight: 500;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .heatmap-grid-wrapper {
+            flex: 1;
+            overflow-x: auto;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(26, 18px);
+            grid-auto-rows: 18px;
+            gap: 3px;
+        }
+
+        .heatmap-cell {
+            aspect-ratio: 1;
+            background: #1e293b;
+            border-radius: 3px;
+            transition: all 0.2s;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            cursor: pointer;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.4);
+            z-index: 10;
+            border-color: rgba(99, 102, 241, 0.6);
+            box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+        }
+
+        .heatmap-cell[data-count="0"] { background: #1e293b; }
+        .heatmap-cell[data-count="1"] { background: rgba(99, 102, 241, 0.3); }
+        .heatmap-cell[data-count="2"] { background: rgba(99, 102, 241, 0.5); }
+        .heatmap-cell[data-count="3"] { background: rgba(99, 102, 241, 0.7); }
+        .heatmap-cell[data-count="4"] { background: rgba(99, 102, 241, 0.9); }
+        .heatmap-cell[data-count="5"] { background: #6366f1; }
+
+
+        /* Two Column Grid */
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 0rem;
+        }
+
+        
+
+        .action-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            text-decoration: none;
+            color: #6ee7b7;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .action-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .action-card i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading-state i {
+            font-size: 2.5rem;
+            color: #6366f1;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .two-col-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
 <body>
     <!-- Navigation -->
     <header class="site-header">
@@ -32,221 +541,163 @@
 
             <ul class="nav-links">
                 <li><a href="./index.html"><i class="fa-solid fa-home"></i> Home</a></li>
-                <li><a href="./data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
-                <li><a href="./about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li><a href="./nasa-data.html"><i class="fa-solid fa-satellite"></i> NASA Live Data</a></li>
                 <li class="crud">
                     <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
-                        CRUD <i class="fa-solid fa-caret-down"></i>
+                        <i class="fa-solid fa-book"></i> My Journal <i class="fa-solid fa-caret-down"></i>
                     </button>
                     <ul class="crud-menu">
-                        <li><a href="./crud/create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
-                        <li><a href="./crud/read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
-                        <li><a href="./crud/update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
-                        <li><a href="./crud/delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                        <li><a href="./crud/create.html"><i class="fa-solid fa-plus"></i> Log Observation</a></li>
+                        <li><a href="./crud/read.html"><i class="fa-solid fa-book-open"></i> View Journal</a></li>
+                        <li><a href="./crud/update.html"><i class="fa-solid fa-pen"></i> Edit Entry</a></li>
+                        <li><a href="./crud/delete.html"><i class="fa-solid fa-trash"></i> Remove Entry</a></li>
                     </ul>
                 </li>
+                <li><a href="./data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="./about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
             </ul>
         </nav>
     </header>
 
     <!-- Main Content -->
     <main>
-        <div class="container">
-            <!-- Page Header -->
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
-                <div class="card-icon">
-                    <i class="fa-solid fa-chart-column"></i>
-                </div>
-                <div>
-                    <h1 style="margin: 0; font-size: 2rem;">Space Data Analytics Dashboard</h1>
-                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 1rem;">
-                        Real-time insights from NASA missions and space observation activities
-                    </p>
-                </div>
-            </div>
-
-            <!-- Information Box -->
-            <div class="info-box">
-                <p style="margin: 0;">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <strong>Live Application:</strong> All charts and statistics are generated from real data fetched
-                    from the backend API. The visualizations update automatically based on the current database state.
+        <div class="container dashboard-container">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <h1><i class="fa-solid fa-chart-line"></i> Your Stargazing Dashboard</h1>
+                <p style="color: #94a3b8; font-size: 1rem;">
+                    Insights and analytics from your observation journal
                 </p>
             </div>
 
             <!-- Loading State -->
-            <div id="loadingState" style="text-align: center; padding: 3rem; display: none;">
-                <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary);"></i>
-                <p style="margin-top: 1rem; color: var(--text-muted);">Loading data from backend...</p>
+            <div class="loading-state" id="loadingState">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p style="margin-top: 1rem; color: #94a3b8;">Loading your dashboard...</p>
             </div>
 
-            <!-- Stats Cards
-            <div class="stats-grid" id="statsCards">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);">
-                        <i class="fa-solid fa-satellite-dish"></i>
+            <!-- Dashboard Content -->
+            <div id="dashboardContent" style="display: none;">
+                
+                <!-- Stats Overview (Dynamic) -->
+                <div class="stats-overview">
+                    <div class="stat-card-dash">
+                        <div class="stat-value-dash" id="statTotal">0</div>
+                        <div class="stat-label-dash">Total Observations</div>
                     </div>
-                    <div class="stat-info">
-                        <div class="stat-label">Total Activities</div>
-                        <div class="stat-value" id="totalActivities">0</div>
+                    <div class="stat-card-dash">
+                        <div class="stat-value-dash" id="statProjects">0</div>
+                        <div class="stat-label-dash">Active Projects</div>
                     </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                        <i class="fa-solid fa-rocket"></i>
+                    <div class="stat-card-dash">
+                        <div class="stat-value-dash" id="statAvgRating">0.0</div>
+                        <div class="stat-label-dash">Avg Rating</div>
                     </div>
-                    <div class="stat-info">
-                        <div class="stat-label">Active Missions</div>
-                        <div class="stat-value" id="activeMissions">0</div>
+                    <div class="stat-card-dash">
+                        <div class="stat-value-dash" id="statThisMonth">0</div>
+                        <div class="stat-label-dash">This Month</div>
                     </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
-                        <i class="fa-solid fa-image"></i>
-                    </div>
-                    <div class="stat-info">
-                        <div class="stat-label">Images Captured</div>
-                        <div class="stat-value" id="totalImages">0</div>
+                    <div class="stat-card-dash">
+                        <div class="stat-value-dash" id="statStreak">0<span style="font-size: 1.5rem;">🔥</span></div>
+                        <div class="stat-label-dash">Day Streak</div>
                     </div>
                 </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);">
-                        <i class="fa-solid fa-flask"></i>
+                <!-- Featured Observations Gallery -->
+                <div class="featured-section">
+                    <h2><i class="fa-solid fa-images"></i> Featured Observations</h2>
+                    <div class="gallery-container">
+                        <button class="carousel-nav carousel-nav-left" id="carouselPrev" onclick="scrollCarousel(-1)">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <div class="gallery-grid" id="featuredGallery">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                        <button class="carousel-nav carousel-nav-right" id="carouselNext" onclick="scrollCarousel(1)">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
                     </div>
-                    <div class="stat-info">
-                        <div class="stat-label">Observations</div>
-                        <div class="stat-value" id="totalObservations">0</div>
-                    </div>
-                </div>
-            </div> -->
-
-            <!-- Stats Cards - Compact Version -->
-            <div class="stats-compact">
-                <div class="stat-item">
-                    <i class="fa-solid fa-satellite-dish stat-icon-compact" style="color: #3b82f6;"></i>
-                    <div class="stat-content-compact">
-                        <div class="stat-value-compact" id="totalActivities">0</div>
-                        <div class="stat-label-compact">Activities</div>
-                    </div>
-                </div>
-
-                <div class="stat-item">
-                    <i class="fa-solid fa-rocket stat-icon-compact" style="color: #10b981;"></i>
-                    <div class="stat-content-compact">
-                        <div class="stat-value-compact" id="activeMissions">0</div>
-                        <div class="stat-label-compact">Active Missions</div>
+                    <div style="text-align: center;">
+                        <a href="./crud/read.html" class="view-all-btn">
+                            <i class="fa-solid fa-eye"></i> View All Observations
+                        </a>
                     </div>
                 </div>
 
-                <div class="stat-item">
-                    <i class="fa-solid fa-image stat-icon-compact" style="color: #f59e0b;"></i>
-                    <div class="stat-content-compact">
-                        <div class="stat-value-compact" id="totalImages">0</div>
-                        <div class="stat-label-compact">Images</div>
+                <!-- Main Charts (Observations Over Time + Equipment) -->
+                <div class="charts-grid">
+                    <!-- Observations Over Time -->
+                    <div class="chart-box">
+                        <h3><i class="fa-solid fa-chart-line"></i> Observations Over Time</h3>
+                        <canvas id="timelineChart"></canvas>
+                    </div>
+
+                    <!-- Equipment Usage (Smaller) -->
+                    <div class="chart-box">
+                        <h3><i class="fa-solid fa-screwdriver-wrench"></i> Equipment Usage</h3>
+                        <div class="equipment-container">
+                            <div class="equipment-chart-wrapper">
+                                <canvas id="equipmentChart" style="max-height: 180px;"></canvas>
+                            </div>
+                            <div class="equipment-legend" id="equipmentLegend">
+                                <div class="legend-title">Equipment Types</div>
+                                <!-- Legend items populated by JavaScript -->
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="stat-item">
-                    <i class="fa-solid fa-flask stat-icon-compact" style="color: #8b5cf6;"></i>
-                    <div class="stat-content-compact">
-                        <div class="stat-value-compact" id="totalObservations">0</div>
-                        <div class="stat-label-compact">Observations</div>
+                <!-- Activity Heatmap -->
+                <div class="full-width-section">
+                    <h3><i class="fa-solid fa-calendar-days"></i> Activity Heatmap</h3>
+                    <div class="heatmap-wrapper">
+                        <div class="heatmap-header">
+                            <div class="heatmap-title">
+                                <i class="fa-solid fa-calendar"></i> Last 6 Months Activity
+                            </div>
+                            <div class="heatmap-legend">
+                                <span class="legend-label-text">Less</span>
+                                <div class="heatmap-color-scale">
+                                    <div class="heatmap-color-box" style="background: #1e293b;"></div>
+                                    <div class="heatmap-color-box" style="background: rgba(99, 102, 241, 0.3);"></div>
+                                    <div class="heatmap-color-box" style="background: rgba(99, 102, 241, 0.5);"></div>
+                                    <div class="heatmap-color-box" style="background: rgba(99, 102, 241, 0.7);"></div>
+                                    <div class="heatmap-color-box" style="background: rgba(99, 102, 241, 0.9);"></div>
+                                    <div class="heatmap-color-box" style="background: #6366f1;"></div>
+                                </div>
+                                <span class="legend-label-text">More</span>
+                            </div>
+                        </div>
+                        <div class="heatmap-container">
+                            <div class="heatmap-months" id="monthLabels">
+                                <!-- Month labels populated by JavaScript -->
+                            </div>
+                            <div class="heatmap-grid-wrapper">
+                                <div class="heatmap-grid" id="activityHeatmap">
+                                    <!-- Populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Chart 1: Activity Types Distribution -->
-            <section class="chart-container">
-                <h2>
-                    <i class="fa-solid fa-chart-pie" style="color: #3b82f6;"></i>
-                    Activity Types Distribution
-                </h2>
-                <p>Breakdown of space observation activities by type. Shows the diversity of mission operations.</p>
-                <canvas id="activityTypesChart"></canvas>
-            </section>
+                <!-- Peak Hours & Favorite Locations -->
+                <div class="two-col-grid">
+                    <!-- Peak Hours -->
+                    <div class="full-width-section">
+                        <h3><i class="fa-solid fa-clock"></i> Peak Observation Hours</h3>
+                        <canvas id="peakHoursChart"></canvas>
+                    </div>
 
-            <!-- Chart 2: Activities by Mission -->
-            <section class="chart-container">
-                <h2>
-                    <i class="fa-solid fa-rocket" style="color: #10b981;"></i>
-                    Activities by Mission
-                </h2>
-                <p>Number of observation activities recorded for each NASA mission. Highlights the most active missions.
-                </p>
-                <canvas id="missionActivitiesChart"></canvas>
-            </section>
-
-            <!-- Chart 3: Activity Timeline -->
-            <section class="chart-container">
-                <h2>
-                    <i class="fa-solid fa-chart-line" style="color: #f59e0b;"></i>
-                    Activity Timeline (2025)
-                </h2>
-                <p>Monthly trend of space observation activities throughout 2025. Shows mission activity patterns over
-                    time.</p>
-                <canvas id="timelineChart"></canvas>
-            </section>
-
-            <!-- Recent Activities Table -->
-            <div class="card">
-                <h2 style="margin-bottom: 1.5rem;">
-                    <i class="fa-solid fa-clock-rotate-left" style="color: #8b5cf6;"></i>
-                    Recent Activities
-                </h2>
-                <div class="table-wrapper">
-                    <table class="table" id="recentActivitiesTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Date</th>
-                                <th>Mission</th>
-                                <th>Type</th>
-                                <th>Title</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="5" style="text-align: center; padding: 2rem;">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Loading activities...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- Favorite Locations -->
+                    <div class="full-width-section">
+                        <h3><i class="fa-solid fa-location-dot"></i> Favorite Locations</h3>
+                        <canvas id="locationsChart"></canvas>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Additional Info Card -->
-            <div class="card">
-                <h2 style="margin-bottom: 1rem;">
-                    <i class="fa-solid fa-lightbulb"></i> About These Visualizations
-                </h2>
-                <p><strong>Data Sources:</strong></p>
-                <ul style="margin-top: 1rem;">
-                    <li><strong>Activity Data:</strong> Real-time data fetched from Node.js/Express backend API</li>
-                    <li><strong>Mission Data:</strong> Retrieved from backend database with mission details</li>
-                    <li><strong>Statistics:</strong> Dynamically calculated from current database state</li>
-                </ul>
-                <p style="margin-top: 1rem;">
-                    <strong>Live Integration:</strong> All charts automatically update when you create, update, or
-                    delete activities.
-                    The dashboard reflects the real-time state of the application database.
-                </p>
-            </div>
+               
 
-            <!-- Navigation Buttons -->
-            <div class="btn-group">
-                <a class="btn btn-primary" href="./index.html">
-                    <i class="fa-solid fa-home"></i> Back to Home
-                </a>
-                <a class="btn btn-success" href="./crud/create.html">
-                    <i class="fa-solid fa-plus"></i> Add New Activity
-                </a>
-                <a class="btn btn-secondary" href="./crud/read.html">
-                    <i class="fa-solid fa-eye"></i> View All Activities
-                </a>
             </div>
         </div>
     </main>
@@ -257,8 +708,8 @@
             <div class="footer-section">
                 <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
                 <ul>
-                    <li>NASA Space Data Explorer</li>
-                    <li>Mission Analytics & Visualizations</li>
+                    <li>Personal Space Observation Journal</li>
+                    <li>Track Your Stargazing Journey</li>
                     <li>Built for ISM 6225</li>
                     <li>University of South Florida</li>
                 </ul>
@@ -267,32 +718,31 @@
                 <h4>Navigation</h4>
                 <ul>
                     <li><a href="./index.html">Home</a></li>
+                    <li><a href="./nasa-data.html">NASA Live Data</a></li>
                     <li><a href="./data-visualization.html">Data Dashboard</a></li>
                     <li><a href="./about.html">About Us</a></li>
-                    <li><a href="./crud/read.html">View Activities</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>CRUD Operations</h4>
+                <h4>My Journal</h4>
                 <ul>
-                    <li><a href="./crud/create.html">Create Activity</a></li>
-                    <li><a href="./crud/read.html">Read Activities</a></li>
-                    <li><a href="./crud/update.html">Update Activity</a></li>
-                    <li><a href="./crud/delete.html">Delete Activity</a></li>
+                    <li><a href="./crud/create.html">Log Observation</a></li>
+                    <li><a href="./crud/read.html">View Journal</a></li>
+                    <li><a href="./crud/update.html">Edit Entry</a></li>
+                    <li><a href="./crud/delete.html">Remove Entry</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h4>Resources</h4>
                 <ul>
                     <li><a href="https://api.nasa.gov/" target="_blank">NASA Open APIs</a></li>
-                    <li><a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer" target="_blank">GitHub
-                            Repository</a></li>
+                    <li><a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer" target="_blank">GitHub Repository</a></li>
                     <li><a href="https://www.nasa.gov/" target="_blank">NASA Official Site</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+            &copy; 2025 SpaceTrack - Personal Space Observation Journal | All rights reserved | ISM 6225 Project
         </div>
     </footer>
 
@@ -301,140 +751,230 @@
     <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
 
     <!-- JavaScript -->
-    <script src="js/config.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/main.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/main.js"></script>
+
     <script>
-        // Load real data from backend
-        let activities = [];
-        let missions = [];
+        let observations = [];
+        let projects = [];
 
-        // Chart instances
-        let activityTypesChart;
-        let missionActivitiesChart;
-        let timelineChart;
-
-        // Load data on page load
-        document.addEventListener('DOMContentLoaded', async function () {
-            document.getElementById('loadingState').style.display = 'block';
-            await loadData();
-            document.getElementById('loadingState').style.display = 'none';
-
-            if (activities.length > 0) {
-                renderCharts();
-                populateStats();
-                populateRecentActivities();
-            } else {
-                showError();
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
         });
 
-        // Load activities and missions from backend
-        async function loadData() {
+        async function loadDashboardData() {
             try {
-                console.log('📡 Loading data from backend...');
+                // Load observations and projects
+                const [obsResponse, projResponse] = await Promise.all([
+                    fetch(`${CONFIG.API_BASE_URL}/activities`),
+                    fetch(`${CONFIG.API_BASE_URL}/missions`)
+                ]);
 
-                // Load activities
-                const activitiesResponse = await ActivityAPI.getAll();
-                if (activitiesResponse.success) {
-                    activities = activitiesResponse.data;
-                    console.log('✅ Loaded', activities.length, 'activities');
-                }
+                const obsData = await obsResponse.json();
+                const projData = await projResponse.json();
 
-                // Load missions
-                const missionsResponse = await MissionAPI.getAll();
-                if (missionsResponse.success) {
-                    missions = missionsResponse.data;
-                    console.log('✅ Loaded', missions.length, 'missions');
-                }
+                if (obsData.success) observations = obsData.data;
+                if (projData.success) projects = projData.data;
+
+                // Hide loading, show content
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('dashboardContent').style.display = 'block';
+
+                // Populate all sections
+                populateStats();
+                populateFeaturedGallery();
+                createTimelineChart();
+                createEquipmentChart();
+                createActivityHeatmap();
+                createPeakHoursChart();
+                createLocationsChart();
+
             } catch (error) {
-                console.error('❌ Error loading data:', error);
-                alert('Could not load data from backend. Please ensure the server is running on http://localhost:3000');
+                console.error('Error loading dashboard:', error);
+                document.getElementById('loadingState').innerHTML = `
+                    <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i>
+                    <p style="margin-top: 1rem; color: #fca5a5;">Failed to load dashboard. Make sure backend is running.</p>
+                `;
             }
         }
 
-        // Get mission name by ID
-        function getMissionName(missionId) {
-            const mission = missions.find(m => m.missionId === missionId);
-            return mission ? mission.name : `Mission ${missionId}`;
-        }
-
-        // Populate statistics cards
+        // DYNAMIC STATS - Updates based on CRUD operations
         function populateStats() {
-            document.getElementById('totalActivities').textContent = activities.length;
+            // Total observations
+            document.getElementById('statTotal').textContent = observations.length;
 
-            const activeMissionsCount = missions.filter(m => m.status === 'Active').length;
-            document.getElementById('activeMissions').textContent = activeMissionsCount;
+            // Active projects
+            document.getElementById('statProjects').textContent = projects.length;
 
-            const imageCount = activities.filter(a => a.type === 'image').length;
-            document.getElementById('totalImages').textContent = imageCount;
+            // Average rating
+            const ratings = observations.filter(obs => obs.rating).map(obs => obs.rating);
+            const avgRating = ratings.length > 0 
+                ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1)
+                : '0.0';
+            document.getElementById('statAvgRating').textContent = avgRating;
 
-            const observationCount = activities.filter(a => a.type === 'observation').length;
-            document.getElementById('totalObservations').textContent = observationCount;
+            // This month (DYNAMIC)
+            const now = new Date();
+            const thisMonth = observations.filter(obs => {
+                const obsDate = new Date(obs.date);
+                return obsDate.getMonth() === now.getMonth() && 
+                       obsDate.getFullYear() === now.getFullYear();
+            }).length;
+            document.getElementById('statThisMonth').textContent = thisMonth;
+
+            // Streak (DYNAMIC - consecutive days)
+            const streak = calculateStreak();
+            document.getElementById('statStreak').innerHTML = streak + '<span style="font-size: 1.5rem;">🔥</span>';
         }
 
-        // Render all charts
-        function renderCharts() {
-            renderActivityTypesChart();
-            renderMissionActivitiesChart();
-            renderTimelineChart();
-        }
+        // DYNAMIC STREAK CALCULATION
+        function calculateStreak() {
+            if (observations.length === 0) return 0;
 
-        // Activity Types Pie Chart
-        function renderActivityTypesChart() {
-            const typeCounts = {};
-            activities.forEach(activity => {
-                typeCounts[activity.type] = (typeCounts[activity.type] || 0) + 1;
-            });
+            // Get unique observation dates sorted
+            const sortedDates = observations
+                .map(obs => new Date(obs.date))
+                .sort((a, b) => b - a);
 
-            const ctx = document.getElementById('activityTypesChart').getContext('2d');
-            activityTypesChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(typeCounts).map(type => type.charAt(0).toUpperCase() + type.slice(1)),
-                    datasets: [{
-                        data: Object.values(typeCounts),
-                        backgroundColor: [
-                            '#3b82f6',
-                            '#10b981',
-                            '#f59e0b',
-                            '#8b5cf6',
-                            '#ef4444'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#94a3b8', padding: 15, font: { size: 12 } }
-                        }
-                    }
+            const uniqueDates = [...new Set(sortedDates.map(d => d.toDateString()))]
+                .map(d => new Date(d));
+
+            let streak = 1;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Check if most recent observation is today or yesterday
+            const mostRecent = new Date(uniqueDates[0]);
+            mostRecent.setHours(0, 0, 0, 0);
+            
+            const daysDiff = Math.floor((today - mostRecent) / (1000 * 60 * 60 * 24));
+            
+            if (daysDiff > 1) {
+                return 0; // Streak broken
+            }
+
+            // Count consecutive days
+            for (let i = 0; i < uniqueDates.length - 1; i++) {
+                const current = new Date(uniqueDates[i]);
+                const next = new Date(uniqueDates[i + 1]);
+                current.setHours(0, 0, 0, 0);
+                next.setHours(0, 0, 0, 0);
+                
+                const diffDays = Math.floor((current - next) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays === 1) {
+                    streak++;
+                } else {
+                    break;
                 }
-            });
+            }
+            
+            return streak;
         }
 
-        // Mission Activities Bar Chart
-        function renderMissionActivitiesChart() {
-            const missionCounts = {};
-            activities.forEach(activity => {
-                const missionName = getMissionName(activity.missionId);
-                missionCounts[missionName] = (missionCounts[missionName] || 0) + 1;
+        let carouselPosition = 0;
+
+        function populateFeaturedGallery() {
+            const gallery = document.getElementById('featuredGallery');
+            const featured = observations
+                .filter(obs => obs.imageUrl)
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 12); // Show up to 12 images for carousel
+
+            if (featured.length === 0) {
+                gallery.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 2rem;">No observations with photos yet. Start adding images to your observations!</p>';
+                document.getElementById('carouselPrev').style.display = 'none';
+                document.getElementById('carouselNext').style.display = 'none';
+                return;
+            }
+
+            gallery.innerHTML = featured.map(obs => {
+                const stars = obs.rating ? '★'.repeat(obs.rating) : '';
+                return `
+                    <div class="gallery-item" onclick="window.location.href='./crud/read.html'">
+                        <img src="${obs.imageUrl}" alt="${obs.title}" class="gallery-image">
+                        <div class="gallery-info">
+                            <div class="gallery-title">${obs.title}</div>
+                            <div class="gallery-meta">
+                                <span>${new Date(obs.date).toLocaleDateString()}</span>
+                                <span class="gallery-rating">${stars}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updateCarouselButtons();
+        }
+
+        function scrollCarousel(direction) {
+            const gallery = document.getElementById('featuredGallery');
+            const itemWidth = gallery.firstElementChild?.offsetWidth || 0;
+            const gap = 16; // 1rem
+            const visibleItems = 4;
+            const totalItems = gallery.children.length;
+            const maxPosition = Math.max(0, totalItems - visibleItems);
+
+            carouselPosition = Math.max(0, Math.min(maxPosition, carouselPosition + direction));
+            
+            const translateX = -carouselPosition * (itemWidth + gap);
+            gallery.style.transform = `translateX(${translateX}px)`;
+            
+            updateCarouselButtons();
+        }
+
+        function updateCarouselButtons() {
+            const gallery = document.getElementById('featuredGallery');
+            const prevBtn = document.getElementById('carouselPrev');
+            const nextBtn = document.getElementById('carouselNext');
+            const totalItems = gallery.children.length;
+            const visibleItems = 4;
+            const maxPosition = Math.max(0, totalItems - visibleItems);
+
+            if (prevBtn && nextBtn) {
+                prevBtn.classList.toggle('disabled', carouselPosition === 0);
+                nextBtn.classList.toggle('disabled', carouselPosition >= maxPosition);
+            }
+        }
+
+
+        function createTimelineChart() {
+            const ctx = document.getElementById('timelineChart').getContext('2d');
+            
+            // Group by month
+            const monthlyData = {};
+            observations.forEach(obs => {
+                const date = new Date(obs.date);
+                const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                monthlyData[key] = (monthlyData[key] || 0) + 1;
             });
 
-            const ctx = document.getElementById('missionActivitiesChart').getContext('2d');
-            missionActivitiesChart = new Chart(ctx, {
-                type: 'bar',
+            // Get last 6 months
+            const labels = [];
+            const data = [];
+            const now = new Date();
+            
+            for (let i = 5; i >= 0; i--) {
+                const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                labels.push(d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }));
+                data.push(monthlyData[key] || 0);
+            }
+
+            new Chart(ctx, {
+                type: 'line',
                 data: {
-                    labels: Object.keys(missionCounts),
+                    labels: labels,
                     datasets: [{
-                        label: 'Number of Activities',
-                        data: Object.values(missionCounts),
-                        backgroundColor: '#10b981',
-                        borderRadius: 6
+                        label: 'Observations',
+                        data: data,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
@@ -446,49 +986,68 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { color: '#94a3b8', stepSize: 1 },
+                            ticks: { 
+                                color: '#94a3b8',
+                                stepSize: 1
+                            },
                             grid: { color: 'rgba(148, 163, 184, 0.1)' }
                         },
                         x: {
-                            ticks: { color: '#94a3b8', font: { size: 10 } },
-                            grid: { display: false }
+                            ticks: { color: '#94a3b8' },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
                         }
                     }
                 }
             });
         }
 
-        // Timeline Line Chart
-        function renderTimelineChart() {
-            const monthCounts = {
-                'Jan': 0, 'Feb': 0, 'Mar': 0, 'Apr': 0,
-                'May': 0, 'Jun': 0, 'Jul': 0, 'Aug': 0,
-                'Sep': 0, 'Oct': 0, 'Nov': 0, 'Dec': 0
-            };
-
-            activities.forEach(activity => {
-                const date = new Date(activity.date);
-                if (date.getFullYear() === 2025) {
-                    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                    const month = monthNames[date.getMonth()];
-                    monthCounts[month]++;
+        function createEquipmentChart() {
+            const ctx = document.getElementById('equipmentChart').getContext('2d');
+            const legendContainer = document.getElementById('equipmentLegend');
+            
+            const equipCounts = {};
+            observations.forEach(obs => {
+                if (obs.equipment) {
+                    equipCounts[obs.equipment] = (equipCounts[obs.equipment] || 0) + 1;
                 }
             });
 
-            const ctx = document.getElementById('timelineChart').getContext('2d');
-            timelineChart = new Chart(ctx, {
-                type: 'line',
+            const sorted = Object.entries(equipCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+
+            const labels = sorted.map(([equip]) => equip);
+            const data = sorted.map(([, count]) => count);
+            const colors = [
+                '#6366f1',
+                '#8b5cf6',
+                '#ec4899',
+                '#f59e0b',
+                '#10b981'
+            ];
+
+            // Populate custom legend
+            const legendTitle = '<div class="legend-title">Equipment Types</div>';
+            if (labels.length > 0) {
+                const legendItems = labels.map((label, index) => `
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: ${colors[index]};"></div>
+                        <div class="legend-label">${label}</div>
+                        <div class="legend-count">${data[index]}</div>
+                    </div>
+                `).join('');
+                legendContainer.innerHTML = legendTitle + legendItems;
+            } else {
+                legendContainer.innerHTML = legendTitle + '<div style="color: #94a3b8; font-size: 0.85rem; text-align: center; padding: 1rem;">No equipment data yet</div>';
+            }
+
+            new Chart(ctx, {
+                type: 'doughnut',
                 data: {
-                    labels: Object.keys(monthCounts),
+                    labels: labels.length > 0 ? labels : ['No data'],
                     datasets: [{
-                        label: 'Activities per Month',
-                        data: Object.values(monthCounts),
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#3b82f6'
+                        data: data.length > 0 ? data : [1],
+                        backgroundColor: colors
                     }]
                 },
                 options: {
@@ -496,16 +1055,157 @@
                     maintainAspectRatio: true,
                     plugins: {
                         legend: {
-                            labels: { color: '#94a3b8', font: { size: 12 } }
+                            display: false // Hide default legend
                         }
+                    }
+                }
+            });
+        }
+
+        function createActivityHeatmap() {
+            const heatmap = document.getElementById('activityHeatmap');
+            const monthLabels = document.getElementById('monthLabels');
+            
+            // Get last 180 days (6 months)
+            const days = 180;
+            const dateCounts = {};
+            
+            observations.forEach(obs => {
+                const dateKey = new Date(obs.date).toDateString();
+                dateCounts[dateKey] = (dateCounts[dateKey] || 0) + 1;
+            });
+
+            // Create month labels
+            const monthsShown = [];
+            const monthPositions = [];
+            
+            // Generate heatmap cells
+            let html = '';
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                const dateKey = date.toDateString();
+                const count = dateCounts[dateKey] || 0;
+                const level = Math.min(count, 5);
+                
+                // Track month positions (every 30 days approximately)
+                if (i % 30 === 0 || i === days - 1) {
+                    const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+                    if (!monthsShown.includes(monthName)) {
+                        monthsShown.push(monthName);
+                        monthPositions.push(monthName);
+                    }
+                }
+                
+                html += `<div class="heatmap-cell" data-count="${level}" title="${date.toLocaleDateString()}: ${count} observation(s)"></div>`;
+            }
+            
+            heatmap.innerHTML = html;
+
+            // Populate month labels - show unique months
+            monthLabels.innerHTML = monthsShown.slice(0, 6).map(month => 
+                `<div class="month-label">${month}</div>`
+            ).join('');
+        }
+
+        function createPeakHoursChart() {
+            const ctx = document.getElementById('peakHoursChart').getContext('2d');
+            
+            const hourCounts = new Array(24).fill(0);
+            observations.forEach(obs => {
+                if (obs.time) {
+                    const hour = parseInt(obs.time.split(':')[0]);
+                    hourCounts[hour]++;
+                }
+            });
+
+            const labels = Array.from({length: 24}, (_, i) => `${i}:00`);
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Observations',
+                        data: hourCounts,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { color: '#94a3b8', stepSize: 1 },
+                            ticks: { 
+                                color: '#94a3b8',
+                                stepSize: 1
+                            },
                             grid: { color: 'rgba(148, 163, 184, 0.1)' }
                         },
                         x: {
+                            ticks: { 
+                                color: '#94a3b8',
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createLocationsChart() {
+            const ctx = document.getElementById('locationsChart').getContext('2d');
+            
+            const locCounts = {};
+            observations.forEach(obs => {
+                if (obs.location) {
+                    locCounts[obs.location] = (locCounts[obs.location] || 0) + 1;
+                }
+            });
+
+            const sorted = Object.entries(locCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+
+            const labels = sorted.map(([loc]) => loc);
+            const data = sorted.map(([, count]) => count);
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels.length > 0 ? labels : ['No data'],
+                    datasets: [{
+                        label: 'Observations',
+                        data: data.length > 0 ? data : [0],
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { 
+                                color: '#94a3b8',
+                                stepSize: 1
+                            },
+                            grid: { color: 'rgba(148, 163, 184, 0.1)' }
+                        },
+                        y: {
                             ticks: { color: '#94a3b8' },
                             grid: { display: false }
                         }
@@ -514,39 +1214,7 @@
             });
         }
 
-        // Populate recent activities table
-        function populateRecentActivities() {
-            const tbody = document.querySelector('#recentActivitiesTable tbody');
-            const recentActivities = [...activities]
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 5);
-
-            tbody.innerHTML = recentActivities.map(activity => `
-                <tr>
-                    <td><span class="badge">#${activity.id}</span></td>
-                    <td>${activity.date}</td>
-                    <td>${getMissionName(activity.missionId)}</td>
-                    <td style="text-transform: capitalize;">${activity.type}</td>
-                    <td>${activity.title}</td>
-                </tr>
-            `).join('');
-        }
-
-        // Show error message
-        function showError() {
-            document.getElementById('statsCards').innerHTML = `
-                <div class="error" style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
-                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                    <p style="margin: 0;">Could not load data from backend</p>
-                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">
-                        Please ensure the backend server is running on http://localhost:3000
-                    </p>
-                </div>
-            `;
-        }
-
-        console.log('✅ Data Visualization page initialized - using backend API');
+        console.log('✅ Dashboard loaded - All data is dynamic and linked to CRUD operations');
     </script>
 </body>
-
 </html>

@@ -3,16 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="SpaceTrack - Your gateway to NASA space mission data and exploration">
-    <title>SpaceTrack - NASA Space Data Explorer</title>
+    <meta name="description" content="SpaceTrack - Your personal space observation journal">
+    <title>SpaceTrack - Personal Space Observation Journal</title>
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <!-- Shared Stylesheet -->
     <link rel="stylesheet" href="./css/styles.css">
+    
+    <style>
+        /* Home Page Specific Styles */
+        body.home-page {
+            background: #0a0e27;
+            overflow-x: hidden;
+        }
+
+        body.home-page main {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        body.home-page .container {
+            max-width: 100%;
+            padding: 0;
+        }
+
+        .home-hero {
+            position: relative;
+            min-height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 2rem;
+        }
+
+        /* Space Background with Real Image and Parallax */
+        .space-background {
+            position: fixed;
+            top: -5%;
+            left: -5%;
+            width: 110%;
+            height: 110%;
+            background-image: url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.15s ease-out;
+            z-index: -3;
+            filter: brightness(0.7);
+        }
+
+        /* Gradient Overlay to Blend */
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(138, 43, 226, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(30, 144, 255, 0.2) 0%, transparent 50%),
+                linear-gradient(to bottom, rgba(10, 14, 39, 0.4), rgba(10, 14, 39, 0.8));
+            z-index: -2;
+        }
+
+        /* Stars Overlay */
+        .stars-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, white, transparent),
+                radial-gradient(2px 2px at 60% 70%, white, transparent),
+                radial-gradient(1px 1px at 50% 50%, white, transparent),
+                radial-gradient(1px 1px at 80% 10%, white, transparent),
+                radial-gradient(2px 2px at 90% 60%, white, transparent),
+                radial-gradient(1px 1px at 33% 80%, white, transparent),
+                radial-gradient(1px 1px at 15% 60%, white, transparent);
+            background-size: 200% 200%;
+            animation: twinkle 8s ease-in-out infinite;
+            opacity: 0.5;
+            z-index: -1;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Hero Content */
+        .hero-content {
+            position: relative;
+            text-align: center;
+            max-width: 900px;
+            z-index: 1;
+            animation: fadeInUp 1.2s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #ec4899 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.3));
+        }
+
+        .hero-subtitle {
+            font-size: 1.4rem;
+            color: #f1f5f9;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+            text-shadow: 0 2px 15px rgba(0, 0, 0, 0.9);
+            font-weight: 300;
+        }
+
+        /* Space-themed Buttons */
+        .space-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .space-btn {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            border-radius: 50px;
+            background: rgba(15, 23, 42, 0.7);
+            color: #e2e8f0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .space-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(96, 165, 250, 0.4) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .space-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .space-btn:hover {
+            border-color: rgba(96, 165, 250, 0.8);
+            box-shadow: 
+                0 0 20px rgba(96, 165, 250, 0.4),
+                0 0 40px rgba(96, 165, 250, 0.2),
+                inset 0 0 20px rgba(96, 165, 250, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .space-btn i,
+        .space-btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Footer Styling */
+        body.home-page footer {
+            position: relative;
+            z-index: 10;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .space-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .space-btn {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
-<body>
+<body class="home-page">
+    <!-- Parallax Space Background -->
+    <div class="space-background" id="spaceBackground"></div>
+    <div class="gradient-overlay"></div>
+    <div class="stars-overlay"></div>
+
     <!-- Navigation -->
     <header class="site-header">
         <nav class="nav">
@@ -26,21 +244,21 @@
             </button>
 
             <ul class="nav-links">
-                <li><a href="./index.html" class="active"><i class="fa-solid fa-home"></i> Home</a></li>
-                <li><a href="./data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="./index.html"><i class="fa-solid fa-home"></i> Home</a></li>
                 <li><a href="./nasa-data.html"><i class="fa-solid fa-satellite"></i> NASA Live Data</a></li>
-                <li><a href="./about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
                 <li class="crud">
                     <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
-                        CRUD <i class="fa-solid fa-caret-down"></i>
+                        <i class="fa-solid fa-book"></i> My Journal <i class="fa-solid fa-caret-down"></i>
                     </button>
                     <ul class="crud-menu">
-                        <li><a href="./crud/create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
-                        <li><a href="./crud/read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
-                        <li><a href="./crud/update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
-                        <li><a href="./crud/delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                        <li><a href="./crud/create.html"><i class="fa-solid fa-plus"></i> Log Observation</a></li>
+                        <li><a href="./crud/read.html"><i class="fa-solid fa-book-open"></i> View Journal</a></li>
+                        <li><a href="./crud/update.html"><i class="fa-solid fa-pen"></i> Edit Entry</a></li>
+                        <li><a href="./crud/delete.html"><i class="fa-solid fa-trash"></i> Remove Entry</a></li>
                     </ul>
                 </li>
+                <li><a href="./data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="./about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
             </ul>
         </nav>
     </header>
@@ -48,192 +266,32 @@
     <!-- Main Content -->
     <main>
         <div class="container">
-            <!-- Hero Section -->
-            <div class="hero">
-                <h1><i class="fa-solid fa-rocket"></i> Welcome to SpaceTrack</h1>
-                <p>Your comprehensive platform for exploring NASA space missions and real-time space data</p>
-                <div class="hero-stats">
-                    <div class="stat-badge">
-                        <i class="fa-solid fa-satellite-dish"></i>
-                        <span id="heroActivities">10</span> Activities Tracked
-                    </div>
-                    <div class="stat-badge">
-                        <i class="fa-solid fa-rocket"></i>
-                        <span id="heroMissions">8</span> Active Missions
-                    </div>
-                    <div class="stat-badge">
-                        <i class="fa-solid fa-chart-line"></i>
-                        Live NASA Data
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Stats -->
-            <div class="stats-compact" id="quickStats" style="display: none;">
-                <div class="stat-item">
-                    <i class="fa-solid fa-satellite-dish stat-icon-compact" style="color: #3b82f6;"></i>
-                    <div class="stat-content-compact">
-                        <div class="stat-value-compact" id="totalActivities">0</div>
-                        <div class="stat-label-compact">Total Activities</div>
-                    </div>
-                </div>
-                
-                <div class="stat-item">
-                    <i class="fa-solid fa-rocket stat-icon-compact" style="color: #10b981;"></i>
-                    <div class="stat-content-compact">
-                        <div class="stat-value-compact" id="totalMissions">0</div>
-                        <div class="stat-label-compact">Missions</div>
-                    </div>
-                </div>
-                
-                <div class="stat-item">
-                    <i class="fa-solid fa-image stat-icon-compact" style="color: #f59e0b;"></i>
-                    <div class="stat-content-compact">
-                        <div class="stat-value-compact" id="totalImages">0</div>
-                        <div class="stat-label-compact">Images</div>
-                    </div>
-                </div>
-                
-                <div class="stat-item">
-                    <i class="fa-solid fa-flask stat-icon-compact" style="color: #8b5cf6;"></i>
-                    <div class="stat-content-compact">
-                        <div class="stat-value-compact" id="totalObservations">0</div>
-                        <div class="stat-label-compact">Observations</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Feature Cards -->
-            <div class="card-grid">
-                <!-- CRUD Operations -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <i class="fa-solid fa-database"></i>
-                        </div>
-                        <div>
-                            <h2>CRUD Operations</h2>
-                        </div>
-                    </div>
-                    <p>Manage space observation activities with full Create, Read, Update, and Delete capabilities. Track missions, observations, and imagery from various NASA programs.</p>
-                    <div class="btn-group" style="margin-top: 1.5rem;">
-                        <a href="./crud/create.html" class="btn btn-success btn-xs">
-                            <i class="fa-solid fa-plus"></i> Create
-                        </a>
-                        <a href="./crud/read.html" class="btn btn-primary btn-xs">
-                            <i class="fa-solid fa-eye"></i> View All
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Data Visualization -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </div>
-                        <div>
-                            <h2>Data Analytics</h2>
-                        </div>
-                    </div>
-                    <p>Interactive charts and visualizations showing activity trends, mission distributions, and timeline analysis. Real-time insights from your space observation database.</p>
-                    <div class="btn-group" style="margin-top: 1.5rem;">
-                        <a href="./data-visualization.html" class="btn btn-primary btn-xs">
-                            <i class="fa-solid fa-chart-column"></i> View Dashboard
-                        </a>
-                    </div>
-                </div>
-
-                <!-- NASA APIs -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-icon">
+            <div class="home-hero">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        Welcome to SpaceTrack
+                    </h1>
+                    <p class="hero-subtitle">
+                        Your personal space observation journal. Track NASA missions, 
+                        discover breathtaking images of the cosmos, monitor asteroids near Earth, 
+                        and follow the International Space Station. Log your stargazing experiences 
+                        and stay connected with the latest space discoveries.
+                    </p>
+                    
+                    <div class="space-buttons">
+                        <a href="./nasa-data.html" class="space-btn">
                             <i class="fa-solid fa-satellite"></i>
-                        </div>
-                        <div>
-                            <h2>NASA Live Data</h2>
-                        </div>
-                    </div>
-                    <p>Real-time integration with NASA's public APIs. Access astronomy pictures, track near-Earth asteroids, and monitor the International Space Station's location.</p>
-                    <div class="btn-group" style="margin-top: 1.5rem;">
-                        <a href="./nasa-data.html" class="btn btn-primary btn-xs">
-                            <i class="fa-solid fa-satellite"></i> Explore APIs
+                            <span>Explore Space Data</span>
+                        </a>
+                        <a href="./data-visualization.html" class="space-btn">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span>View Dashboard</span>
+                        </a>
+                        <a href="./crud/read.html" class="space-btn">
+                            <i class="fa-solid fa-book-open"></i>
+                            <span>My Observation Journal</span>
                         </a>
                     </div>
-                </div>
-            </div>
-
-            <!-- Current Missions Grid -->
-            <div class="card">
-                <h2 style="margin-bottom: 1.5rem;">
-                    <i class="fa-solid fa-rocket"></i> Active NASA Missions
-                </h2>
-                <div id="missionsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
-                    <div style="text-align: center; padding: 2rem;">
-                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 2rem; color: var(--primary);"></i>
-                        <p style="margin-top: 1rem; color: var(--text-muted);">Loading missions...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Activities -->
-            <div class="card">
-                <h2 style="margin-bottom: 1.5rem;">
-                    <i class="fa-solid fa-clock-rotate-left"></i> Recent Activities
-                </h2>
-                <div class="table-wrapper">
-                    <table class="table" id="recentActivitiesTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Mission</th>
-                                <th>Type</th>
-                                <th>Title</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="5" style="text-align: center; padding: 2rem;">
-                                    <i class="fa-solid fa-spinner fa-spin"></i> Loading activities...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="btn-group">
-                    <a href="./crud/read.html" class="btn btn-secondary">
-                        <i class="fa-solid fa-eye"></i> View All Activities
-                    </a>
-                </div>
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="card">
-                <h2 style="margin-bottom: 1.5rem;">
-                    <i class="fa-solid fa-bolt"></i> Quick Actions
-                </h2>
-                <div class="crud-grid">
-                    <a href="./crud/create.html" class="crud-btn">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>Create Activity</span>
-                        <small>Add new space observation</small>
-                    </a>
-                    <a href="./data-visualization.html" class="crud-btn read">
-                        <i class="fa-solid fa-chart-column"></i>
-                        <span>View Analytics</span>
-                        <small>Interactive data dashboard</small>
-                    </a>
-                    <a href="./nasa-data.html" class="crud-btn update">
-                        <i class="fa-solid fa-satellite"></i>
-                        <span>NASA Live Data</span>
-                        <small>Real-time space information</small>
-                    </a>
-                    <a href="./about.html" class="crud-btn delete">
-                        <i class="fa-solid fa-users"></i>
-                        <span>About Us</span>
-                        <small>Project team & details</small>
-                    </a>
                 </div>
             </div>
         </div>
@@ -245,8 +303,8 @@
             <div class="footer-section">
                 <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
                 <ul>
-                    <li>NASA Space Data Explorer</li>
-                    <li>Mission Analytics & Visualizations</li>
+                    <li>Personal Space Observation Journal</li>
+                    <li>Track Your Stargazing Journey</li>
                     <li>Built for ISM 6225</li>
                     <li>University of South Florida</li>
                 </ul>
@@ -255,18 +313,18 @@
                 <h4>Navigation</h4>
                 <ul>
                     <li><a href="./index.html">Home</a></li>
-                    <li><a href="./data-visualization.html">Data Dashboard</a></li>
                     <li><a href="./nasa-data.html">NASA Live Data</a></li>
+                    <li><a href="./data-visualization.html">Data Dashboard</a></li>
                     <li><a href="./about.html">About Us</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>CRUD Operations</h4>
+                <h4>My Journal</h4>
                 <ul>
-                    <li><a href="./crud/create.html">Create Activity</a></li>
-                    <li><a href="./crud/read.html">Read Activities</a></li>
-                    <li><a href="./crud/update.html">Update Activity</a></li>
-                    <li><a href="./crud/delete.html">Delete Activity</a></li>
+                    <li><a href="./crud/create.html">Log Observation</a></li>
+                    <li><a href="./crud/read.html">View Journal</a></li>
+                    <li><a href="./crud/update.html">Edit Entry</a></li>
+                    <li><a href="./crud/delete.html">Remove Entry</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -279,7 +337,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+            &copy; 2025 SpaceTrack - Personal Space Observation Journal | All rights reserved | ISM 6225 Project
         </div>
     </footer>
 
@@ -289,121 +347,19 @@
 
     <!-- JavaScript -->
     <script src="./js/config.js"></script>
-    <script src="./js/api.js"></script>
     <script src="./js/main.js"></script>
     <script>
-        // Load data from backend on page load
-        document.addEventListener('DOMContentLoaded', async function() {
-            await loadDashboardData();
+        // Parallax Effect
+        document.addEventListener('mousemove', function(e) {
+            const background = document.getElementById('spaceBackground');
+            const mouseX = (e.clientX / window.innerWidth) - 0.5;
+            const mouseY = (e.clientY / window.innerHeight) - 0.5;
+            const moveX = mouseX * 125;
+            const moveY = mouseY * 125;
+            background.style.transform = `translate(${moveX}px, ${moveY}px) scale(1.1)`;
         });
 
-        async function loadDashboardData() {
-            try {
-                // Load activities
-                const activitiesResponse = await ActivityAPI.getAll();
-                if (activitiesResponse.success) {
-                    const activities = activitiesResponse.data;
-                    
-                    // Update stats
-                    document.getElementById('heroActivities').textContent = activities.length;
-                    document.getElementById('totalActivities').textContent = activities.length;
-                    
-                    const imageCount = activities.filter(a => a.type === 'image').length;
-                    document.getElementById('totalImages').textContent = imageCount;
-                    
-                    const observationCount = activities.filter(a => a.type === 'observation').length;
-                    document.getElementById('totalObservations').textContent = observationCount;
-                    
-                    // Show quick stats
-                    document.getElementById('quickStats').style.display = 'flex';
-                    
-                    // Load recent activities
-                    loadRecentActivities(activities);
-                }
-
-                // Load missions
-                const missionsResponse = await MissionAPI.getAll();
-                if (missionsResponse.success) {
-                    const missions = missionsResponse.data;
-                    document.getElementById('heroMissions').textContent = missions.length;
-                    document.getElementById('totalMissions').textContent = missions.length;
-                    
-                    // Load missions grid
-                    loadMissionsGrid(missions);
-                }
-            } catch (error) {
-                console.error('❌ Error loading dashboard data:', error);
-            }
-        }
-
-        function loadRecentActivities(activities) {
-            const tbody = document.querySelector('#recentActivitiesTable tbody');
-            const recentActivities = [...activities]
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 5);
-
-            if (recentActivities.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">
-                            No activities yet. <a href="./crud/create.html" style="color: var(--primary);">Create your first activity</a>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = recentActivities.map(activity => `
-                <tr>
-                    <td><span class="badge">#${activity.id}</span></td>
-                    <td>Mission ${activity.missionId}</td>
-                    <td style="text-transform: capitalize;">${activity.type}</td>
-                    <td>${activity.title}</td>
-                    <td>${activity.date}</td>
-                </tr>
-            `).join('');
-        }
-
-        function loadMissionsGrid(missions) {
-            const grid = document.getElementById('missionsGrid');
-            const activeMissions = missions.filter(m => m.status === 'Active');
-
-            if (activeMissions.length === 0) {
-                grid.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 2rem;">
-                        <p style="color: var(--text-muted);">No active missions found</p>
-                    </div>
-                `;
-                return;
-            }
-
-            grid.innerHTML = activeMissions.map(mission => `
-                <div style="background: rgba(15, 23, 42, 0.6); padding: 1.5rem; border-radius: 0.75rem; border: 1px solid var(--border-color); transition: all 0.3s ease;">
-                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
-                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-                            🚀
-                        </div>
-                        <div style="flex: 1;">
-                            <h3 style="margin: 0; font-size: 1rem; color: var(--text-light);">${mission.name}</h3>
-                            <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">${mission.type}</p>
-                        </div>
-                    </div>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0; line-height: 1.5;">
-                        ${mission.description.substring(0, 80)}...
-                    </p>
-                    <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.75rem; color: var(--text-muted);">
-                            <i class="fa-solid fa-calendar"></i> ${mission.launchDate}
-                        </span>
-                        <span style="font-size: 0.75rem; padding: 0.25rem 0.5rem; background: rgba(16, 185, 129, 0.2); color: #10b981; border-radius: 0.25rem;">
-                            ${mission.status}
-                        </span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        console.log('✅ Home page initialized with backend connection');
+        console.log('✅ SpaceTrack Home Page Loaded');
     </script>
 </body>
 </html>

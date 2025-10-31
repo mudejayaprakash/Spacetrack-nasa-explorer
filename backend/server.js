@@ -14,6 +14,9 @@ const nasaRoutes = require('./src/routes/nasaRoutes');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Import database
+const { testConnection, syncDatabase } = require('./src/config/database');
+
 // ============================================
 // MIDDLEWARE
 // ============================================
@@ -120,18 +123,53 @@ app.use((err, req, res, next) => {
 // START SERVER
 // ============================================
 
-app.listen(PORT, () => {
-    console.log('=================================');
-    console.log('🚀 SpaceTrack API Server');
-    console.log('=================================');
-    console.log(`📡 Server running on: http://localhost:${PORT}`);
-    console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
-    console.log(`🔗 Health check: http://localhost:${PORT}/`);
-    console.log(`📊 API docs: http://localhost:${PORT}/api`);
-    console.log('=================================');
-    console.log('📍 Available Endpoints:');
-    console.log(`   Activities: http://localhost:${PORT}/api/activities`);
-    console.log(`   Missions: http://localhost:${PORT}/api/missions`);
-    console.log(`   NASA API: http://localhost:${PORT}/api/nasa/info`);
-    console.log('=================================');
-});
+// ============================================
+// START SERVER WITH DATABASE CONNECTION
+// ============================================
+
+async function startServer() {
+    try {
+        // Test database connection
+        console.log('🔌 Testing database connection...');
+        const connected = await testConnection();
+        
+        if (!connected) {
+            console.error('❌ Failed to connect to database. Please check your .env configuration.');
+            process.exit(1);
+        }
+        
+        // Sync database models
+        console.log('🔄 Synchronizing database...');
+        await syncDatabase();
+        
+        // Import and seed data AFTER sync
+        const { seedProjects } = require('./src/models/Mission');
+        const { seedObservations } = require('./src/models/Activity');
+
+        await seedProjects();
+        await seedObservations();
+        
+        // Start Express server
+        app.listen(PORT, () => {
+            console.log('=================================');
+            console.log('🚀 SpaceTrack API Server');
+            console.log('=================================');
+            console.log(`📡 Server running on: http://localhost:${PORT}`);
+            console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+            console.log(`🔗 Health check: http://localhost:${PORT}/`);
+            console.log(`📊 API docs: http://localhost:${PORT}/api`);
+            console.log('=================================');
+            console.log('📍 Available Endpoints:');
+            console.log(`   Activities: http://localhost:${PORT}/api/activities`);
+            console.log(`   Missions: http://localhost:${PORT}/api/missions`);
+            console.log(`   NASA API: http://localhost:${PORT}/api/nasa/info`);
+            console.log('=================================');
+        });
+    } catch (error) {
+        console.error('❌ Failed to start server:', error.message);
+        process.exit(1);
+    }
+}
+
+// Start the server
+startServer();

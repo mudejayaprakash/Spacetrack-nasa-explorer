@@ -1,17 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Live NASA Data - Real-time space data from NASA APIs">
+    <meta name="description" content="Live NASA Data - Real-time space data">
     <title>NASA Live Data - SpaceTrack</title>
-    
+
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
+
     <!-- Shared Stylesheet -->
     <link rel="stylesheet" href="./css/styles.css">
+
+    <style>
+        /* Pulse Animation for LIVE indicator */
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ISS Compact Card - Improved */
+        .iss-compact {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .iss-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .iss-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(6, 182, 212, 0.2);
+            border: 2px solid rgba(6, 182, 212, 0.4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .iss-coords {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+        }
+
+        .coord-item {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 0.5rem;
+        }
+
+        .coord-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .coord-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #06b6d4;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Data Grid Layout */
+        .data-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        /* Section Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .section-title {
+            flex: 1;
+        }
+
+        .section-title h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text-light);
+        }
+
+        .section-title p {
+            margin: 0.25rem 0 0 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* APOD Image Container */
+        .apod-image-container {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .apod-image-container img {
+            width: 100%;
+            max-height: 600px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Info Pills */
+        .info-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* APOD Header Row */
+        .apod-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* View Full Resolution Button - Smaller */
+        .view-hd-btn {
+            padding: 0.5rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 50px;
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .view-hd-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.6);
+            transform: translateY(-1px);
+        }
+
+        /* NEO Stats Badge - Smaller */
+        .neo-stats-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .neo-icon-circle {
+            width: 50px;
+            height: 50px;
+            background: rgba(245, 158, 11, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .neo-count {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #f59e0b;
+            line-height: 1;
+            font-family: 'Courier New', monospace;
+        }
+
+        .neo-text {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* Back Button - Smaller and Subtle */
+        .back-home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            border-radius: 50px;
+            background: rgba(15, 23, 42, 0.6);
+            color: #60a5fa;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-home-btn:hover {
+            border-color: rgba(96, 165, 250, 0.6);
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+        }
+    </style>
 </head>
+
 <body>
     <!-- Navigation -->
     <header class="site-header">
@@ -27,20 +262,21 @@
 
             <ul class="nav-links">
                 <li><a href="./index.html"><i class="fa-solid fa-home"></i> Home</a></li>
-                <li><a href="./data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
-                <li><a href="./nasa-data.html" class="active"><i class="fa-solid fa-satellite"></i> NASA Live Data</a></li>
-                <li><a href="./about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li><a href="./nasa-data.html" class="active"><i class="fa-solid fa-satellite"></i> NASA Live Data</a>
+                </li>
                 <li class="crud">
                     <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
-                        CRUD <i class="fa-solid fa-caret-down"></i>
+                        <i class="fa-solid fa-book"></i> My Journal <i class="fa-solid fa-caret-down"></i>
                     </button>
                     <ul class="crud-menu">
-                        <li><a href="./crud/create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
-                        <li><a href="./crud/read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
-                        <li><a href="./crud/update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
-                        <li><a href="./crud/delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                        <li><a href="./crud/create.html"><i class="fa-solid fa-plus"></i> Log Observation</a></li>
+                        <li><a href="./crud/read.html"><i class="fa-solid fa-book-open"></i> View Journal</a></li>
+                        <li><a href="./crud/update.html"><i class="fa-solid fa-pen"></i> Edit Entry</a></li>
+                        <li><a href="./crud/delete.html"><i class="fa-solid fa-trash"></i> Remove Entry</a></li>
                     </ul>
                 </li>
+                <li><a href="./data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="./about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
             </ul>
         </nav>
     </header>
@@ -50,136 +286,75 @@
         <div class="container">
             <!-- Page Header -->
             <div style="text-align: center; margin-bottom: 3rem;">
-                <h1 style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                    <i class="fa-solid fa-satellite"></i> NASA Live Data Integration
+                <h1
+                    style="font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    <i class="fa-solid fa-satellite"></i> NASA Live Data
                 </h1>
                 <p class="muted" style="font-size: 1.1rem;">
-                    Real-time space data from NASA's public APIs
-                </p>
-            </div>
-
-            <!-- Info Box -->
-            <div class="info-box">
-                <p style="margin: 0;">
-                    <i class="fa-solid fa-circle-info"></i>
-                    <strong>Live API Integration:</strong> This page demonstrates real-time integration with NASA APIs. All data is fetched through our secure backend server which manages API keys and rate limiting.
+                    Real-time space information updated directly from NASA
                 </p>
             </div>
 
             <!-- Loading State -->
             <div id="loadingState" style="text-align: center; padding: 3rem;">
                 <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary);"></i>
-                <p style="margin-top: 1rem; color: var(--text-muted);">Fetching live data from NASA APIs...</p>
+                <p style="margin-top: 1rem; color: var(--text-muted);">Connecting to NASA data sources...</p>
             </div>
 
-            <!-- Astronomy Picture of the Day -->
-            <div class="card" id="apodCard" style="display: none;">
-                <h2 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <i class="fa-solid fa-image" style="color: #3b82f6;"></i>
-                    Astronomy Picture of the Day
-                </h2>
-                <div id="apodContent"></div>
-            </div>
-
-            <!-- ISS Current Location -->
-            <div class="card" id="issCard" style="display: none;">
-                <h2 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <i class="fa-solid fa-satellite" style="color: #06b6d4;"></i>
-                    International Space Station - Live Location
-                </h2>
-                <div id="issContent"></div>
-            </div>
-
-            <!-- Near Earth Objects -->
-            <div class="card" id="neoCard" style="display: none;">
-                <h2 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <i class="fa-solid fa-meteor" style="color: #f59e0b;"></i>
-                    Near Earth Objects (Asteroids Passing Today)
-                </h2>
-                <div id="neoContent"></div>
-            </div>
-
-            <!-- API Information - Compact Version -->
-            <div class="card">
-                <h2 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <i class="fa-solid fa-circle-info"></i> NASA API Integration
-                </h2>
-                
-                <p style="margin-bottom: 1.5rem; color: var(--text-muted);">
-                    This application integrates with NASA's Open API platform to fetch real-time space data. 
-                    All API requests are routed through our backend server for security and rate limit management.
-                </p>
-
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
-                    <!-- APOD -->
-                    <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05)); border-radius: 0.75rem; border-left: 4px solid #3b82f6;">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                                🖼️
-                            </div>
-                            <div>
-                                <h3 style="margin: 0; font-size: 1.1rem; color: #3b82f6;">APOD API</h3>
-                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Astronomy Pictures</p>
-                            </div>
+            <!-- ISS Current Location (Compact - Top) -->
+            <div class="iss-compact" id="issCompact" style="display: none;">
+                <div class="iss-header">
+                    <div class="iss-icon">🛰️</div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <h3 style="margin: 0; font-size: 1.1rem; color: #06b6d4;">International Space Station</h3>
+                            <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.75rem; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 50px; font-size: 0.75rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <i class="fa-solid fa-circle" style="font-size: 0.5rem; animation: pulse 2s ease-in-out infinite;"></i>
+                                LIVE
+                            </span>
                         </div>
-                        <p style="margin: 0; font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">
-                            Daily astronomy images from space telescopes and observatories with detailed scientific explanations
-                        </p>
-                    </div>
-
-                    <!-- NEO -->
-                    <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05)); border-radius: 0.75rem; border-left: 4px solid #f59e0b;">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                                ☄️
-                            </div>
-                            <div>
-                                <h3 style="margin: 0; font-size: 1.1rem; color: #f59e0b;">NEO API</h3>
-                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Asteroid Tracking</p>
-                            </div>
-                        </div>
-                        <p style="margin: 0; font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">
-                            Near-Earth Object tracking system monitoring asteroids passing close to Earth with hazard assessment
-                        </p>
-                    </div>
-
-                    <!-- ISS -->
-                    <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(6, 182, 212, 0.05)); border-radius: 0.75rem; border-left: 4px solid #06b6d4;">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #06b6d4, #0891b2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                                🛰️
-                            </div>
-                            <div>
-                                <h3 style="margin: 0; font-size: 1.1rem; color: #06b6d4;">ISS Tracker</h3>
-                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Real-time Location</p>
-                            </div>
-                        </div>
-                        <p style="margin: 0; font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;">
-                            Live position tracking of the International Space Station orbiting Earth at 28,000 km/h
-                        </p>
+                        <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">Updates every 5 seconds</p>
                     </div>
                 </div>
+                <div class="iss-coords" id="issCoords"></div>
+            </div>
 
-                <div style="margin-top: 2rem; padding: 1rem; background: rgba(59, 130, 246, 0.05); border-radius: 0.5rem; border: 1px solid rgba(59, 130, 246, 0.2);">
-                    <p style="margin: 0; font-size: 0.95rem; color: var(--text-muted); text-align: center;">
-                        <i class="fa-solid fa-link"></i>
-                        <strong style="color: var(--text-light);">API Source:</strong> 
-                        All data provided by NASA's Open API initiative at 
-                        <a href="https://api.nasa.gov/" target="_blank" style="color: #3b82f6; text-decoration: none; font-weight: 600;">api.nasa.gov</a>
-                    </p>
+            <!-- Data Grid -->
+            <div class="data-grid">
+                <!-- Astronomy Picture of the Day -->
+                <div class="card" id="apodCard" style="display: none;">
+                    <div class="section-header">
+                        <div class="section-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                            <i class="fa-solid fa-image" style="color: white;"></i>
+                        </div>
+                        <div class="section-title">
+                            <h2>Astronomy Picture of the Day</h2>
+                            <p>Today's stunning view of our universe</p>
+                        </div>
+                    </div>
+                    <div id="apodContent"></div>
+                </div>
+
+                <!-- Near Earth Objects -->
+                <div class="card" id="neoCard" style="display: none;">
+                    <div class="section-header">
+                        <div class="section-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                            <i class="fa-solid fa-meteor" style="color: white;"></i>
+                        </div>
+                        <div class="section-title">
+                            <h2>Near Earth Objects</h2>
+                            <p>Asteroids passing close to Earth today</p>
+                        </div>
+                    </div>
+                    <div id="neoContent"></div>
                 </div>
             </div>
 
-            <!-- Navigation Buttons -->
-            <div class="btn-group">
-                <a class="btn btn-primary" href="./index.html">
-                    <i class="fa-solid fa-home"></i> Back to Home
-                </a>
-                <a class="btn btn-secondary" href="./data-visualization.html">
-                    <i class="fa-solid fa-chart-column"></i> View Dashboard
-                </a>
-                <a class="btn btn-success" href="./crud/read.html">
-                    <i class="fa-solid fa-eye"></i> View Activities
+            <!-- Back to Home Button -->
+            <div style="text-align: center; margin-top: 3rem; margin-bottom: 2rem;">
+                <a class="back-home-btn" href="./index.html">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back to Home</span>
                 </a>
             </div>
         </div>
@@ -191,8 +366,8 @@
             <div class="footer-section">
                 <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
                 <ul>
-                    <li>NASA Space Data Explorer</li>
-                    <li>Mission Analytics & Visualizations</li>
+                    <li>Personal Space Observation Journal</li>
+                    <li>Track Your Stargazing Journey</li>
                     <li>Built for ISM 6225</li>
                     <li>University of South Florida</li>
                 </ul>
@@ -201,31 +376,32 @@
                 <h4>Navigation</h4>
                 <ul>
                     <li><a href="./index.html">Home</a></li>
-                    <li><a href="./data-visualization.html">Data Dashboard</a></li>
                     <li><a href="./nasa-data.html">NASA Live Data</a></li>
+                    <li><a href="./data-visualization.html">Data Dashboard</a></li>
                     <li><a href="./about.html">About Us</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>CRUD Operations</h4>
+                <h4>My Journal</h4>
                 <ul>
-                    <li><a href="./crud/create.html">Create Activity</a></li>
-                    <li><a href="./crud/read.html">Read Activities</a></li>
-                    <li><a href="./crud/update.html">Update Activity</a></li>
-                    <li><a href="./crud/delete.html">Delete Activity</a></li>
+                    <li><a href="./crud/create.html">Log Observation</a></li>
+                    <li><a href="./crud/read.html">View Journal</a></li>
+                    <li><a href="./crud/update.html">Edit Entry</a></li>
+                    <li><a href="./crud/delete.html">Remove Entry</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h4>Resources</h4>
                 <ul>
                     <li><a href="https://api.nasa.gov/" target="_blank">NASA Open APIs</a></li>
-                    <li><a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer" target="_blank">GitHub Repository</a></li>
+                    <li><a href="https://github.com/mudejayaprakash/Spacetrack-nasa-explorer" target="_blank">GitHub
+                            Repository</a></li>
                     <li><a href="https://www.nasa.gov/" target="_blank">NASA Official Site</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+            &copy; 2025 SpaceTrack - Personal Space Observation Journal | All rights reserved | ISM 6225 Project
         </div>
     </footer>
 
@@ -239,17 +415,87 @@
     <script src="./js/main.js"></script>
     <script>
         // Load NASA data on page load
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', async function () {
             await Promise.all([
-                loadAPOD(),
                 loadISS(),
+                loadAPOD(),
                 loadNEO()
             ]);
-            
+
+            // Start auto-refresh for ISS after initial load
+            startISSAutoRefresh();
+
             document.getElementById('loadingState').style.display = 'none';
         });
 
-        // 1. Astronomy Picture of the Day
+        // 1. ISS Current Location (Compact) - WITH LIVE AUTO-REFRESH
+        let issUpdateInterval = null;
+
+        async function loadISS() {
+            try {
+                console.log('📡 Fetching ISS location...');
+                const response = await fetch('http://localhost:3000/api/nasa/iss-location');
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    const iss = result.data.iss_position;
+                    const timestamp = new Date(result.data.timestamp * 1000);
+                    const coords = document.getElementById('issCoords');
+
+                    coords.innerHTML = `
+                        <div class="coord-item">
+                            <div class="coord-label"><i class="fa-solid fa-location-dot"></i> Latitude</div>
+                            <div class="coord-value">${parseFloat(iss.latitude).toFixed(4)}°</div>
+                        </div>
+                        <div class="coord-item">
+                            <div class="coord-label"><i class="fa-solid fa-location-dot"></i> Longitude</div>
+                            <div class="coord-value">${parseFloat(iss.longitude).toFixed(4)}°</div>
+                        </div>
+                        <div class="coord-item">
+                            <div class="coord-label"><i class="fa-solid fa-clock"></i> Updated At</div>
+                            <div class="coord-value">${timestamp.toLocaleTimeString()}</div>
+                        </div>
+                    `;
+
+                    document.getElementById('issCompact').style.display = 'block';
+                    console.log('✅ ISS location updated');
+                } else {
+                    throw new Error('Failed to load ISS data');
+                }
+            } catch (error) {
+                console.error('❌ Error loading ISS:', error);
+            }
+        }
+
+        // Start auto-refresh for ISS position
+        function startISSAutoRefresh() {
+            // Clear any existing interval
+            if (issUpdateInterval) {
+                clearInterval(issUpdateInterval);
+            }
+            
+            // Update ISS position every 5 seconds
+            issUpdateInterval = setInterval(() => {
+                loadISS();
+            }, 5000); // 5 seconds
+            
+            console.log('🔄 ISS auto-refresh started (updates every 5 seconds)');
+        }
+
+        // Stop auto-refresh when page is hidden (save resources)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                if (issUpdateInterval) {
+                    clearInterval(issUpdateInterval);
+                    console.log('⏸️ ISS auto-refresh paused (page hidden)');
+                }
+            } else {
+                startISSAutoRefresh();
+                console.log('▶️ ISS auto-refresh resumed');
+            }
+        });
+
+        // 2. Astronomy Picture of the Day
         async function loadAPOD() {
             try {
                 console.log('📡 Fetching APOD from NASA...');
@@ -261,39 +507,43 @@
                     const content = document.getElementById('apodContent');
 
                     content.innerHTML = `
-                        <div style="display: grid; gap: 1.5rem;">
-                            <div>
-                                <h3 style="color: var(--text-light); margin-bottom: 0.5rem; font-size: 1.3rem;">
-                                    ${apod.title}
-                                </h3>
-                                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
-                                    <i class="fa-solid fa-calendar"></i> ${apod.date}
-                                    ${apod.copyright ? ` | <i class="fa-solid fa-camera"></i> ${apod.copyright}` : ''}
-                                </p>
+                        <div class="apod-header-row">
+                            <div class="info-pill">
+                                <i class="fa-solid fa-calendar"></i>
+                                <span>${apod.date}</span>
+                                ${apod.copyright ? `<span style="margin-left: 0.5rem;">• © ${apod.copyright}</span>` : ''}
                             </div>
-                            ${apod.media_type === 'image' ? `
-                                <img src="${apod.url}" alt="${apod.title}" 
-                                     style="width: 100%; max-height: 500px; object-fit: cover; border-radius: 0.75rem; border: 1px solid var(--border-color); box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
-                            ` : apod.media_type === 'video' ? `
-                                <iframe src="${apod.url}" 
-                                        style="width: 100%; height: 500px; border-radius: 0.75rem; border: 1px solid var(--border-color);"
-                                        frameborder="0" allowfullscreen></iframe>
-                            ` : ''}
-                            <div style="background: rgba(15, 23, 42, 0.6); padding: 1.5rem; border-radius: 0.75rem; border-left: 3px solid #3b82f6;">
-                                <h4 style="color: var(--text-light); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
-                                    <i class="fa-solid fa-book-open"></i> Explanation
-                                </h4>
-                                <p style="color: var(--text-muted); line-height: 1.8; margin: 0;">
-                                    ${apod.explanation}
-                                </p>
-                            </div>
+                            
                             ${apod.hdurl ? `
-                                <a href="${apod.hdurl}" target="_blank" class="btn btn-primary" style="justify-content: center;">
-                                    <i class="fa-solid fa-external-link"></i> View High Resolution Image
+                                <a href="${apod.hdurl}" target="_blank" class="view-hd-btn">
+                                    <i class="fa-solid fa-expand"></i>
+                                    <span>View Full Resolution</span>
                                 </a>
                             ` : ''}
                         </div>
+                        
+                        ${apod.media_type === 'image' ? `
+                            <div class="apod-image-container">
+                                <img src="${apod.url}" alt="${apod.title}">
+                            </div>
+                        ` : apod.media_type === 'video' ? `
+                            <div class="apod-image-container" style="height: 500px;">
+                                <iframe src="${apod.url}" 
+                                        style="width: 100%; height: 100%; border: none;"
+                                        allowfullscreen></iframe>
+                            </div>
+                        ` : ''}
+                        
+                        <div style="background: rgba(15, 23, 42, 0.6); padding: 1.5rem; border-radius: 0.75rem; border-left: 3px solid #3b82f6; margin-top: 1.5rem;">
+                            <h3 style="color: var(--text-light); margin-bottom: 0.75rem; font-size: 1.2rem;">
+                                ${apod.title}
+                            </h3>
+                            <p style="color: var(--text-muted); line-height: 1.8; margin: 0;">
+                                ${apod.explanation}
+                            </p>
+                        </div>
                     `;
+
                     document.getElementById('apodCard').style.display = 'block';
                     console.log('✅ APOD loaded successfully');
                 } else {
@@ -301,71 +551,9 @@
                 }
             } catch (error) {
                 console.error('❌ Error loading APOD:', error);
-                showError('apodCard', 'apodContent', 'Astronomy Picture of the Day');
+                showError('apodCard', 'apodContent', 'Astronomy Picture');
             }
         }
-
-        // 2. ISS Current Location
-        async function loadISS() {
-            try {
-                console.log('📡 Fetching ISS location...');
-                const response = await fetch('http://localhost:3000/api/nasa/iss-location');
-                const result = await response.json();
-
-                if (result.success && result.data) {
-                    const iss = result.data.iss_position;
-                    const timestamp = new Date(result.data.timestamp * 1000);
-                    const content = document.getElementById('issContent');
-                    
-                    content.innerHTML = `
-                        <div style="background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(6, 182, 212, 0.05)); padding: 2rem; border-radius: 0.75rem; border-left: 4px solid #06b6d4;">
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 1.5rem;">
-                                <div style="text-align: center;">
-                                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">
-                                        <i class="fa-solid fa-location-dot"></i> Latitude
-                                    </p>
-                                    <p style="font-size: 2rem; font-weight: 700; color: #06b6d4; margin: 0;">
-                                        ${parseFloat(iss.latitude).toFixed(4)}°
-                                    </p>
-                                </div>
-                                <div style="text-align: center;">
-                                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">
-                                        <i class="fa-solid fa-location-dot"></i> Longitude
-                                    </p>
-                                    <p style="font-size: 2rem; font-weight: 700; color: #06b6d4; margin: 0;">
-                                        ${parseFloat(iss.longitude).toFixed(4)}°
-                                    </p>
-                                </div>
-                                <div style="text-align: center;">
-                                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">
-                                        <i class="fa-solid fa-clock"></i> Updated At
-                                    </p>
-                                    <p style="font-size: 1.25rem; font-weight: 600; color: var(--text-light); margin: 0;">
-                                        ${timestamp.toLocaleTimeString()}
-                                    </p>
-                                </div>
-                            </div>
-                            <div style="background: rgba(6, 182, 212, 0.1); padding: 1rem; border-radius: 0.5rem;">
-                                <p style="margin: 0; color: var(--text-muted); font-size: 0.95rem; text-align: center; line-height: 1.6;">
-                                    <i class="fa-solid fa-circle-info"></i>
-                                    The ISS orbits Earth at approximately <strong style="color: #06b6d4;">28,000 km/h</strong>, 
-                                    completing one orbit every <strong style="color: #06b6d4;">90 minutes</strong> at an altitude of 
-                                    <strong style="color: #06b6d4;">~400 km</strong> above Earth's surface.
-                                </p>
-                            </div>
-                        </div>
-                    `;
-                    document.getElementById('issCard').style.display = 'block';
-                    console.log('✅ ISS location loaded successfully');
-                } else {
-                    throw new Error('Failed to load ISS data');
-                }
-            } catch (error) {
-                console.error('❌ Error loading ISS:', error);
-                showError('issCard', 'issContent', 'ISS Location');
-            }
-        }
-
         // 3. Near Earth Objects
         async function loadNEO() {
             try {
@@ -378,72 +566,92 @@
                     const objects = result.data.near_earth_objects[today] || [];
                     const content = document.getElementById('neoContent');
 
+                    // Update the section header to include count
+                    const neoCard = document.getElementById('neoCard');
+                    const sectionHeader = neoCard.querySelector('.section-header');
+
+                    if (objects.length > 0) {
+                        // Add count badge to header
+                        const countBadge = `
+                    <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 1rem; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 50px; margin-left: auto;">
+                        <span style="font-size: 1.5rem;">☄️</span>
+                        <div style="text-align: left;">
+                            <div style="font-size: 1.3rem; font-weight: 800; color: #f59e0b; line-height: 1; font-family: 'Courier New', monospace;">${objects.length}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Detected Today</div>
+                        </div>
+                    </div>
+                `;
+                        sectionHeader.innerHTML = `
+                    <div class="section-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                        <i class="fa-solid fa-meteor" style="color: white;"></i>
+                    </div>
+                    <div class="section-title">
+                        <h2>Near Earth Objects</h2>
+                        <p>Asteroids passing close to Earth today</p>
+                    </div>
+                    ${countBadge}
+                `;
+                    }
+
                     if (objects.length === 0) {
                         content.innerHTML = `
-                            <div style="text-align: center; padding: 3rem; background: rgba(245, 158, 11, 0.05); border-radius: 0.75rem; border: 1px dashed rgba(245, 158, 11, 0.3);">
-                                <i class="fa-solid fa-circle-info" style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem;"></i>
-                                <p style="margin: 0; color: var(--text-muted); font-size: 1.1rem;">
-                                    No near-Earth objects detected for today
-                                </p>
-                                <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.9rem;">
-                                    This is actually good news - our planet is safe today! 🌍
-                                </p>
-                            </div>
-                        `;
+                    <div style="text-align: center; padding: 3rem; background: rgba(16, 185, 129, 0.05); border-radius: 0.75rem; border: 1px dashed rgba(16, 185, 129, 0.3);">
+                        <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+                        <p style="margin: 0; color: var(--text-light); font-size: 1.2rem; font-weight: 600;">
+                            All Clear Today!
+                        </p>
+                        <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">
+                            No near-Earth asteroids detected. Our planet is safe! 🌍
+                        </p>
+                    </div>
+                `;
                     } else {
                         let html = `
-                            <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05)); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem; border-left: 4px solid #f59e0b;">
-                                <p style="margin: 0; color: var(--text-muted); font-size: 1.1rem; text-align: center;">
-                                    <i class="fa-solid fa-meteor"></i>
-                                    <strong style="color: #f59e0b; font-size: 1.5rem;">${objects.length}</strong> 
-                                    asteroid${objects.length > 1 ? 's' : ''} passing near Earth today
-                                </p>
-                            </div>
-                            <div class="table-wrapper">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th><i class="fa-solid fa-signature"></i> Name</th>
-                                            <th><i class="fa-solid fa-ruler"></i> Diameter (m)</th>
-                                            <th><i class="fa-solid fa-arrows-left-right"></i> Miss Distance (km)</th>
-                                            <th><i class="fa-solid fa-gauge-high"></i> Velocity (km/h)</th>
-                                            <th><i class="fa-solid fa-triangle-exclamation"></i> Hazardous</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                        `;
+                    <div class="table-wrapper">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><i class="fa-solid fa-signature"></i> Name</th>
+                                    <th><i class="fa-solid fa-ruler"></i> Size (m)</th>
+                                    <th><i class="fa-solid fa-arrows-left-right"></i> Distance (km)</th>
+                                    <th><i class="fa-solid fa-gauge-high"></i> Speed (km/h)</th>
+                                    <th><i class="fa-solid fa-shield"></i> Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
 
-                        objects.slice(0, 8).forEach(obj => {
+                        objects.slice(0, 10).forEach(obj => {
                             const diameter = obj.estimated_diameter.meters;
                             const closeApproach = obj.close_approach_data[0];
-                            
+
                             html += `
-                                <tr>
-                                    <td style="font-weight: 600; color: var(--text-light);">${obj.name}</td>
-                                    <td>${Math.round(diameter.estimated_diameter_min)} - ${Math.round(diameter.estimated_diameter_max)}</td>
-                                    <td>${parseInt(closeApproach.miss_distance.kilometers).toLocaleString()}</td>
-                                    <td>${parseInt(closeApproach.relative_velocity.kilometers_per_hour).toLocaleString()}</td>
-                                    <td>
-                                        ${obj.is_potentially_hazardous_asteroid ? 
-                                            '<span style="color: #ef4444; font-weight: 600;"><i class="fa-solid fa-triangle-exclamation"></i> Yes</span>' : 
-                                            '<span style="color: #10b981; font-weight: 600;"><i class="fa-solid fa-check"></i> No</span>'}
-                                    </td>
-                                </tr>
-                            `;
+                        <tr>
+                            <td style="font-weight: 600; color: var(--text-light);">${obj.name}</td>
+                            <td>${Math.round(diameter.estimated_diameter_min)}-${Math.round(diameter.estimated_diameter_max)}</td>
+                            <td>${parseInt(closeApproach.miss_distance.kilometers).toLocaleString()}</td>
+                            <td>${parseInt(closeApproach.relative_velocity.kilometers_per_hour).toLocaleString()}</td>
+                            <td>
+                                ${obj.is_potentially_hazardous_asteroid ?
+                                    '<span style="color: #ef4444; font-weight: 600;"><i class="fa-solid fa-triangle-exclamation"></i> Monitor</span>' :
+                                    '<span style="color: #10b981; font-weight: 600;"><i class="fa-solid fa-check"></i> Safe</span>'}
+                            </td>
+                        </tr>
+                    `;
                         });
 
                         html += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        `;
+                            </tbody>
+                        </table>
+                    </div>
+                `;
 
-                        if (objects.length > 8) {
+                        if (objects.length > 10) {
                             html += `
-                                <p style="margin-top: 1rem; text-align: center; color: var(--text-muted); font-size: 0.95rem;">
-                                    Showing 8 of ${objects.length} objects detected today
-                                </p>
-                            `;
+                        <p style="margin-top: 1rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+                            Showing 10 of ${objects.length} detected objects
+                        </p>
+                    `;
                         }
 
                         content.innerHTML = html;
@@ -459,25 +667,120 @@
                 showError('neoCard', 'neoContent', 'Near Earth Objects');
             }
         }
+        // // 3. Near Earth Objects
+        // async function loadNEO() {
+        //     try {
+        //         console.log('📡 Fetching NEO data from NASA...');
+        //         const response = await fetch('http://localhost:3000/api/nasa/neo');
+        //         const result = await response.json();
+
+        //         if (result.success && result.data) {
+        //             const today = new Date().toISOString().split('T')[0];
+        //             const objects = result.data.near_earth_objects[today] || [];
+        //             const content = document.getElementById('neoContent');
+
+        //             if (objects.length === 0) {
+        //                 content.innerHTML = `
+        //                     <div style="text-align: center; padding: 3rem; background: rgba(16, 185, 129, 0.05); border-radius: 0.75rem; border: 1px dashed rgba(16, 185, 129, 0.3);">
+        //                         <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
+        //                         <p style="margin: 0; color: var(--text-light); font-size: 1.2rem; font-weight: 600;">
+        //                             All Clear Today!
+        //                         </p>
+        //                         <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">
+        //                             No near-Earth asteroids detected. Our planet is safe! 🌍
+        //                         </p>
+        //                     </div>
+        //                 `;
+        //             } else {
+        //                 let html = `
+        //                     <div class="neo-stats-badge">
+        //                         <div class="neo-icon-circle">☄️</div>
+        //                         <div>
+        //                             <div class="neo-count">${objects.length}</div>
+        //                             <p class="neo-text">Asteroid${objects.length > 1 ? 's' : ''} Detected Today</p>
+        //                         </div>
+        //                     </div>
+
+        //                     <div class="table-wrapper">
+        //                         <table class="table">
+        //                             <thead>
+        //                                 <tr>
+        //                                     <th><i class="fa-solid fa-signature"></i> Name</th>
+        //                                     <th><i class="fa-solid fa-ruler"></i> Size (m)</th>
+        //                                     <th><i class="fa-solid fa-arrows-left-right"></i> Distance (km)</th>
+        //                                     <th><i class="fa-solid fa-gauge-high"></i> Speed (km/h)</th>
+        //                                     <th><i class="fa-solid fa-shield"></i> Status</th>
+        //                                 </tr>
+        //                             </thead>
+        //                             <tbody>
+        //                 `;
+
+        //                 objects.slice(0, 10).forEach(obj => {
+        //                     const diameter = obj.estimated_diameter.meters;
+        //                     const closeApproach = obj.close_approach_data[0];
+
+        //                     html += `
+        //                         <tr>
+        //                             <td style="font-weight: 600; color: var(--text-light);">${obj.name}</td>
+        //                             <td>${Math.round(diameter.estimated_diameter_min)}-${Math.round(diameter.estimated_diameter_max)}</td>
+        //                             <td>${parseInt(closeApproach.miss_distance.kilometers).toLocaleString()}</td>
+        //                             <td>${parseInt(closeApproach.relative_velocity.kilometers_per_hour).toLocaleString()}</td>
+        //                             <td>
+        //                                 ${obj.is_potentially_hazardous_asteroid ? 
+        //                                     '<span style="color: #ef4444; font-weight: 600;"><i class="fa-solid fa-triangle-exclamation"></i> Monitor</span>' : 
+        //                                     '<span style="color: #10b981; font-weight: 600;"><i class="fa-solid fa-check"></i> Safe</span>'}
+        //                             </td>
+        //                         </tr>
+        //                     `;
+        //                 });
+
+        //                 html += `
+        //                             </tbody>
+        //                         </table>
+        //                     </div>
+        //                 `;
+
+        //                 if (objects.length > 10) {
+        //                     html += `
+        //                         <p style="margin-top: 1rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+        //                             Showing 10 of ${objects.length} detected objects
+        //                         </p>
+        //                     `;
+        //                 }
+
+        //                 content.innerHTML = html;
+        //             }
+
+        //             document.getElementById('neoCard').style.display = 'block';
+        //             console.log('✅ NEO data loaded successfully');
+        //         } else {
+        //             throw new Error('Failed to load NEO data');
+        //         }
+        //     } catch (error) {
+        //         console.error('❌ Error loading NEO:', error);
+        //         showError('neoCard', 'neoContent', 'Near Earth Objects');
+        //     }
+        // }
 
         // Show error message
         function showError(cardId, contentId, name) {
             const card = document.getElementById(cardId);
             const content = document.getElementById(contentId);
-            
+
             content.innerHTML = `
                 <div class="error" style="text-align: center; padding: 2rem;">
                     <i class="fa-solid fa-triangle-exclamation" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
                     <p style="margin: 0; font-size: 1.1rem;">Failed to load ${name}</p>
-                    <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;">
-                        Please ensure the backend server is running on http://localhost:3000
+                    <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: var(--text-muted);">
+                        Please ensure the backend server is running
                     </p>
                 </div>
             `;
             card.style.display = 'block';
         }
 
-        console.log('✅ NASA Data page initialized - 3 working APIs');
+        console.log('✅ NASA Data page initialized');
     </script>
 </body>
+
 </html>

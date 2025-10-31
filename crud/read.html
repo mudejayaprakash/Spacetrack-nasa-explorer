@@ -3,14 +3,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="View all space observation activities">
-    <title>View Activities - SpaceTrack</title>
+    <meta name="description" content="View your space observations - SpaceTrack Personal Journal">
+    <title>View Journal - SpaceTrack</title>
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <!-- Shared Stylesheet -->
     <link rel="stylesheet" href="../css/styles.css">
+    
+    <style>
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Page Header */
+        .page-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Stats Cards - COMPACT */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 0.5rem;
+            padding: 0.65rem 0.85rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #818cf8;
+            margin-bottom: 0.1rem;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Filters Section - MINIMAL COMPACT */
+        .filters-section {
+            background: #1e293b;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: 180px 180px 1fr;
+            gap: 0.75rem;
+            align-items: end;
+        }
+
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .filter-field label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .filter-field select,
+        .filter-field input {
+            padding: 0.45rem 0.65rem;
+            border: 1px solid #334155;
+            border-radius: 0.375rem;
+            background: #0f172a;
+            color: #f1f5f9;
+            font-size: 0.85rem;
+        }
+
+        /* Observations Grid */
+        .observations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-auto-rows: 600px;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .observation-card {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .observation-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .observation-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: #0f172a;
+        }
+
+        .observation-content {
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .observation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.75rem;
+        }
+
+        .observation-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin: 0;
+        }
+
+        .observation-rating {
+            display: flex;
+            gap: 0.2rem;
+        }
+
+        .observation-rating .star {
+            color: #fbbf24;
+            font-size: 0.9rem;
+        }
+
+        .observation-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .observation-type-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: #60a5fa;
+            margin-bottom: 0.75rem;
+        }
+
+        .observation-description {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .observation-footer {
+            display: flex;
+            gap: 0.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+            margin-top: auto;
+        }
+
+        .btn-edit,
+        .btn-delete {
+            flex: 1;
+            padding: 0.5rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            color: #6ee7b7;
+        }
+
+        .btn-edit:hover {
+            background: rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 0.75rem;
+            border: 1px dashed rgba(59, 130, 246, 0.3);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #6366f1;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 0.5rem 0;
+            color: #f1f5f9;
+        }
+
+        .empty-state p {
+            margin: 0 0 1.5rem 0;
+            color: #94a3b8;
+        }
+
+        .btn-add-first {
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+
+        .btn-add-first:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading-state i {
+            font-size: 2.5rem;
+            color: #6366f1;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            border-radius: 50px;
+            background: rgba(15, 23, 42, 0.6);
+            color: #60a5fa;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            border-color: rgba(96, 165, 250, 0.6);
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .observations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -27,96 +367,111 @@
 
             <ul class="nav-links">
                 <li><a href="../index.html"><i class="fa-solid fa-home"></i> Home</a></li>
-                <li><a href="../data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
-                <li><a href="../about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li><a href="../nasa-data.html"><i class="fa-solid fa-satellite"></i> NASA Live Data</a></li>
                 <li class="crud">
                     <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
-                        CRUD <i class="fa-solid fa-caret-down"></i>
+                        <i class="fa-solid fa-book"></i> My Journal <i class="fa-solid fa-caret-down"></i>
                     </button>
                     <ul class="crud-menu">
-                        <li><a href="./create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
-                        <li><a href="./read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
-                        <li><a href="./update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
-                        <li><a href="./delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                        <li><a href="./create.html"><i class="fa-solid fa-plus"></i> Log Observation</a></li>
+                        <li><a href="./read.html"><i class="fa-solid fa-book-open"></i> View Journal</a></li>
+                        <li><a href="./update.html"><i class="fa-solid fa-pen"></i> Edit Entry</a></li>
+                        <li><a href="./delete.html"><i class="fa-solid fa-trash"></i> Remove Entry</a></li>
                     </ul>
                 </li>
+                <li><a href="../data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="../about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
             </ul>
         </nav>
     </header>
 
     <!-- Main Content -->
     <main>
-        <div class="container">
-            <!-- Breadcrumbs -->
-            <div class="breadcrumbs">
-                <a href="../index.html">Home</a> / Activities
-            </div>
-
-            <!-- Page Content -->
-            <div class="card">
-                <h1 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <i class="fa-solid fa-eye" style="color: var(--info);"></i>
-                    All Space Activities
-                </h1>
-                
-                <p class="muted" style="margin-bottom: 1.5rem;">
-                    View and manage all space observation activities stored in the database. Use the search box to filter activities, or click the action buttons to update or delete records.
+        <div class="container page-container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1><i class=""></i> My Observation Journal</h1>
+                <p style="color: #94a3b8; font-size: 1rem;">
+                    Browse and manage your stargazing observations
                 </p>
+            </div>
 
-                <div class="info-box">
-                    <p style="margin: 0;">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <strong>Live Application:</strong> All data is fetched from the backend API in real-time. The search functionality queries the backend server for instant results.
-                    </p>
+            <!-- Statistics Cards (Dynamic) -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCount">0</div>
+                    <div class="stat-label">Observations</div>
                 </div>
-
-                <!-- Toolbar -->
-                <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-top: 1.5rem; margin-bottom: 1.5rem;">
-                    <div style="flex: 1; min-width: 250px;">
-                        <label for="searchInput" style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
-                            <i class="fa-solid fa-magnifying-glass"></i> Search Activities
-                        </label>
-                        <input 
-                            type="text" 
-                            id="searchInput" 
-                            class="input" 
-                            placeholder="Search by ID, mission, type, location, or title..."
-                            style="width: 100%;">
-                    </div>
-                    <div style="display: flex; gap: 0.75rem; align-items: flex-end;">
-                        <a href="./create.html" class="btn btn-success">
-                            <i class="fa-solid fa-plus"></i> New Activity
-                        </a>
-                        <button id="clearSearch" class="btn btn-outline">
-                            <i class="fa-solid fa-rotate-left"></i> Clear
-                        </button>
-                    </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="projectCount">0</div>
+                    <div class="stat-label">Projects</div>
                 </div>
-
-                <!-- Results Info -->
-                <div id="resultsInfo" style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.95rem;">
-                    <i class="fa-solid fa-list"></i> Showing <strong id="resultCount">0</strong> activities
-                </div>
-
-                <!-- Table Container -->
-                <div id="tableContainer"></div>
-
-                <!-- Table Note -->
-                <div class="notice" style="margin-top: 1rem;">
-                    <p style="margin: 0;">
-                        <i class="fa-solid fa-lightbulb"></i>
-                        <strong>Tip:</strong> Use the inline action buttons to <strong>Update</strong> or <strong>Delete</strong> individual activities. All changes are persisted to the database and reflected across the application.
-                    </p>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgRating">0.0</div>
+                    <div class="stat-label">Avg Rating</div>
                 </div>
             </div>
 
-            <!-- Back to Home Button -->
-            <div class="btn-group">
-                <a class="btn btn-primary" href="../index.html">
-                    <i class="fa-solid fa-home"></i> Back to Home
+            <!-- Filters (Compact, Real-time) -->
+            <div class="filters-section">
+                <div class="filters-grid">
+                    <div class="filter-field">
+                        <label><i class="fa-solid fa-folder"></i> Project</label>
+                        <select id="filterProject">
+                            <option value="">All Projects</option>
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label><i class="fa-solid fa-tag"></i> Type</label>
+                        <select id="filterType">
+                            <option value="">All Types</option>
+                            <option value="Telescope">Telescope</option>
+                            <option value="Naked Eye">Naked Eye</option>
+                            <option value="Binoculars">Binoculars</option>
+                            <option value="Astrophotography">Astrophotography</option>
+                            <option value="ISS Pass">ISS Pass</option>
+                            <option value="Meteor Shower">Meteor Shower</option>
+                            <option value="Eclipse">Eclipse</option>
+                            <option value="Learning">Learning</option>
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label><i class="fa-solid fa-search"></i> Search</label>
+                        <input type="text" id="filterSearch" placeholder="Search observations...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div class="loading-state" id="loadingState">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p style="margin-top: 1rem; color: #94a3b8;">Loading your observations...</p>
+            </div>
+
+            <!-- Observations Grid -->
+            <div class="observations-grid" id="observationsGrid" style="display: none;">
+                <!-- Cards will be inserted here -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="fa-solid fa-telescope"></i>
+                <h3>No Observations Found</h3>
+                <p>Start logging your stargazing experiences!</p>
+                <a href="./create.html" class="btn-add-first">
+                    <i class="fa-solid fa-plus"></i> Log First Observation
                 </a>
-                <a class="btn btn-secondary" href="../data-visualization.html">
-                    <i class="fa-solid fa-chart-column"></i> View Dashboard
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="nav-buttons">
+                <a href="../index.html" class="nav-btn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back to Home</span>
+                </a>
+                <a href="./create.html" class="nav-btn">
+                    <span>Log New Observation</span>
+                    <i class="fa-solid fa-arrow-right"></i>
                 </a>
             </div>
         </div>
@@ -128,8 +483,8 @@
             <div class="footer-section">
                 <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
                 <ul>
-                    <li>NASA Space Data Explorer</li>
-                    <li>Mission Analytics & Visualizations</li>
+                    <li>Personal Space Observation Journal</li>
+                    <li>Track Your Stargazing Journey</li>
                     <li>Built for ISM 6225</li>
                     <li>University of South Florida</li>
                 </ul>
@@ -138,18 +493,18 @@
                 <h4>Navigation</h4>
                 <ul>
                     <li><a href="../index.html">Home</a></li>
+                    <li><a href="../nasa-data.html">NASA Live Data</a></li>
                     <li><a href="../data-visualization.html">Data Dashboard</a></li>
                     <li><a href="../about.html">About Us</a></li>
-                    <li><a href="./read.html">View Activities</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>CRUD Operations</h4>
+                <h4>My Journal</h4>
                 <ul>
-                    <li><a href="./create.html">Create Activity</a></li>
-                    <li><a href="./read.html">Read Activities</a></li>
-                    <li><a href="./update.html">Update Activity</a></li>
-                    <li><a href="./delete.html">Delete Activity</a></li>
+                    <li><a href="./create.html">Log Observation</a></li>
+                    <li><a href="./read.html">View Journal</a></li>
+                    <li><a href="./update.html">Edit Entry</a></li>
+                    <li><a href="./delete.html">Remove Entry</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -162,7 +517,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+            &copy; 2025 SpaceTrack - Personal Space Observation Journal | All rights reserved | ISM 6225 Project
         </div>
     </footer>
 
@@ -174,193 +529,272 @@
     <script src="../js/config.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/main.js"></script>
+
     <script>
-        // State
-        let allActivities = [];
-        let filteredActivities = [];
+        let allObservations = [];
+        let allProjects = [];
 
-        // DOM Elements
-        const searchInput = document.getElementById('searchInput');
-        const clearBtn = document.getElementById('clearSearch');
-        const tableContainer = document.getElementById('tableContainer');
-        const resultCount = document.getElementById('resultCount');
-
-        // Load activities on page load
         document.addEventListener('DOMContentLoaded', function() {
-            loadActivities();
+            loadData();
+            setupRealTimeFilters();
         });
 
-        // Load all activities from backend API
-        async function loadActivities() {
+        async function loadData() {
             try {
-                console.log('📡 Fetching activities from backend...');
+                // Load projects for filter
+                const projectsResponse = await fetch(`${CONFIG.API_BASE_URL}/missions`);
+                const projectsData = await projectsResponse.json();
                 
-                const response = await ActivityAPI.getAll();
-                
-                if (response.success) {
-                    allActivities = response.data;
-                    filteredActivities = [...allActivities];
-                    console.log('✅ Loaded', allActivities.length, 'activities from backend');
-                    renderTable();
+                if (projectsData.success) {
+                    allProjects = projectsData.data;
+                    populateProjectFilter();
+                }
+
+                // Load all observations
+                const observationsResponse = await fetch(`${CONFIG.API_BASE_URL}/activities`);
+                const observationsData = await observationsResponse.json();
+
+                if (observationsData.success) {
+                    allObservations = observationsData.data;
+                    applyFilters(); // Initial display
                 } else {
-                    console.error('Failed to load activities:', response);
-                    showError('Failed to load activities from server');
+                    showEmptyState();
                 }
             } catch (error) {
-                console.error('Error loading activities:', error);
-                showError('Could not connect to backend. Is the server running?');
+                console.error('Error loading data:', error);
+                document.getElementById('loadingState').innerHTML = `
+                    <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i>
+                    <p style="margin-top: 1rem; color: #fca5a5;">Failed to load observations. Make sure backend is running.</p>
+                `;
             }
         }
 
-        // Filter activities based on search query
-        async function filterActivities(query) {
-            const searchTerm = query.toLowerCase().trim();
+        function populateProjectFilter() {
+            const select = document.getElementById('filterProject');
+            allProjects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.projectId;
+                option.textContent = project.name;
+                select.appendChild(option);
+            });
+        }
+
+        // REAL-TIME FILTERING (Google-style)
+        function setupRealTimeFilters() {
+            // Apply filters on any input change
+            document.getElementById('filterProject').addEventListener('change', applyFilters);
+            document.getElementById('filterType').addEventListener('change', applyFilters);
             
-            if (!searchTerm) {
-                filteredActivities = [...allActivities];
-                renderTable();
-                return;
-            }
-
-            try {
-                // Use backend search API
-                console.log('🔍 Searching for:', searchTerm);
-                const response = await ActivityAPI.search(searchTerm);
-                
-                if (response.success) {
-                    filteredActivities = response.data;
-                    console.log('✅ Found', filteredActivities.length, 'results');
-                    renderTable();
-                }
-            } catch (error) {
-                console.error('Search error:', error);
-                // Fallback to local filtering if backend fails
-                filteredActivities = allActivities.filter(activity => {
-                    const id = String(activity.id).toLowerCase();
-                    const type = activity.type.toLowerCase();
-                    const title = activity.title.toLowerCase();
-                    const location = activity.location ? activity.location.toLowerCase() : '';
-                    
-                    return id.includes(searchTerm) || 
-                           type.includes(searchTerm) || 
-                           title.includes(searchTerm) ||
-                           location.includes(searchTerm);
-                });
-                renderTable();
-            }
-        }
-
-        // Get mission name by ID
-        function getMissionName(missionId) {
-            // This will use the CRUD simulator from main.js as a fallback
-            if (window.CRUD && window.CRUD.missionName) {
-                return window.CRUD.missionName(missionId);
-            }
-            return `Mission ${missionId}`;
-        }
-
-        // Render the activities table
-        function renderTable() {
-            resultCount.textContent = filteredActivities.length;
-
-            if (filteredActivities.length === 0) {
-                tableContainer.innerHTML = `
-                    <div class="notice" style="text-align: center; padding: 3rem;">
-                        <i class="fa-solid fa-inbox" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
-                        <p style="margin: 0; font-size: 1.1rem;">No activities found</p>
-                        <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">
-                            ${searchInput.value ? 'Try adjusting your search criteria' : 'Create your first activity to get started'}
-                        </p>
-                    </div>
-                `;
-                return;
-            }
-
-            let tableHTML = `
-                <div class="table-wrapper">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Mission</th>
-                                <th>Type</th>
-                                <th>Date</th>
-                                <th>Title</th>
-                                <th>Location</th>
-                                <th class="right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            filteredActivities.forEach(activity => {
-                const mission = getMissionName(activity.missionId);
-                tableHTML += `
-                    <tr data-id="${activity.id}">
-                        <td><span class="badge">#${activity.id}</span></td>
-                        <td>${mission}</td>
-                        <td><span style="text-transform: capitalize;">${activity.type}</span></td>
-                        <td>${activity.date}</td>
-                        <td>${activity.title}</td>
-                        <td style="font-size: 0.9rem; color: var(--text-muted);">${activity.location || '-'}</td>
-                        <td class="right">
-                            <a href="./update.html?id=${activity.id}" class="btn btn-xs btn-warning" title="Update activity">
-                                <i class="fa-solid fa-pen"></i> Update
-                            </a>
-                            <a href="./delete.html?id=${activity.id}" class="btn btn-xs btn-danger" title="Delete activity">
-                                <i class="fa-solid fa-trash"></i> Delete
-                            </a>
-                        </td>
-                    </tr>
-                `;
+            // Real-time search as user types (with debounce)
+            let searchTimeout;
+            document.getElementById('filterSearch').addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(applyFilters, 300); // Wait 300ms after user stops typing
             });
 
-            tableHTML += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-
-            tableContainer.innerHTML = tableHTML;
+            // Support Enter key on search
+            document.getElementById('filterSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    clearTimeout(searchTimeout);
+                    applyFilters();
+                }
+            });
         }
 
-        // Show error message
-        function showError(message) {
-            tableContainer.innerHTML = `
-                <div class="error" style="text-align: center; padding: 2rem;">
-                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                    <p style="margin: 0; font-size: 1.1rem;">${message}</p>
-                    <button onclick="loadActivities()" class="btn btn-primary" style="margin-top: 1rem;">
-                        <i class="fa-solid fa-rotate-right"></i> Retry
-                    </button>
-                </div>
-            `;
-        }
+        function applyFilters() {
+            const projectId = document.getElementById('filterProject').value;
+            const type = document.getElementById('filterType').value;
+            const search = document.getElementById('filterSearch').value.toLowerCase().trim();
 
-        // Search input handler with debounce
-        let searchTimeout;
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                filterActivities(this.value);
-            }, 300);
-        });
+            let filtered = allObservations;
 
-        // Clear search button
-        clearBtn.addEventListener('click', function() {
-            searchInput.value = '';
-            filterActivities('');
-            searchInput.focus();
-        });
-
-        // Handle Enter key in search
-        searchInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                filterActivities(this.value);
+            // Filter by project
+            if (projectId) {
+                filtered = filtered.filter(obs => obs.projectId === parseInt(projectId));
             }
-        });
 
-        console.log('✅ Read page initialized - using backend API');
+            // Filter by type
+            if (type) {
+                filtered = filtered.filter(obs => obs.observationType === type);
+            }
+
+            // Filter by search (real-time)
+            if (search) {
+                filtered = filtered.filter(obs => 
+                    obs.title.toLowerCase().includes(search) ||
+                    (obs.description && obs.description.toLowerCase().includes(search)) ||
+                    (obs.objectObserved && obs.objectObserved.toLowerCase().includes(search)) ||
+                    (obs.location && obs.location.toLowerCase().includes(search)) ||
+                    (obs.equipment && obs.equipment.toLowerCase().includes(search))
+                );
+            }
+
+            displayObservations(filtered);
+            updateStatistics(filtered); // Update stats dynamically
+        }
+
+        // UPDATE STATISTICS DYNAMICALLY based on filtered observations
+        function updateStatistics(observations) {
+            document.getElementById('totalCount').textContent = observations.length;
+            
+            // Count unique projects in filtered observations
+            const uniqueProjects = new Set(observations.map(obs => obs.projectId));
+            document.getElementById('projectCount').textContent = uniqueProjects.size;
+            
+            // Calculate average rating from filtered observations
+            const ratings = observations.filter(obs => obs.rating).map(obs => obs.rating);
+            const avgRating = ratings.length > 0 
+                ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1)
+                : '0.0';
+            document.getElementById('avgRating').textContent = avgRating;
+        }
+
+        function displayObservations(observations) {
+            const grid = document.getElementById('observationsGrid');
+            const loading = document.getElementById('loadingState');
+            const empty = document.getElementById('emptyState');
+
+            loading.style.display = 'none';
+
+            if (observations.length === 0) {
+                grid.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+            grid.style.display = 'grid';
+            grid.innerHTML = '';
+
+            observations.forEach(obs => {
+                const card = createObservationCard(obs);
+                grid.appendChild(card);
+            });
+        }
+
+        function createObservationCard(obs) {
+            const card = document.createElement('div');
+            card.className = 'observation-card';
+
+            // Image section - Always show image area for consistency
+            let imageHtml = '';
+            if (obs.imageUrl) {
+                imageHtml = `<img src="${obs.imageUrl}" alt="${obs.title}" class="observation-image">`;
+            } else {
+                // Placeholder for observations without images
+                imageHtml = `
+                    <div class="observation-image" style="display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1e293b, #0f172a);">
+                        <div style="text-align: center; color: #64748b;">
+                            <i class="fa-solid fa-image" style="font-size: 3rem; margin-bottom: 0.5rem; opacity: 0.3;"></i>
+                            <div style="font-size: 0.85rem; font-weight: 500;">No Image Available</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Rating stars
+            let ratingHtml = '';
+            if (obs.rating) {
+                ratingHtml = '<div class="observation-rating">';
+                for (let i = 0; i < obs.rating; i++) {
+                    ratingHtml += '<span class="star">★</span>';
+                }
+                ratingHtml += '</div>';
+            }
+
+            // Project name
+            const projectName = obs.project ? obs.project.name : 'Unknown Project';
+
+            card.innerHTML = `
+                ${imageHtml}
+                <div class="observation-content">
+                    <div class="observation-header">
+                        <h3 class="observation-title">${obs.title}</h3>
+                        ${ratingHtml}
+                    </div>
+                    
+                    <span class="observation-type-badge">
+                        <i class="fa-solid fa-tag"></i> ${obs.observationType}
+                    </span>
+
+                    <div class="observation-meta">
+                        <div class="meta-item">
+                            <i class="fa-solid fa-calendar"></i>
+                            ${new Date(obs.date).toLocaleDateString()}
+                        </div>
+                        ${obs.time ? `
+                        <div class="meta-item">
+                            <i class="fa-solid fa-clock"></i>
+                            ${obs.time}
+                        </div>
+                        ` : ''}
+                        <div class="meta-item">
+                            <i class="fa-solid fa-folder"></i>
+                            ${projectName}
+                        </div>
+                    </div>
+
+                    ${obs.objectObserved ? `
+                    <div class="observation-meta">
+                        <div class="meta-item">
+                            <i class="fa-solid fa-circle-dot"></i>
+                            ${obs.objectObserved}
+                        </div>
+                        ${obs.location ? `
+                        <div class="meta-item">
+                            <i class="fa-solid fa-location-dot"></i>
+                            ${obs.location}
+                        </div>
+                        ` : ''}
+                    </div>
+                    ` : ''}
+
+                    <p class="observation-description">${obs.description || ''}</p>
+
+                    <div class="observation-footer">
+                        <button class="btn-edit" onclick="editObservation(${obs.id})">
+                            <i class="fa-solid fa-pen"></i> Edit
+                        </button>
+                        <button class="btn-delete" onclick="deleteObservation(${obs.id}, '${obs.title.replace(/'/g, "\\'")}')">
+                            <i class="fa-solid fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function showEmptyState() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('observationsGrid').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'block';
+        }
+
+        function editObservation(id) {
+            window.location.href = `./update.html?id=${id}`;
+        }
+
+        async function deleteObservation(id, title) {
+            if (!confirm(`Are you sure you want to delete "${title}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await ActivityAPI.delete(id);
+                if (response.success) {
+                    alert('Observation deleted successfully!');
+                    loadData(); // Reload data
+                } else {
+                    alert('Failed to delete observation');
+                }
+            } catch (error) {
+                console.error('Error deleting observation:', error);
+                alert('Failed to delete observation. Make sure backend is running.');
+            }
+        }
+
+        console.log('✅ View Journal page loaded');
     </script>
 </body>
 </html>

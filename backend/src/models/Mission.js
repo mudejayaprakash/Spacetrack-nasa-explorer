@@ -1,129 +1,102 @@
 /**
- * Mission Model
- * Represents NASA space missions
+ * Project Model (Sequelize)
+ * Represents user-created observation projects/collections
  */
 
-class Mission {
-    constructor(data) {
-        this.missionId = data.missionId;
-        this.name = data.name;
-        this.type = data.type;
-        this.status = data.status;
-        this.launchDate = data.launchDate || null;
-        this.description = data.description || '';
-        this.createdAt = data.createdAt || new Date();
-        this.updatedAt = data.updatedAt || new Date();
-    }
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/database');
 
-    // Convert to JSON
-    toJSON() {
-        return {
-            missionId: this.missionId,
-            name: this.name,
-            type: this.type,
-            status: this.status,
-            launchDate: this.launchDate,
-            description: this.description,
-            createdAt: this.createdAt,
-            updatedAt: this.updatedAt
-        };
+// Define Project model
+const Project = sequelize.define('Project', {
+    projectId: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false
+    },
+    name: {
+        type: DataTypes.STRING(100),
+        allowNull: false
+    },
+    description: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    category: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        defaultValue: 'General'
+        // Categories: Telescope, Naked Eye, Astrophotography, Learning, etc.
+    },
+    startDate: {
+        type: DataTypes.DATEONLY,
+        allowNull: true
+    },
+    status: {
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        defaultValue: 'Active'
+        // Active, Completed, Planned
+    }
+}, {
+    tableName: 'projects',
+    timestamps: true,
+    underscored: true
+});
+
+// Seed initial projects (examples for users to see)
+async function seedProjects() {
+    const projectsData = [
+        {
+            name: 'My 2025 Stargazing Journey',
+            description: 'Personal observations and discoveries throughout 2025 - documenting my growth as an amateur astronomer',
+            category: 'General',
+            startDate: '2025-01-01',
+            status: 'Active'
+        },
+        {
+            name: 'Learning Constellations',
+            description: 'Systematic project to identify and memorize all major constellations visible from my location',
+            category: 'Learning',
+            startDate: '2025-01-15',
+            status: 'Active'
+        },
+        {
+            name: 'Backyard Telescope Sessions',
+            description: 'Deep sky observations using my 8-inch Dobsonian telescope from home',
+            category: 'Telescope',
+            startDate: '2025-02-01',
+            status: 'Active'
+        },
+        {
+            name: 'ISS Tracking Adventures',
+            description: 'Tracking and photographing International Space Station passes over my location',
+            category: 'Naked Eye',
+            startDate: '2025-03-01',
+            status: 'Active'
+        },
+        {
+            name: 'Astrophotography Learning',
+            description: 'My journey learning to photograph celestial objects - from moon shots to deep sky',
+            category: 'Astrophotography',
+            startDate: '2025-01-20',
+            status: 'Active'
+        }
+    ];
+
+    try {
+        const count = await Project.count();
+        
+        if (count === 0) {
+            console.log('📊 Seeding example projects...');
+            await Project.bulkCreate(projectsData);
+            console.log('✅ Projects seeded successfully!');
+        } else {
+            console.log('ℹ️  Projects already exist, skipping seed.');
+        }
+    } catch (error) {
+        console.error('❌ Error seeding projects:', error.message);
     }
 }
 
-// In-memory storage for missions
-let missions = [
-    new Mission({
-        missionId: 1,
-        name: 'Artemis I',
-        type: 'Lunar',
-        status: 'Completed',
-        launchDate: '2022-11-16',
-        description: 'Uncrewed Moon mission to test Orion spacecraft'
-    }),
-    new Mission({
-        missionId: 2,
-        name: 'Perseverance',
-        type: 'Mars Rover',
-        status: 'Active',
-        launchDate: '2020-07-30',
-        description: 'Mars rover searching for signs of ancient life'
-    }),
-    new Mission({
-        missionId: 3,
-        name: 'James Webb Space Telescope',
-        type: 'Space Telescope',
-        status: 'Active',
-        launchDate: '2021-12-25',
-        description: 'Most powerful space telescope ever built'
-    }),
-    new Mission({
-        missionId: 4,
-        name: 'Parker Solar Probe',
-        type: 'Heliophysics',
-        status: 'Active',
-        launchDate: '2018-08-12',
-        description: 'Studying the Sun\'s outer corona'
-    }),
-    new Mission({
-        missionId: 5,
-        name: 'Hubble Space Telescope',
-        type: 'Space Telescope',
-        status: 'Active',
-        launchDate: '1990-04-24',
-        description: 'Iconic space telescope observing the universe'
-    }),
-    new Mission({
-        missionId: 6,
-        name: 'International Space Station',
-        type: 'Space Station',
-        status: 'Active',
-        launchDate: '1998-11-20',
-        description: 'Habitable artificial satellite in low Earth orbit'
-    }),
-    new Mission({
-        missionId: 7,
-        name: 'Voyager 1',
-        type: 'Interstellar',
-        status: 'Active',
-        launchDate: '1977-09-05',
-        description: 'First spacecraft to enter interstellar space'
-    }),
-    new Mission({
-        missionId: 8,
-        name: 'Europa Clipper',
-        type: 'Planetary',
-        status: 'Planned',
-        launchDate: '2024-10-10',
-        description: 'Mission to study Jupiter\'s moon Europa'
-    })
-];
-
-// Model methods (CRUD operations for missions)
-const MissionModel = {
-    // Get all missions
-    findAll() {
-        return missions.map(m => m.toJSON());
-    },
-
-    // Get mission by ID
-    findById(missionId) {
-        const mission = missions.find(m => m.missionId === parseInt(missionId));
-        return mission ? mission.toJSON() : null;
-    },
-
-    // Get missions by status
-    findByStatus(status) {
-        return missions
-            .filter(m => m.status.toLowerCase() === status.toLowerCase())
-            .map(m => m.toJSON());
-    },
-
-    // Get missions by type
-    findByType(type) {
-        return missions
-            .filter(m => m.type.toLowerCase() === type.toLowerCase())
-            .map(m => m.toJSON());
-    }
-};
-
-module.exports = MissionModel;
+module.exports = { Project, seedProjects };

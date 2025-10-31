@@ -1,240 +1,286 @@
 /**
- * Activity Controller
- * Handles all activity-related business logic (CRUD operations)
+ * Observation Controller
+ * Handles all observation-related business logic using Sequelize (CRUD operations)
  */
 
-const ActivityModel = require('../models/Activity');
-const MissionModel = require('../models/Mission');
+const { Observation } = require('../models/Activity');
+const { Project } = require('../models/Mission');
+const { Op } = require('sequelize');
 
-const activityController = {
+const observationController = {
     // CREATE - POST /api/activities
-    createActivity: (req, res) => {
+    createActivity: async (req, res) => {
         try {
-            const { missionId, type, date, title, description, location } = req.body;
+            const { projectId, observationType, date, time, title, objectObserved, location, equipment, conditions, description, rating, imageUrl } = req.body;
 
             // Validation
-            if (!missionId || !type || !date || !title) {
+            if (!projectId || !observationType || !date || !title) {
                 return res.status(400).json({
                     success: false,
                     error: 'Missing required fields',
-                    message: 'missionId, type, date, and title are required'
+                    message: 'projectId, observationType, date, and title are required'
                 });
             }
 
-            // Verify mission exists
-            const mission = MissionModel.findById(missionId);
-            if (!mission) {
+            // Verify project exists
+            const project = await Project.findByPk(projectId);
+            if (!project) {
                 return res.status(404).json({
                     success: false,
-                    error: 'Mission not found',
-                    message: `No mission found with ID: ${missionId}`
+                    error: 'Project not found',
+                    message: `No project found with ID: ${projectId}`
                 });
             }
 
-            // Create activity
-            const newActivity = ActivityModel.create({
-                missionId,
-                type,
+            // Create observation in database
+            const newObservation = await Observation.create({
+                projectId,
+                observationType,
                 date,
+                time: time || null,
                 title,
-                description,
-                location
+                objectObserved: objectObserved || '',
+                location: location || '',
+                equipment: equipment || '',
+                conditions: conditions || '',
+                description: description || '',
+                rating: rating || null,
+                imageUrl: imageUrl || null
             });
 
             res.status(201).json({
                 success: true,
-                message: 'Activity created successfully',
-                data: newActivity
+                message: 'Observation created successfully',
+                data: newObservation
             });
         } catch (error) {
             console.error('Error in createActivity:', error);
             res.status(500).json({
                 success: false,
-                error: 'Failed to create activity',
+                error: 'Failed to create observation',
                 message: error.message
             });
         }
     },
 
     // READ - GET /api/activities
-    getAllActivities: (req, res) => {
+    getAllActivities: async (req, res) => {
         try {
-            const { missionId, type, search } = req.query;
+            const { projectId, observationType, search } = req.query;
 
-            let activities;
+            let whereClause = {};
 
-            // Filter by query parameters
-            if (search) {
-                activities = ActivityModel.search(search);
-            } else if (missionId) {
-                activities = ActivityModel.findByMissionId(missionId);
-            } else if (type) {
-                activities = ActivityModel.findByType(type);
-            } else {
-                activities = ActivityModel.findAll();
+            // Filter by projectId
+            if (projectId) {
+                whereClause.projectId = projectId;
             }
+
+            // Filter by type
+            if (observationType) {
+                whereClause.observationType = {
+                    [Op.iLike]: `%${observationType}%`
+                };
+            }
+
+            // Search across multiple fields
+            if (search) {
+                whereClause[Op.or] = [
+                    { title: { [Op.iLike]: `%${search}%` } },
+                    { description: { [Op.iLike]: `%${search}%` } },
+                    { objectObserved: { [Op.iLike]: `%${search}%` } },
+                    { location: { [Op.iLike]: `%${search}%` } },
+                    { equipment: { [Op.iLike]: `%${search}%` } },
+                    { observationType: { [Op.iLike]: `%${search}%` } }
+                ];
+            }
+
+            const observations = await Observation.findAll({
+                where: whereClause,
+                include: [{
+                    model: Project,
+                    as: 'project',
+                    attributes: ['projectId', 'name', 'category', 'status']
+                }],
+                order: [['date', 'DESC'], ['id', 'DESC']]
+            });
 
             res.status(200).json({
                 success: true,
-                count: activities.length,
-                data: activities
+                count: observations.length,
+                data: observations
             });
         } catch (error) {
             console.error('Error in getAllActivities:', error);
             res.status(500).json({
                 success: false,
-                error: 'Failed to fetch activities',
+                error: 'Failed to fetch observations',
                 message: error.message
             });
         }
     },
 
     // READ - GET /api/activities/:id
-    getActivityById: (req, res) => {
+    getActivityById: async (req, res) => {
         try {
             const { id } = req.params;
-            const activity = ActivityModel.findById(id);
+            const observation = await Observation.findByPk(id, {
+                include: [{
+                    model: Project,
+                    as: 'project',
+                    attributes: ['projectId', 'name', 'category', 'status']
+                }]
+            });
 
-            if (!activity) {
+            if (!observation) {
                 return res.status(404).json({
                     success: false,
-                    error: 'Activity not found',
-                    message: `No activity found with ID: ${id}`
+                    error: 'Observation not found',
+                    message: `No observation found with ID: ${id}`
                 });
             }
 
             res.status(200).json({
                 success: true,
-                data: activity
+                data: observation
             });
         } catch (error) {
             console.error('Error in getActivityById:', error);
             res.status(500).json({
                 success: false,
-                error: 'Failed to fetch activity',
+                error: 'Failed to fetch observation',
                 message: error.message
             });
         }
     },
 
     // UPDATE - PUT /api/activities/:id
-    updateActivity: (req, res) => {
+    updateActivity: async (req, res) => {
         try {
             const { id } = req.params;
             const updates = req.body;
 
-            // Check if activity exists
-            const existingActivity = ActivityModel.findById(id);
-            if (!existingActivity) {
+            // Check if observation exists
+            const observation = await Observation.findByPk(id);
+            if (!observation) {
                 return res.status(404).json({
                     success: false,
-                    error: 'Activity not found',
-                    message: `No activity found with ID: ${id}`
+                    error: 'Observation not found',
+                    message: `No observation found with ID: ${id}`
                 });
             }
 
-            // If missionId is being updated, verify the mission exists
-            if (updates.missionId) {
-                const mission = MissionModel.findById(updates.missionId);
-                if (!mission) {
+            // If projectId is being updated, verify the project exists
+            if (updates.projectId) {
+                const project = await Project.findByPk(updates.projectId);
+                if (!project) {
                     return res.status(404).json({
                         success: false,
-                        error: 'Mission not found',
-                        message: `No mission found with ID: ${updates.missionId}`
+                        error: 'Project not found',
+                        message: `No project found with ID: ${updates.projectId}`
                     });
                 }
             }
 
-            // Update activity
-            const updatedActivity = ActivityModel.update(id, updates);
+            // Update observation
+            await observation.update(updates);
+
+            // Fetch updated observation with project details
+            const updatedObservation = await Observation.findByPk(id, {
+                include: [{
+                    model: Project,
+                    as: 'project',
+                    attributes: ['projectId', 'name', 'category', 'status']
+                }]
+            });
 
             res.status(200).json({
                 success: true,
-                message: 'Activity updated successfully',
-                data: updatedActivity
+                message: 'Observation updated successfully',
+                data: updatedObservation
             });
         } catch (error) {
             console.error('Error in updateActivity:', error);
             res.status(500).json({
                 success: false,
-                error: 'Failed to update activity',
+                error: 'Failed to update observation',
                 message: error.message
             });
         }
     },
 
     // DELETE - DELETE /api/activities/:id
-    deleteActivity: (req, res) => {
+    deleteActivity: async (req, res) => {
         try {
             const { id } = req.params;
 
-            // Check if activity exists
-            const existingActivity = ActivityModel.findById(id);
-            if (!existingActivity) {
+            // Check if observation exists
+            const observation = await Observation.findByPk(id);
+            if (!observation) {
                 return res.status(404).json({
                     success: false,
-                    error: 'Activity not found',
-                    message: `No activity found with ID: ${id}`
+                    error: 'Observation not found',
+                    message: `No observation found with ID: ${id}`
                 });
             }
 
-            // Delete activity
-            const deleted = ActivityModel.delete(id);
+            // Delete observation
+            await observation.destroy();
 
-            if (deleted) {
-                res.status(200).json({
-                    success: true,
-                    message: 'Activity deleted successfully',
-                    data: { id: parseInt(id) }
-                });
-            } else {
-                res.status(500).json({
-                    success: false,
-                    error: 'Failed to delete activity'
-                });
-            }
+            res.status(200).json({
+                success: true,
+                message: 'Observation deleted successfully',
+                data: { id: parseInt(id) }
+            });
         } catch (error) {
             console.error('Error in deleteActivity:', error);
             res.status(500).json({
                 success: false,
-                error: 'Failed to delete activity',
+                error: 'Failed to delete observation',
                 message: error.message
             });
         }
     },
 
     // GET /api/activities/mission/:missionId
-    getActivitiesByMission: (req, res) => {
+    getActivitiesByMission: async (req, res) => {
         try {
             const { missionId } = req.params;
 
-            // Verify mission exists
-            const mission = MissionModel.findById(missionId);
-            if (!mission) {
+            // Verify project exists
+            const project = await Project.findByPk(missionId);
+            if (!project) {
                 return res.status(404).json({
                     success: false,
-                    error: 'Mission not found',
-                    message: `No mission found with ID: ${missionId}`
+                    error: 'Project not found',
+                    message: `No project found with ID: ${missionId}`
                 });
             }
 
-            const activities = ActivityModel.findByMissionId(missionId);
+            const observations = await Observation.findAll({
+                where: { projectId: missionId },
+                include: [{
+                    model: Project,
+                    as: 'project',
+                    attributes: ['projectId', 'name', 'category', 'status']
+                }],
+                order: [['date', 'DESC']]
+            });
 
             res.status(200).json({
                 success: true,
-                mission: mission.name,
-                count: activities.length,
-                data: activities
+                project: project.name,
+                count: observations.length,
+                data: observations
             });
         } catch (error) {
             console.error('Error in getActivitiesByMission:', error);
             res.status(500).json({
                 success: false,
-                error: 'Failed to fetch activities',
+                error: 'Failed to fetch observations',
                 message: error.message
             });
         }
     }
 };
 
-module.exports = activityController;
+module.exports = observationController;
