@@ -1,4 +1,4 @@
-# 🚀 SpaceTrack - NASA Space Data Explorer
+# SpaceTrack - NASA Space Data Explorer
 
 A full-stack web application for tracking and managing NASA space missions and observation activities. Built with Node.js, Express, and vanilla JavaScript.
 
@@ -11,7 +11,7 @@ A full-stack web application for tracking and managing NASA space missions and o
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 - [Project Overview](#project-overview)
 - [Features](#features)
 - [Technical Architecture](#technical-architecture)
@@ -28,21 +28,21 @@ A full-stack web application for tracking and managing NASA space missions and o
 
 ---
 
-## 🎯 Project Overview
+## Project Overview
 
 SpaceTrack is a full-stack web application that enables users to manage space observation activities, track NASA missions, and access real-time space data. Built with **Node.js**, **Express**, **PostgreSQL**, and deployed on **Microsoft Azure**, it demonstrates complete MVC architecture with full CRUD operations and external API integration.
 
 ### Key Objectives
-- ✅ Transform static website into dynamic full-stack application
-- ✅ Implement MVC architecture with separation of concerns
-- ✅ Create complete CRUD operations for data management
-- ✅ Integrate NASA's public APIs for live space data
-- ✅ Deploy to Microsoft Azure with cloud database
-- ✅ Provide data visualization and analytics
+- Transform static website into dynamic full-stack application
+- Implement MVC architecture with separation of concerns
+- Create complete CRUD operations for data management
+- Integrate NASA's public APIs for live space data
+- Deploy to Microsoft Azure with cloud database
+- Provide data visualization and analytics
 
 ---
 
-## ✨ Features
+## Features
 
 ### Core Functionality
 - **Full CRUD Operations**: Create, Read, Update, Delete for observation activities and space missions
@@ -62,7 +62,7 @@ SpaceTrack is a full-stack web application that enables users to manage space ob
 
 ---
 
-## 🏗️ Technical Architecture
+## Technical Architecture
 
 SpaceTrack implements the **Model-View-Controller (MVC)** design pattern:
 ```
@@ -87,7 +87,7 @@ SpaceTrack implements the **Model-View-Controller (MVC)** design pattern:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 ```
 SpaceTrack/
 ├── backend/
@@ -142,7 +142,7 @@ SpaceTrack/
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Base URL
 ```
@@ -228,7 +228,7 @@ Local: http://localhost:3000/api
 
 ---
 
-## 📊 Data Model & ERD
+## Data Model & ERD
 
 ### Entity Relationship Diagram
 
@@ -267,7 +267,7 @@ CREATE TABLE "Missions" (
 
 ---
 
-## ✏️ CRUD Implementation
+## CRUD Implementation
 
 ### CREATE Operations
 
@@ -381,7 +381,7 @@ exports.deleteActivity = async (req, res) => {
 
 ---
 
-## 🌌 NASA API Integration
+## NASA API Integration
 
 ### Backend Implementation
 
@@ -460,7 +460,7 @@ exports.getISSLocation = async (req, res) => {
 
 ---
 
-## 🚢 Azure Deployment
+## Azure Deployment
 
 ### Azure Components
 
@@ -526,7 +526,7 @@ cd /home/site/wwwroot/backend && npm install --production && node server.js
 
 ---
 
-## 🛠️ Technical Challenges & Solutions
+## Technical Challenges & Solutions
 
 ### Challenge 1: Azure Deployment Failures
 
@@ -640,7 +640,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 
 ---
 
-## 💻 Technologies Used
+## Technologies Used
 
 ### Backend
 - **Node.js v20.x** - JavaScript runtime
@@ -673,7 +673,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 
 ---
 
-## 👥 Team
+## Team
 
 ### Team Members
 
@@ -718,7 +718,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 
 ---
 
-## 🚀 Installation & Setup
+## Installation & Setup
 
 ### Prerequisites
 - Node.js v20 or higher
@@ -763,13 +763,13 @@ Open `index.html` in your browser or use Live Server
 
 ---
 
-## 📝 License
+## License
 
 This project was created for educational purposes as part of ISM 6225 coursework at the University of South Florida.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **NASA** for providing free public APIs
 - **Microsoft Azure** for student credits
@@ -778,37 +778,14 @@ This project was created for educational purposes as part of ISM 6225 coursework
 
 ---
 
-## 📞 Contact & Links
+## Contact & Links
 
 **Live Application:** [https://spacetrack.azurewebsites.net](https://spacetrack.azurewebsites.net)
 
 **GitHub Repository:** [https://github.com/mudejayaprakash/Spacetrack-nasa-explorer](https://github.com/mudejayaprakash/Spacetrack-nasa-explorer)
 
----
 
-## 📈 Project Status
-
-✅ **Completed and Deployed**
-
-- [x] MVC Architecture Implemented
-- [x] Full CRUD Operations Working
-- [x] NASA API Integration Complete
-- [x] Deployed to Microsoft Azure
-- [x] PostgreSQL Database Connected
-- [x] Data Visualization Dashboard
-- [x] Responsive Design
-- [x] Documentation Complete
-
----
-
-**Last Updated:** November 2, 2025  
-**Version:** 1.0.0  
-**Status:** Production Ready ✅
-
----
 
 *Made with ❤️ by the SpaceTrack Team*  
 *University of South Florida | ISM 6225 | Fall 2025*
 ---
-
-**Made with ❤️ and ☕ by the SpaceTrack Team**
