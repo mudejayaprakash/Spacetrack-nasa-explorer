@@ -3,14 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Update space observation activity">
-    <title>Update Activity - SpaceTrack</title>
+    <meta name="description" content="Edit observation - SpaceTrack Personal Journal">
+    <title>Edit Entry - SpaceTrack</title>
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <!-- Shared Stylesheet -->
     <link rel="stylesheet" href="../css/styles.css">
+    
+    <style>
+        .form-container {
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        .compact-form {
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        /* Observation Selector */
+        .selector-section {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .selector-section h3 {
+            margin: 0 0 1rem 0;
+            color: #93c5fd;
+            font-size: 1.1rem;
+        }
+
+        .selector-field {
+            display: flex;
+            gap: 0.75rem;
+            align-items: end;
+        }
+
+        .selector-field select {
+            flex: 1;
+            padding: 0.7rem 0.85rem;
+            border: 1px solid #334155;
+            border-radius: 0.375rem;
+            background: #0f172a;
+            color: #f1f5f9;
+            font-size: 1rem;
+        }
+
+        .btn-load {
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-load:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Form styling (same as create) */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row-triple {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row-full {
+            grid-column: 1 / -1;
+        }
+
+        .form-field label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+
+        .form-field label .required {
+            color: #f87171;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            border: 1px solid #334155;
+            border-radius: 0.375rem;
+            background: #0f172a;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .form-field textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-field small {
+            display: block;
+            margin-top: 0.3rem;
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        /* Rating Stars */
+        .rating-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 0.4rem;
+        }
+
+        .star {
+            font-size: 1.5rem;
+            color: #475569;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .star.active,
+        .star:hover {
+            color: #fbbf24;
+        }
+
+        /* Image Upload */
+        .image-upload-area {
+            border: 2px dashed #334155;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            background: #0f172a;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-upload-area:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .image-upload-area i {
+            font-size: 1.5rem;
+            color: #94a3b8;
+            margin-bottom: 0.3rem;
+        }
+
+        .image-upload-area p {
+            margin: 0;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .remove-image-btn {
+            margin-top: 0.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            border-radius: 0.375rem;
+            color: #fca5a5;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* Buttons */
+        .form-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+
+        .btn-update {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-cancel {
+            background: #475569;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #64748b;
+        }
+
+        /* Info Box */
+        .info-note {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid #f59e0b;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: #fbbf24;
+        }
+
+        /* Success/Error Messages */
+        .alert {
+            padding: 0.875rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            color: #6ee7b7;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            border-radius: 50px;
+            background: rgba(15, 23, 42, 0.6);
+            color: #60a5fa;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            border-color: rgba(96, 165, 250, 0.6);
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .form-row,
+            .form-row-triple {
+                grid-template-columns: 1fr;
+            }
+
+            .selector-field {
+                flex-direction: column;
+            }
+
+            .btn-load {
+                width: 100%;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -27,150 +363,221 @@
 
             <ul class="nav-links">
                 <li><a href="../index.html"><i class="fa-solid fa-home"></i> Home</a></li>
-                <li><a href="../data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
-                <li><a href="../about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li><a href="../nasa-data.html"><i class="fa-solid fa-satellite"></i> NASA Live Data</a></li>
                 <li class="crud">
                     <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
-                        CRUD <i class="fa-solid fa-caret-down"></i>
+                        <i class="fa-solid fa-book"></i> My Journal <i class="fa-solid fa-caret-down"></i>
                     </button>
                     <ul class="crud-menu">
-                        <li><a href="./create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
-                        <li><a href="./read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
-                        <li><a href="./update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
-                        <li><a href="./delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                        <li><a href="./create.html"><i class="fa-solid fa-plus"></i> Log Observation</a></li>
+                        <li><a href="./read.html"><i class="fa-solid fa-book-open"></i> View Journal</a></li>
+                        <li><a href="./update.html"><i class="fa-solid fa-pen"></i> Edit Entry</a></li>
+                        <li><a href="./delete.html"><i class="fa-solid fa-trash"></i> Remove Entry</a></li>
                     </ul>
                 </li>
+                <li><a href="../data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="../about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
             </ul>
         </nav>
     </header>
 
     <!-- Main Content -->
     <main>
-        <div class="container">
-            <!-- Breadcrumbs -->
-            <div class="breadcrumbs">
-                <a href="../index.html">Home</a> / 
-                <a href="./read.html">Activities</a> / 
-                Update <span id="activityBadge"></span>
+        <div class="container form-container">
+            <!-- Page Header -->
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">
+                    <i class=""></i> Edit Observation
+                </h1>
+                <p style="color: #94a3b8; font-size: 1rem;">
+                    Update your observation details
+                </p>
             </div>
 
-            <!-- Page Content -->
-            <div class="card">
-                <h1 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <i class="fa-solid fa-pen" style="color: var(--warning);"></i>
-                    Update Activity <span id="activityId" class="badge"></span>
-                </h1>
-                
-                <p class="muted" style="margin-bottom: 1.5rem;">
-                    This simulates the <strong>Update</strong> operation. In the final MVC application, changes will be persisted to the database and automatically update all visualizations and tables with the modified data.
-                </p>
-
-                <div class="info-box">
-                    <p style="margin: 0;">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <strong>Demo Mode:</strong> The form is pre-filled with existing activity data. Modifications are saved to the in-memory simulator. In production, updates will be sent to the backend API.
-                    </p>
+            <!-- Observation Selector -->
+            <div class="selector-section" id="selectorSection">
+                <h3><i class="fa-solid fa-magnifying-glass"></i> Select Observation to Edit</h3>
+                <div class="selector-field">
+                    <select id="observationSelect">
+                        <option value="">Choose an observation...</option>
+                    </select>
+                    <button class="btn-load" onclick="loadSelectedObservation()">
+                        <i class="fa-solid fa-download"></i> Load
+                    </button>
                 </div>
+            </div>
 
-                <!-- Loading State -->
-                <div id="loadingState" style="text-align: center; padding: 3rem; display: none;">
-                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary);"></i>
-                    <p style="margin-top: 1rem; color: var(--text-muted);">Loading activity data...</p>
-                </div>
+            <!-- Success Message -->
+            <div id="successMessage" class="alert alert-success">
+                <i class="fa-solid fa-circle-check"></i> <strong>Success!</strong> Observation updated successfully.
+            </div>
 
-                <!-- Not Found State -->
-                <div id="notFoundState" style="text-align: center; padding: 3rem; display: none;">
-                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem;"></i>
-                    <h2 style="margin-bottom: 0.5rem;">Activity Not Found</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 2rem;">
-                        The activity you're looking for doesn't exist or has been deleted.
-                    </p>
-                    <a href="./read.html" class="btn btn-primary">
-                        <i class="fa-solid fa-arrow-left"></i> Back to Activities List
-                    </a>
-                </div>
+            <!-- Error Message -->
+            <div id="errorMessage" class="alert alert-error">
+                <i class="fa-solid fa-circle-exclamation"></i> <span id="errorText"></span>
+            </div>
 
-                <!-- Update Form -->
-                <form id="updateForm" style="margin-top: 2rem; display: none;">
-                    <div class="form-grid">
-                        <div>
-                            <label for="missionId">
-                                <i class="fa-solid fa-rocket"></i> Mission
+            <!-- Update Form -->
+            <div class="compact-form" id="updateForm" style="display: none;">
+                <form id="editForm">
+                    <input type="hidden" id="observationId">
+
+                    <!-- Row 1: Project and Type -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-folder"></i> Project <span class="required">*</span>
                             </label>
-                            <select id="missionId" required>
-                                <option value="">-- Select Mission --</option>
+                            <select id="projectId" required>
+                                <option value="">Select Project</option>
                             </select>
                         </div>
 
-                        <div>
-                            <label for="type">
-                                <i class="fa-solid fa-tag"></i> Activity Type
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-tag"></i> Observation Type <span class="required">*</span>
                             </label>
-                            <select id="type" required>
-                                <option value="">-- Select Type --</option>
-                                <option value="image">Image Capture</option>
-                                <option value="observation">Scientific Observation</option>
-                                <option value="instrument">Instrument Reading</option>
-                                <option value="maneuver">Spacecraft Maneuver</option>
-                                <option value="sample">Sample Collection</option>
+                            <select id="observationType" required>
+                                <option value="">Select Type</option>
+                                <option value="Telescope">Telescope Observation</option>
+                                <option value="Naked Eye">Naked Eye</option>
+                                <option value="Binoculars">Binoculars</option>
+                                <option value="Astrophotography">Astrophotography</option>
+                                <option value="ISS Pass">ISS Pass</option>
+                                <option value="Meteor Shower">Meteor Shower</option>
+                                <option value="Eclipse">Eclipse</option>
+                                <option value="Learning">Learning/Education</option>
                             </select>
                         </div>
+                    </div>
 
-                        <div>
-                            <label for="date">
-                                <i class="fa-solid fa-calendar"></i> Observation Date
+                    <!-- Row 2: Object and Date -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-circle-dot"></i> Object Observed
+                            </label>
+                            <input type="text" id="objectObserved" placeholder="e.g., Saturn, Andromeda Galaxy">
+                        </div>
+
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-calendar"></i> Date <span class="required">*</span>
                             </label>
                             <input type="date" id="date" required>
                         </div>
+                    </div>
 
-                        <div>
-                            <label for="title">
-                                <i class="fa-solid fa-heading"></i> Title / Description
+                    <!-- Row 3: Time, Location, Rating -->
+                    <div class="form-row-triple">
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-clock"></i> Time
                             </label>
-                            <input type="text" id="title" placeholder="e.g., Jezero Crater panorama" required>
+                            <input type="time" id="time">
+                        </div>
+
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-location-dot"></i> Location
+                            </label>
+                            <input type="text" id="location" placeholder="e.g., Backyard">
+                        </div>
+
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-star"></i> Rating
+                            </label>
+                            <input type="hidden" id="rating" value="">
+                            <div class="rating-container">
+                                <span class="star" data-rating="1">★</span>
+                                <span class="star" data-rating="2">★</span>
+                                <span class="star" data-rating="3">★</span>
+                                <span class="star" data-rating="4">★</span>
+                                <span class="star" data-rating="5">★</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Form Actions -->
-                    <div class="btn-group" style="justify-content: flex-start; margin-top: 2rem;">
-                        <button type="submit" class="btn btn-warning">
-                            <i class="fa-solid fa-check"></i> Apply Changes
+                    <!-- Row 4: Equipment and Conditions -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-screwdriver-wrench"></i> Equipment Used
+                            </label>
+                            <input type="text" id="equipment" placeholder="e.g., 8-inch Dobsonian">
+                        </div>
+
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-cloud-sun"></i> Sky Conditions
+                            </label>
+                            <input type="text" id="conditions" placeholder="e.g., Clear sky">
+                        </div>
+                    </div>
+
+                    <!-- Title (Full Width) -->
+                    <div class="form-field form-row-full">
+                        <label>
+                            <i class="fa-solid fa-heading"></i> Title <span class="required">*</span>
+                        </label>
+                        <input type="text" id="title" placeholder="e.g., First time seeing Saturn's rings!" required>
+                    </div>
+
+                    <!-- Description (Full Width) -->
+                    <div class="form-field form-row-full">
+                        <label>
+                            <i class="fa-solid fa-align-left"></i> Notes & Details
+                        </label>
+                        <textarea id="description" placeholder="Describe what you saw..."></textarea>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="form-field form-row-full">
+                        <label>
+                            <i class="fa-solid fa-camera"></i> Photo
+                        </label>
+                        <div class="image-upload-area" id="imageUploadArea">
+                            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <p>Click to change photo</p>
+                        </div>
+                        <div id="imagePreviewContainer" style="display: none;">
+                            <img id="imagePreview" class="image-preview" alt="Preview">
+                            <div style="text-align: center;">
+                                <button type="button" class="remove-image-btn" onclick="removeImage()">
+                                    <i class="fa-solid fa-xmark"></i> Remove Image
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="form-buttons">
+                        <button type="submit" class="btn-update">
+                            <i class="fa-solid fa-check"></i> Update Observation
                         </button>
-                        <button type="button" id="cancelBtn" class="btn btn-outline">
+                        <button type="button" class="btn-cancel" onclick="window.location.href='./read.html'">
                             <i class="fa-solid fa-xmark"></i> Cancel
                         </button>
-                        <a href="./read.html" class="btn btn-secondary">
-                            <i class="fa-solid fa-eye"></i> View All Activities
-                        </a>
                     </div>
                 </form>
 
-                <!-- Success Message -->
-                <div id="successMsg" class="success" style="display: none; margin-top: 1.5rem;">
-                    <i class="fa-solid fa-check-circle"></i>
-                    <div>
-                        <strong>Activity updated successfully!</strong><br>
-                        <small>In the final application, changes will be persisted to the database.</small>
-                    </div>
-                </div>
-
-                <!-- Error Message -->
-                <div id="errorMsg" class="error" style="display: none; margin-top: 1.5rem;">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <div>
-                        <strong>Update failed!</strong><br>
-                        <small>Could not update the activity. Please try again.</small>
-                    </div>
+                <!-- Info Note -->
+                <div class="info-note">
+                    <i class="fa-solid fa-info-circle"></i> <strong>Editing:</strong> Changes will be saved immediately to your journal.
                 </div>
             </div>
 
-            <!-- Back to Home Button -->
-            <div class="btn-group">
-                <a class="btn btn-primary" href="../index.html">
-                    <i class="fa-solid fa-home"></i> Back to Home
+            <!-- Navigation Buttons -->
+            <div class="nav-buttons">
+                <a href="./read.html" class="nav-btn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back to Journal</span>
                 </a>
-                <a class="btn btn-secondary" href="../data-visualization.html">
-                    <i class="fa-solid fa-chart-column"></i> View Dashboard
+                <a href="./create.html" class="nav-btn">
+                    <span>Log New Observation</span>
+                    <i class="fa-solid fa-arrow-right"></i>
                 </a>
             </div>
         </div>
@@ -182,8 +589,8 @@
             <div class="footer-section">
                 <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
                 <ul>
-                    <li>NASA Space Data Explorer</li>
-                    <li>Mission Analytics & Visualizations</li>
+                    <li>Personal Space Observation Journal</li>
+                    <li>Track Your Stargazing Journey</li>
                     <li>Built for ISM 6225</li>
                     <li>University of South Florida</li>
                 </ul>
@@ -192,18 +599,18 @@
                 <h4>Navigation</h4>
                 <ul>
                     <li><a href="../index.html">Home</a></li>
+                    <li><a href="../nasa-data.html">NASA Live Data</a></li>
                     <li><a href="../data-visualization.html">Data Dashboard</a></li>
                     <li><a href="../about.html">About Us</a></li>
-                    <li><a href="./read.html">View Activities</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>CRUD Operations</h4>
+                <h4>My Journal</h4>
                 <ul>
-                    <li><a href="./create.html">Create Activity</a></li>
-                    <li><a href="./read.html">Read Activities</a></li>
-                    <li><a href="./update.html">Update Activity</a></li>
-                    <li><a href="./delete.html">Delete Activity</a></li>
+                    <li><a href="./create.html">Log Observation</a></li>
+                    <li><a href="./read.html">View Journal</a></li>
+                    <li><a href="./update.html">Edit Entry</a></li>
+                    <li><a href="./delete.html">Remove Entry</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -216,159 +623,255 @@
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+            &copy; 2025 SpaceTrack - Personal Space Observation Journal | All rights reserved | ISM 6225 Project
         </div>
     </footer>
-
-    <!-- JavaScript -->
-    <script src="../js/main.js"></script>
-    <script>
-        // Get activity ID from URL query parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const activityIdParam = urlParams.get('id');
-        
-        let currentActivity = null;
-        let originalData = null;
-
-        // DOM Elements
-        const loadingState = document.getElementById('loadingState');
-        const notFoundState = document.getElementById('notFoundState');
-        const updateForm = document.getElementById('updateForm');
-        const activityIdBadge = document.getElementById('activityId');
-        const activityBreadcrumb = document.getElementById('activityBadge');
-        const successMsg = document.getElementById('successMsg');
-        const errorMsg = document.getElementById('errorMsg');
-
-        // Load activity on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadActivity();
-        });
-
-        // Load the activity to update
-        function loadActivity() {
-            loadingState.style.display = 'block';
-
-            setTimeout(() => {
-                if (!activityIdParam || !window.CRUD) {
-                    showNotFound();
-                    return;
-                }
-
-                const activityId = parseInt(activityIdParam);
-                currentActivity = window.CRUD.getActivity(activityId);
-
-                if (!currentActivity) {
-                    showNotFound();
-                    return;
-                }
-
-                // Store original data for cancel functionality
-                originalData = { ...currentActivity };
-
-                // Populate form
-                populateForm();
-                loadingState.style.display = 'none';
-                updateForm.style.display = 'block';
-            }, 300);
-        }
-
-        // Show not found state
-        function showNotFound() {
-            loadingState.style.display = 'none';
-            notFoundState.style.display = 'block';
-        }
-
-        // Populate form with activity data
-        function populateForm() {
-            // Set activity ID badge
-            activityIdBadge.textContent = `#${currentActivity.id}`;
-            activityBreadcrumb.textContent = `#${currentActivity.id}`;
-
-            // Populate mission dropdown
-            const missionSelect = document.getElementById('missionId');
-            window.CRUD.Missions.forEach(mission => {
-                const option = document.createElement('option');
-                option.value = mission.missionId;
-                option.textContent = `${mission.name} (${mission.type})`;
-                missionSelect.appendChild(option);
-            });
-
-            // Set form values
-            document.getElementById('missionId').value = currentActivity.missionId;
-            document.getElementById('type').value = currentActivity.type;
-            document.getElementById('date').value = currentActivity.date;
-            document.getElementById('title').value = currentActivity.title;
-
-            // Set max date to today
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('date').max = today;
-        }
-
-        // Handle form submission
-        document.getElementById('updateForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const updatedData = {
-                missionId: parseInt(document.getElementById('missionId').value),
-                type: document.getElementById('type').value,
-                date: document.getElementById('date').value,
-                title: document.getElementById('title').value.trim() || '(untitled)'
-            };
-
-            // Update activity using CRUD simulator
-            const success = window.CRUD.updateActivity(currentActivity.id, updatedData);
-
-            if (success) {
-                // Update current activity reference
-                currentActivity = window.CRUD.getActivity(currentActivity.id);
-                originalData = { ...currentActivity };
-
-                // Show success message
-                successMsg.style.display = 'flex';
-                errorMsg.style.display = 'none';
-
-                // Scroll to success message
-                successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-                // Hide success message after 5 seconds
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 5000);
-            } else {
-                // Show error message
-                errorMsg.style.display = 'flex';
-                successMsg.style.display = 'none';
-
-                // Scroll to error message
-                errorMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-                // Hide error message after 5 seconds
-                setTimeout(() => {
-                    errorMsg.style.display = 'none';
-                }, 5000);
-            }
-        });
-
-        // Cancel button - restore original data
-        document.getElementById('cancelBtn').addEventListener('click', function() {
-            if (originalData) {
-                document.getElementById('missionId').value = originalData.missionId;
-                document.getElementById('type').value = originalData.type;
-                document.getElementById('date').value = originalData.date;
-                document.getElementById('title').value = originalData.title;
-
-                // Hide any messages
-                successMsg.style.display = 'none';
-                errorMsg.style.display = 'none';
-
-                // Show feedback
-                alert('Form reset to original values');
-            }
-        });
-    </script>
 
     <!-- Botpress Chatbot -->
     <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
     <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+
+    <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+        let selectedImage = null;
+        let currentObservationId = null;
+
+        // Rating system
+        let selectedRating = 0;
+        const stars = document.querySelectorAll('.star');
+        
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.getAttribute('data-rating'));
+                document.getElementById('rating').value = selectedRating;
+                updateStars();
+            });
+
+            star.addEventListener('mouseover', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                highlightStars(rating);
+            });
+        });
+
+        document.querySelector('.rating-container').addEventListener('mouseleave', function() {
+            updateStars();
+        });
+
+        function highlightStars(rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        function updateStars() {
+            highlightStars(selectedRating);
+        }
+
+        // Image upload
+        const imageUploadArea = document.getElementById('imageUploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+
+        imageUploadArea.addEventListener('click', () => imageInput.click());
+        imageInput.addEventListener('change', handleImageSelect);
+
+        function handleImageSelect() {
+            const file = imageInput.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showError('Image must be less than 5MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    selectedImage = e.target.result;
+                    imagePreview.src = selectedImage;
+                    imageUploadArea.style.display = 'none';
+                    imagePreviewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage() {
+            selectedImage = null;
+            imageInput.value = '';
+            imageUploadArea.style.display = 'block';
+            imagePreviewContainer.style.display = 'none';
+        }
+
+        // Load observations and projects on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProjects();
+            loadObservations();
+            checkURLParameter();
+        });
+
+        async function loadProjects() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/missions`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const select = document.getElementById('projectId');
+                    data.data.forEach(project => {
+                        const option = document.createElement('option');
+                        option.value = project.projectId;
+                        option.textContent = `${project.name} (${project.category})`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading projects:', error);
+            }
+        }
+
+        async function loadObservations() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/activities`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const select = document.getElementById('observationSelect');
+                    data.data.forEach(obs => {
+                        const option = document.createElement('option');
+                        option.value = obs.id;
+                        option.textContent = `${obs.title} (${new Date(obs.date).toLocaleDateString()})`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading observations:', error);
+            }
+        }
+
+        // Check if ID is in URL (coming from READ page)
+        function checkURLParameter() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            if (id) {
+                document.getElementById('observationSelect').value = id;
+                loadObservationById(id);
+            }
+        }
+
+        function loadSelectedObservation() {
+            const id = document.getElementById('observationSelect').value;
+            if (!id) {
+                showError('Please select an observation first');
+                return;
+            }
+            loadObservationById(id);
+        }
+
+        async function loadObservationById(id) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/activities/${id}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    populateForm(data.data);
+                    document.getElementById('selectorSection').style.display = 'none';
+                    document.getElementById('updateForm').style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    showError('Failed to load observation');
+                }
+            } catch (error) {
+                console.error('Error loading observation:', error);
+                showError('Failed to load observation. Make sure backend is running.');
+            }
+        }
+
+        function populateForm(obs) {
+            currentObservationId = obs.id;
+            document.getElementById('observationId').value = obs.id;
+            document.getElementById('projectId').value = obs.projectId;
+            document.getElementById('observationType').value = obs.observationType;
+            document.getElementById('date').value = obs.date;
+            document.getElementById('time').value = obs.time || '';
+            document.getElementById('title').value = obs.title;
+            document.getElementById('objectObserved').value = obs.objectObserved || '';
+            document.getElementById('location').value = obs.location || '';
+            document.getElementById('equipment').value = obs.equipment || '';
+            document.getElementById('conditions').value = obs.conditions || '';
+            document.getElementById('description').value = obs.description || '';
+
+            // Set rating
+            if (obs.rating) {
+                selectedRating = obs.rating;
+                document.getElementById('rating').value = obs.rating;
+                updateStars();
+            }
+
+            // Set image
+            if (obs.imageUrl) {
+                selectedImage = obs.imageUrl;
+                imagePreview.src = obs.imageUrl;
+                imageUploadArea.style.display = 'none';
+                imagePreviewContainer.style.display = 'block';
+            }
+        }
+
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                projectId: parseInt(document.getElementById('projectId').value),
+                observationType: document.getElementById('observationType').value,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value || null,
+                title: document.getElementById('title').value,
+                objectObserved: document.getElementById('objectObserved').value,
+                location: document.getElementById('location').value,
+                equipment: document.getElementById('equipment').value,
+                conditions: document.getElementById('conditions').value,
+                description: document.getElementById('description').value,
+                rating: selectedRating || null,
+                imageUrl: selectedImage || null
+            };
+
+            try {
+                const response = await ActivityAPI.update(currentObservationId, formData);
+
+                if (response.success) {
+                    showSuccess();
+                    setTimeout(() => {
+                        window.location.href = './read.html';
+                    }, 1500);
+                } else {
+                    showError(response.message || 'Failed to update observation');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to update observation. Make sure backend is running.');
+            }
+        });
+
+        function showSuccess() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showError(message) {
+            document.getElementById('successMessage').classList.remove('show');
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        console.log('✅ Edit Entry page loaded');
+    </script>
 </body>
 </html>

@@ -3,14 +3,366 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Delete space observation activity">
-    <title>Delete Activity - SpaceTrack</title>
+    <meta name="description" content="Delete observation - SpaceTrack Personal Journal">
+    <title>Remove Entry - SpaceTrack</title>
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <!-- Shared Stylesheet -->
     <link rel="stylesheet" href="../css/styles.css">
+    
+    <style>
+        .page-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Observation Selector */
+        .selector-section {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .selector-section h3 {
+            margin: 0 0 1rem 0;
+            color: #fca5a5;
+            font-size: 1.1rem;
+        }
+
+        .selector-field {
+            display: flex;
+            gap: 0.75rem;
+            align-items: end;
+        }
+
+        .selector-field select {
+            flex: 1;
+            padding: 0.7rem 0.85rem;
+            border: 1px solid #334155;
+            border-radius: 0.375rem;
+            background: #0f172a;
+            color: #f1f5f9;
+            font-size: 1rem;
+        }
+
+        .btn-load {
+            padding: 0.7rem 1.5rem;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .btn-load:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Preview Card */
+        .preview-card {
+            background: #1e293b;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .preview-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin: 0;
+        }
+
+        .preview-rating {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .preview-rating .star {
+            color: #fbbf24;
+            font-size: 1.1rem;
+        }
+
+        .preview-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .preview-item {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .preview-item-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .preview-item-value {
+            font-size: 1rem;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .preview-description {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            margin-top: 1rem;
+        }
+
+        .preview-description-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .preview-description-text {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        /* Warning Box */
+        .warning-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .warning-box i {
+            font-size: 1.5rem;
+            color: #ef4444;
+        }
+
+        .warning-box-content {
+            flex: 1;
+        }
+
+        .warning-box-content h4 {
+            margin: 0 0 0.25rem 0;
+            color: #fca5a5;
+            font-size: 1rem;
+        }
+
+        .warning-box-content p {
+            margin: 0;
+            color: #fecaca;
+            font-size: 0.9rem;
+        }
+
+        /* Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-cancel {
+            background: #475569;
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel:hover {
+            background: #64748b;
+        }
+
+        /* Success/Error Messages */
+        .alert {
+            padding: 0.875rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            color: #6ee7b7;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 0.75rem;
+            border: 1px dashed rgba(59, 130, 246, 0.3);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: #6366f1;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 0.5rem 0;
+            color: #f1f5f9;
+        }
+
+        .empty-state p {
+            margin: 0 0 1.5rem 0;
+            color: #94a3b8;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            border-radius: 50px;
+            background: rgba(15, 23, 42, 0.6);
+            color: #60a5fa;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            border-color: rgba(96, 165, 250, 0.6);
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .preview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .selector-field {
+                flex-direction: column;
+            }
+
+            .btn-load {
+                width: 100%;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn-delete,
+            .btn-cancel {
+                width: 100%;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -27,128 +379,106 @@
 
             <ul class="nav-links">
                 <li><a href="../index.html"><i class="fa-solid fa-home"></i> Home</a></li>
-                <li><a href="../data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
-                <li><a href="../about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li><a href="../nasa-data.html"><i class="fa-solid fa-satellite"></i> NASA Live Data</a></li>
                 <li class="crud">
                     <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
-                        CRUD <i class="fa-solid fa-caret-down"></i>
+                        <i class="fa-solid fa-book"></i> My Journal <i class="fa-solid fa-caret-down"></i>
                     </button>
                     <ul class="crud-menu">
-                        <li><a href="./create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
-                        <li><a href="./read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
-                        <li><a href="./update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
-                        <li><a href="./delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                        <li><a href="./create.html"><i class="fa-solid fa-plus"></i> Log Observation</a></li>
+                        <li><a href="./read.html"><i class="fa-solid fa-book-open"></i> View Journal</a></li>
+                        <li><a href="./update.html"><i class="fa-solid fa-pen"></i> Edit Entry</a></li>
+                        <li><a href="./delete.html"><i class="fa-solid fa-trash"></i> Remove Entry</a></li>
                     </ul>
                 </li>
+                <li><a href="../data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="../about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
             </ul>
         </nav>
     </header>
 
     <!-- Main Content -->
     <main>
-        <div class="container">
-            <!-- Breadcrumbs -->
-            <div class="breadcrumbs">
-                <a href="../index.html">Home</a> / 
-                <a href="./read.html">Activities</a> / 
-                Delete <span id="activityBadge"></span>
-            </div>
-
-            <!-- Page Content -->
-            <div class="card">
-                <h1 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <i class="fa-solid fa-trash" style="color: var(--danger);"></i>
-                    Delete Activity <span id="activityId" class="badge"></span>
+        <div class="container page-container">
+            <!-- Page Header -->
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-trash-can"></i> Remove Observation
                 </h1>
-                
-                <p class="muted" style="margin-bottom: 1.5rem;">
-                    This simulates the <strong>Delete</strong> operation. In the final MVC application, confirming deletion will permanently remove the record from the database and update all visualizations and tables.
+                <p style="color: #94a3b8; font-size: 1rem;">
+                    Permanently delete an observation from your journal
                 </p>
+            </div>
 
-                <div class="info-box">
-                    <p style="margin: 0;">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <strong>Demo Mode:</strong> Review the activity details below before confirming deletion. In production, this action will be permanent and cannot be undone.
-                    </p>
-                </div>
-
-                <!-- Loading State -->
-                <div id="loadingState" style="text-align: center; padding: 3rem; display: none;">
-                    <i class="fa-solid fa-spinner fa-spin" style="font-size: 3rem; color: var(--primary);"></i>
-                    <p style="margin-top: 1rem; color: var(--text-muted);">Loading activity data...</p>
-                </div>
-
-                <!-- Not Found State -->
-                <div id="notFoundState" style="text-align: center; padding: 3rem; display: none;">
-                    <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: var(--warning); margin-bottom: 1rem;"></i>
-                    <h2 style="margin-bottom: 0.5rem;">Activity Not Found</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 2rem;">
-                        The activity you're looking for doesn't exist or has already been deleted.
-                    </p>
-                    <a href="./read.html" class="btn btn-primary">
-                        <i class="fa-solid fa-arrow-left"></i> Back to Activities List
-                    </a>
-                </div>
-
-                <!-- Delete Confirmation -->
-                <div id="deleteConfirmation" style="display: none;">
-                    <!-- Warning Message -->
-                    <div class="error" style="margin-top: 2rem; margin-bottom: 2rem;">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <div>
-                            <strong>Warning: This action cannot be undone!</strong><br>
-                            <small>Please review the activity details below before confirming deletion.</small>
-                        </div>
-                    </div>
-
-                    <!-- Activity Summary -->
-                    <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 2rem;">
-                        <h3 style="margin-bottom: 1rem; color: var(--text-light);">
-                            <i class="fa-solid fa-circle-info"></i> Activity Details
-                        </h3>
-                        <div id="activitySummary" style="display: grid; gap: 1rem;"></div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="btn-group" style="justify-content: flex-start;">
-                        <button id="confirmDeleteBtn" class="btn btn-danger">
-                            <i class="fa-solid fa-trash"></i> Confirm Delete
-                        </button>
-                        <a href="./read.html" class="btn btn-outline">
-                            <i class="fa-solid fa-xmark"></i> Cancel
-                        </a>
-                        <a href="./update.html" id="updateLink" class="btn btn-secondary" style="display: none;">
-                            <i class="fa-solid fa-pen"></i> Update Instead
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Success Message -->
-                <div id="successMsg" class="success" style="display: none; margin-top: 1.5rem;">
-                    <i class="fa-solid fa-check-circle"></i>
-                    <div>
-                        <strong>Activity deleted successfully!</strong><br>
-                        <small>The record has been removed from the system.</small>
-                    </div>
-                </div>
-
-                <!-- Error Message -->
-                <div id="errorMsg" class="error" style="display: none; margin-top: 1.5rem;">
-                    <i class="fa-solid fa-circle-exclamation"></i>
-                    <div>
-                        <strong>Deletion failed!</strong><br>
-                        <small>Could not delete the activity. Please try again.</small>
-                    </div>
+            <!-- Observation Selector -->
+            <div class="selector-section" id="selectorSection">
+                <h3><i class="fa-solid fa-magnifying-glass"></i> Select Observation to Remove</h3>
+                <div class="selector-field">
+                    <select id="observationSelect">
+                        <option value="">Choose an observation...</option>
+                    </select>
+                    <button class="btn-load" onclick="loadSelectedObservation()">
+                        <i class="fa-solid fa-download"></i> Load
+                    </button>
                 </div>
             </div>
 
-            <!-- Back to Home Button -->
-            <div class="btn-group">
-                <a class="btn btn-primary" href="../index.html">
-                    <i class="fa-solid fa-home"></i> Back to Home
+            <!-- Success Message -->
+            <div id="successMessage" class="alert alert-success">
+                <i class="fa-solid fa-circle-check"></i> <strong>Deleted!</strong> Observation removed successfully.
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="alert alert-error">
+                <i class="fa-solid fa-circle-exclamation"></i> <span id="errorText"></span>
+            </div>
+
+            <!-- Preview Section -->
+            <div id="previewSection" style="display: none;">
+                <!-- Warning Box -->
+                <div class="warning-box">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div class="warning-box-content">
+                        <h4>Warning: This action cannot be undone</h4>
+                        <p>Once deleted, this observation will be permanently removed from your journal.</p>
+                    </div>
+                </div>
+
+                <!-- Preview Card -->
+                <div class="preview-card" id="previewCard">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="btn-delete" onclick="confirmDelete()">
+                        <i class="fa-solid fa-trash"></i> Confirm Delete
+                    </button>
+                    <button class="btn-cancel" onclick="cancelDelete()">
+                        <i class="fa-solid fa-xmark"></i> Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <i class="fa-solid fa-inbox"></i>
+                <h3>No Observations Found</h3>
+                <p>You don't have any observations to delete.</p>
+                <a href="./create.html" class="btn-load" style="text-decoration: none;">
+                    <i class="fa-solid fa-plus"></i> Log First Observation
                 </a>
-                <a class="btn btn-secondary" href="../data-visualization.html">
-                    <i class="fa-solid fa-chart-column"></i> View Dashboard
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="nav-buttons">
+                <a href="./read.html" class="nav-btn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back to Journal</span>
+                </a>
+                <a href="./create.html" class="nav-btn">
+                    <span>Log New Observation</span>
+                    <i class="fa-solid fa-arrow-right"></i>
                 </a>
             </div>
         </div>
@@ -160,8 +490,8 @@
             <div class="footer-section">
                 <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
                 <ul>
-                    <li>NASA Space Data Explorer</li>
-                    <li>Mission Analytics & Visualizations</li>
+                    <li>Personal Space Observation Journal</li>
+                    <li>Track Your Stargazing Journey</li>
                     <li>Built for ISM 6225</li>
                     <li>University of South Florida</li>
                 </ul>
@@ -170,18 +500,18 @@
                 <h4>Navigation</h4>
                 <ul>
                     <li><a href="../index.html">Home</a></li>
+                    <li><a href="../nasa-data.html">NASA Live Data</a></li>
                     <li><a href="../data-visualization.html">Data Dashboard</a></li>
                     <li><a href="../about.html">About Us</a></li>
-                    <li><a href="./read.html">View Activities</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>CRUD Operations</h4>
+                <h4>My Journal</h4>
                 <ul>
-                    <li><a href="./create.html">Create Activity</a></li>
-                    <li><a href="./read.html">Read Activities</a></li>
-                    <li><a href="./update.html">Update Activity</a></li>
-                    <li><a href="./delete.html">Delete Activity</a></li>
+                    <li><a href="./create.html">Log Observation</a></li>
+                    <li><a href="./read.html">View Journal</a></li>
+                    <li><a href="./update.html">Edit Entry</a></li>
+                    <li><a href="./delete.html">Remove Entry</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -194,192 +524,233 @@
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+            &copy; 2025 SpaceTrack - Personal Space Observation Journal | All rights reserved | ISM 6225 Project
         </div>
     </footer>
-
-    <!-- JavaScript -->
-    <script src="../js/main.js"></script>
-    <script>
-        // Get activity ID from URL query parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const activityIdParam = urlParams.get('id');
-        
-        let currentActivity = null;
-        let isDeleted = false;
-
-        // DOM Elements
-        const loadingState = document.getElementById('loadingState');
-        const notFoundState = document.getElementById('notFoundState');
-        const deleteConfirmation = document.getElementById('deleteConfirmation');
-        const activityIdBadge = document.getElementById('activityId');
-        const activityBreadcrumb = document.getElementById('activityBadge');
-        const activitySummary = document.getElementById('activitySummary');
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-        const updateLink = document.getElementById('updateLink');
-        const successMsg = document.getElementById('successMsg');
-        const errorMsg = document.getElementById('errorMsg');
-
-        // Load activity on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            loadActivity();
-        });
-
-        // Load the activity to delete
-        function loadActivity() {
-            loadingState.style.display = 'block';
-
-            setTimeout(() => {
-                if (!activityIdParam || !window.CRUD) {
-                    showNotFound();
-                    return;
-                }
-
-                const activityId = parseInt(activityIdParam);
-                currentActivity = window.CRUD.getActivity(activityId);
-
-                if (!currentActivity) {
-                    showNotFound();
-                    return;
-                }
-
-                // Display activity details
-                displayActivity();
-                loadingState.style.display = 'none';
-                deleteConfirmation.style.display = 'block';
-            }, 300);
-        }
-
-        // Show not found state
-        function showNotFound() {
-            loadingState.style.display = 'none';
-            notFoundState.style.display = 'block';
-        }
-
-        // Display activity details
-        function displayActivity() {
-            // Set activity ID badge
-            activityIdBadge.textContent = `#${currentActivity.id}`;
-            activityBreadcrumb.textContent = `#${currentActivity.id}`;
-
-            // Set update link
-            updateLink.href = `./update.html?id=${currentActivity.id}`;
-            updateLink.style.display = 'inline-flex';
-
-            // Get mission name
-            const missionName = window.CRUD.missionName(currentActivity.missionId);
-
-            // Create summary HTML
-            const summaryHTML = `
-                <div style="display: flex; padding: 0.75rem 0; border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
-                    <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
-                        <i class="fa-solid fa-hashtag"></i> Activity ID:
-                    </div>
-                    <div style="color: var(--text-muted);">
-                        <span class="badge">#${currentActivity.id}</span>
-                    </div>
-                </div>
-                <div style="display: flex; padding: 0.75rem 0; border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
-                    <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
-                        <i class="fa-solid fa-rocket"></i> Mission:
-                    </div>
-                    <div style="color: var(--text-muted);">
-                        ${missionName}
-                    </div>
-                </div>
-                <div style="display: flex; padding: 0.75rem 0; border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
-                    <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
-                        <i class="fa-solid fa-tag"></i> Type:
-                    </div>
-                    <div style="color: var(--text-muted); text-transform: capitalize;">
-                        ${currentActivity.type}
-                    </div>
-                </div>
-                <div style="display: flex; padding: 0.75rem 0; border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
-                    <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
-                        <i class="fa-solid fa-calendar"></i> Date:
-                    </div>
-                    <div style="color: var(--text-muted);">
-                        ${currentActivity.date}
-                    </div>
-                </div>
-                <div style="display: flex; padding: 0.75rem 0;">
-                    <div style="flex: 0 0 140px; font-weight: 600; color: var(--text-light);">
-                        <i class="fa-solid fa-heading"></i> Title:
-                    </div>
-                    <div style="color: var(--text-muted);">
-                        ${currentActivity.title}
-                    </div>
-                </div>
-            `;
-
-            activitySummary.innerHTML = summaryHTML;
-        }
-
-        // Handle delete confirmation
-        confirmDeleteBtn.addEventListener('click', function() {
-            if (isDeleted) {
-                return; // Prevent double deletion
-            }
-
-            // Confirm with user
-            const confirmed = confirm(
-                `Are you absolutely sure you want to delete activity #${currentActivity.id}?\n\n` +
-                `Title: ${currentActivity.title}\n` +
-                `Mission: ${window.CRUD.missionName(currentActivity.missionId)}\n\n` +
-                `This action cannot be undone!`
-            );
-
-            if (!confirmed) {
-                return;
-            }
-
-            // Delete activity using CRUD simulator
-            const success = window.CRUD.deleteActivity(currentActivity.id);
-
-            if (success) {
-                isDeleted = true;
-
-                // Hide confirmation section
-                deleteConfirmation.style.display = 'none';
-
-                // Show success message
-                successMsg.innerHTML = `
-                    <i class="fa-solid fa-check-circle"></i>
-                    <div>
-                        <strong>Activity #${currentActivity.id} deleted successfully!</strong><br>
-                        <small>The record has been removed. In the final application, this will update the database and all visualizations.</small>
-                    </div>
-                `;
-                successMsg.style.display = 'flex';
-                errorMsg.style.display = 'none';
-
-                // Scroll to success message
-                successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-                // Redirect to read page after 3 seconds
-                setTimeout(() => {
-                    window.location.href = './read.html';
-                }, 3000);
-
-            } else {
-                // Show error message
-                errorMsg.style.display = 'flex';
-                successMsg.style.display = 'none';
-
-                // Scroll to error message
-                errorMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-                // Hide error message after 5 seconds
-                setTimeout(() => {
-                    errorMsg.style.display = 'none';
-                }, 5000);
-            }
-        });
-    </script>
 
     <!-- Botpress Chatbot -->
     <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
     <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+
+    <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+        let currentObservation = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadObservations();
+        });
+
+        async function loadObservations() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/activities`);
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    const select = document.getElementById('observationSelect');
+                    data.data.forEach(obs => {
+                        const option = document.createElement('option');
+                        option.value = obs.id;
+                        option.textContent = `${obs.title} (${new Date(obs.date).toLocaleDateString()})`;
+                        select.appendChild(option);
+                    });
+                } else {
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading observations:', error);
+                showError('Failed to load observations. Make sure backend is running.');
+            }
+        }
+
+        function loadSelectedObservation() {
+            const id = document.getElementById('observationSelect').value;
+            if (!id) {
+                showError('Please select an observation first');
+                return;
+            }
+            loadObservationById(id);
+        }
+
+        async function loadObservationById(id) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/activities/${id}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    currentObservation = data.data;
+                    displayPreview(data.data);
+                    document.getElementById('selectorSection').style.display = 'none';
+                    document.getElementById('previewSection').style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    showError('Failed to load observation');
+                }
+            } catch (error) {
+                console.error('Error loading observation:', error);
+                showError('Failed to load observation. Make sure backend is running.');
+            }
+        }
+
+        function displayPreview(obs) {
+            const card = document.getElementById('previewCard');
+            
+            // Rating stars
+            let ratingHtml = '';
+            if (obs.rating) {
+                ratingHtml = '<div class="preview-rating">';
+                for (let i = 0; i < obs.rating; i++) {
+                    ratingHtml += '<span class="star">★</span>';
+                }
+                ratingHtml += '</div>';
+            }
+
+            // Image
+            let imageHtml = '';
+            if (obs.imageUrl) {
+                imageHtml = `<img src="${obs.imageUrl}" alt="${obs.title}" class="preview-image">`;
+            }
+
+            const projectName = obs.project ? obs.project.name : 'Unknown Project';
+
+            card.innerHTML = `
+                <div class="preview-header">
+                    <h2 class="preview-title">${obs.title}</h2>
+                    ${ratingHtml}
+                </div>
+
+                ${imageHtml}
+
+                <div class="preview-grid">
+                    <div class="preview-item">
+                        <div class="preview-item-label">
+                            <i class="fa-solid fa-folder"></i> Project
+                        </div>
+                        <div class="preview-item-value">${projectName}</div>
+                    </div>
+
+                    <div class="preview-item">
+                        <div class="preview-item-label">
+                            <i class="fa-solid fa-tag"></i> Type
+                        </div>
+                        <div class="preview-item-value">${obs.observationType}</div>
+                    </div>
+
+                    <div class="preview-item">
+                        <div class="preview-item-label">
+                            <i class="fa-solid fa-calendar"></i> Date
+                        </div>
+                        <div class="preview-item-value">${new Date(obs.date).toLocaleDateString()}</div>
+                    </div>
+
+                    ${obs.time ? `
+                    <div class="preview-item">
+                        <div class="preview-item-label">
+                            <i class="fa-solid fa-clock"></i> Time
+                        </div>
+                        <div class="preview-item-value">${obs.time}</div>
+                    </div>
+                    ` : ''}
+
+                    ${obs.objectObserved ? `
+                    <div class="preview-item">
+                        <div class="preview-item-label">
+                            <i class="fa-solid fa-circle-dot"></i> Object
+                        </div>
+                        <div class="preview-item-value">${obs.objectObserved}</div>
+                    </div>
+                    ` : ''}
+
+                    ${obs.location ? `
+                    <div class="preview-item">
+                        <div class="preview-item-label">
+                            <i class="fa-solid fa-location-dot"></i> Location
+                        </div>
+                        <div class="preview-item-value">${obs.location}</div>
+                    </div>
+                    ` : ''}
+
+                    ${obs.equipment ? `
+                    <div class="preview-item">
+                        <div class="preview-item-label">
+                            <i class="fa-solid fa-screwdriver-wrench"></i> Equipment
+                        </div>
+                        <div class="preview-item-value">${obs.equipment}</div>
+                    </div>
+                    ` : ''}
+
+                    ${obs.conditions ? `
+                    <div class="preview-item">
+                        <div class="preview-item-label">
+                            <i class="fa-solid fa-cloud-sun"></i> Conditions
+                        </div>
+                        <div class="preview-item-value">${obs.conditions}</div>
+                    </div>
+                    ` : ''}
+                </div>
+
+                ${obs.description ? `
+                <div class="preview-description">
+                    <div class="preview-description-label">
+                        <i class="fa-solid fa-align-left"></i> Description
+                    </div>
+                    <div class="preview-description-text">${obs.description}</div>
+                </div>
+                ` : ''}
+            `;
+        }
+
+        async function confirmDelete() {
+            if (!currentObservation) return;
+
+            const confirmed = confirm(`Are you absolutely sure you want to delete "${currentObservation.title}"?\n\nThis action CANNOT be undone!`);
+            
+            if (!confirmed) return;
+
+            try {
+                const response = await ActivityAPI.delete(currentObservation.id);
+
+                if (response.success) {
+                    showSuccess();
+                    setTimeout(() => {
+                        window.location.href = './read.html';
+                    }, 1500);
+                } else {
+                    showError('Failed to delete observation');
+                }
+            } catch (error) {
+                console.error('Error deleting observation:', error);
+                showError('Failed to delete observation. Make sure backend is running.');
+            }
+        }
+
+        function cancelDelete() {
+            window.location.href = './read.html';
+        }
+
+        function showEmptyState() {
+            document.getElementById('selectorSection').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'block';
+        }
+
+        function showSuccess() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.add('show');
+            document.getElementById('previewSection').style.display = 'none';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showError(message) {
+            document.getElementById('successMessage').classList.remove('show');
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        console.log('✅ Remove Entry page loaded');
+    </script>
 </body>
 </html>

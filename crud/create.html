@@ -3,14 +3,352 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Create new space observation activity">
-    <title>Create Activity - SpaceTrack</title>
+    <meta name="description" content="Log new space observation - SpaceTrack Personal Journal">
+    <title>Log Observation - SpaceTrack</title>
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <!-- Shared Stylesheet -->
     <link rel="stylesheet" href="../css/styles.css">
+    
+    <style>
+        /* Compact Container */
+        .form-container {
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        /* Form Styling */
+        .compact-form {
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row-triple {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row-full {
+            grid-column: 1 / -1;
+        }
+
+        .form-field label {
+            display: block;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+
+        .form-field label .required {
+            color: #f87171;
+        }
+
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            border: 1px solid #334155;
+            border-radius: 0.375rem;
+            background: #0f172a;
+            color: #f1f5f9;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        /* Transparent placeholder for selects */
+        .form-field select {
+            color: rgba(148, 163, 184, 0.5);
+        }
+
+        .form-field select:focus,
+        .form-field select.has-value {
+            color: #f1f5f9;
+        }
+
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .form-field textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-field small {
+            display: block;
+            margin-top: 0.3rem;
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        /* Project Selection with Create Option - FIXED ALIGNMENT */
+        .project-row {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-field-container {
+            flex: 1;
+        }
+
+        .btn-add-project {
+            padding: 0.6rem 1rem;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            border-radius: 0.375rem;
+            color: #6ee7b7;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            margin-top: 1.85rem;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn-add-project:hover {
+            background: rgba(16, 185, 129, 0.25);
+        }
+
+        /* Image Upload - SMALLER SIZE */
+        .image-upload-area {
+            border: 2px dashed #334155;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            background: #0f172a;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-upload-area:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .image-upload-area.dragover {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .image-upload-area i {
+            font-size: 1.5rem;
+            color: #94a3b8;
+            margin-bottom: 0.3rem;
+        }
+
+        .image-upload-area p {
+            margin: 0;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .remove-image-btn {
+            margin-top: 0.5rem;
+            padding: 0.4rem 1rem;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            border-radius: 0.375rem;
+            color: #fca5a5;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* Rating Stars */
+        .rating-container {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-top: 0.4rem;
+        }
+
+        .star {
+            font-size: 1.8rem;
+            color: #64748b;
+            cursor: pointer;
+            transition: color 0.2s;
+            user-select: none;
+        }
+
+        .star.active,
+        .star:hover {
+            color: #fbbf24;
+        }
+
+        /* Buttons */
+        .form-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-reset {
+            background: #475569;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-reset:hover {
+            background: #64748b;
+        }
+
+        /* Info Box */
+        .info-note {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        /* Success/Error Messages */
+        .alert {
+            padding: 0.875rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        .alert.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid #10b981;
+            color: #6ee7b7;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* STANDARDIZED NAVIGATION BUTTONS (from nasa-data.html) */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid rgba(96, 165, 250, 0.3);
+            border-radius: 50px;
+            background: rgba(15, 23, 42, 0.6);
+            color: #60a5fa;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            border-color: rgba(96, 165, 250, 0.6);
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .form-row,
+            .form-row-triple {
+                grid-template-columns: 1fr;
+            }
+            
+            .project-row {
+                flex-direction: column;
+            }
+            
+            .btn-add-project {
+                width: 100%;
+                align-self: stretch;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Navigation -->
@@ -27,123 +365,222 @@
 
             <ul class="nav-links">
                 <li><a href="../index.html"><i class="fa-solid fa-home"></i> Home</a></li>
-                <li><a href="../data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
-                <li><a href="../about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
+                <li><a href="../nasa-data.html"><i class="fa-solid fa-satellite"></i> NASA Live Data</a></li>
                 <li class="crud">
                     <button class="crud-toggle" aria-haspopup="true" aria-expanded="false">
-                        CRUD <i class="fa-solid fa-caret-down"></i>
+                        <i class="fa-solid fa-book"></i> My Journal <i class="fa-solid fa-caret-down"></i>
                     </button>
                     <ul class="crud-menu">
-                        <li><a href="./create.html"><i class="fa-solid fa-plus"></i> Create</a></li>
-                        <li><a href="./read.html"><i class="fa-solid fa-eye"></i> Read</a></li>
-                        <li><a href="./update.html"><i class="fa-solid fa-pen"></i> Update</a></li>
-                        <li><a href="./delete.html"><i class="fa-solid fa-trash"></i> Delete</a></li>
+                        <li><a href="./create.html"><i class="fa-solid fa-plus"></i> Log Observation</a></li>
+                        <li><a href="./read.html"><i class="fa-solid fa-book-open"></i> View Journal</a></li>
+                        <li><a href="./update.html"><i class="fa-solid fa-pen"></i> Edit Entry</a></li>
+                        <li><a href="./delete.html"><i class="fa-solid fa-trash"></i> Remove Entry</a></li>
                     </ul>
                 </li>
+                <li><a href="../data-visualization.html"><i class="fa-solid fa-chart-column"></i> Data Dashboard</a></li>
+                <li><a href="../about.html"><i class="fa-solid fa-users"></i> About Us</a></li>
             </ul>
         </nav>
     </header>
 
     <!-- Main Content -->
     <main>
-        <div class="container">
-            <!-- Breadcrumbs -->
-            <div class="breadcrumbs">
-                <a href="../index.html">Home</a> / 
-                <a href="./read.html">Activities</a> / 
-                Create
+        <div class="container form-container">
+            <!-- Page Header -->
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-telescope"></i> Log New Observation
+                </h1>
+                <p style="color: #94a3b8; font-size: 1rem;">
+                    Record your stargazing experience and observations
+                </p>
             </div>
 
-            <!-- Page Content -->
-            <div class="card">
-                <h1 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
-                    <i class="fa-solid fa-plus" style="color: var(--success);"></i>
-                    Create New Activity
-                </h1>
-                
-                <p class="muted" style="margin-bottom: 1.5rem;">
-                    This simulates the <strong>Create</strong> operation. In the final MVC application, clicking "Save" will persist the new activity to the database and automatically update all visualizations and tables with the new data.
-                </p>
+            <!-- Success Message -->
+            <div id="successMessage" class="alert alert-success">
+                <i class="fa-solid fa-circle-check"></i> <strong>Success!</strong> Observation logged successfully.
+            </div>
 
-                <div class="info-box">
-                    <p style="margin: 0;">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <strong>Demo Mode:</strong> This is a static prototype. The form validates input and simulates data creation using JavaScript. In the production version, data will be sent to the backend API and stored in PostgreSQL.
-                    </p>
-                </div>
+            <!-- Error Message -->
+            <div id="errorMessage" class="alert alert-error">
+                <i class="fa-solid fa-circle-exclamation"></i> <span id="errorText"></span>
+            </div>
 
-                <!-- Create Form -->
-                <form id="createForm" style="margin-top: 2rem;">
-                    <div class="form-grid">
-                        <div>
-                            <label for="missionId">
-                                <i class="fa-solid fa-rocket"></i> Mission
+            <!-- Create Form -->
+            <div class="compact-form">
+                <form id="createForm">
+                    <!-- Project Selection with New Button - FIXED ALIGNMENT -->
+                    <div class="project-row">
+                        <div class="project-field-container">
+                            <div class="form-field">
+                                <label>
+                                    <i class="fa-solid fa-folder"></i> Project <span class="required">*</span>
+                                </label>
+                                <select id="projectId" required>
+                                    <option value="">Select Project</option>
+                                </select>
+                                <small>Which project/collection is this for?</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-project" onclick="openNewProjectModal()">
+                            <i class="fa-solid fa-plus"></i> New
+                        </button>
+                    </div>
+
+                    <!-- Row 1: Type and Object -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-tag"></i> Observation Type <span class="required">*</span>
                             </label>
-                            <select id="missionId" required>
-                                <option value="">-- Select Mission --</option>
+                            <select id="observationType" required>
+                                <option value="">Select Type</option>
+                                <option value="Telescope">Telescope Observation</option>
+                                <option value="Naked Eye">Naked Eye</option>
+                                <option value="Binoculars">Binoculars</option>
+                                <option value="Astrophotography">Astrophotography</option>
+                                <option value="ISS Pass">ISS Pass</option>
+                                <option value="Meteor Shower">Meteor Shower</option>
+                                <option value="Eclipse">Eclipse</option>
+                                <option value="Learning">Learning/Education</option>
                             </select>
                         </div>
 
-                        <div>
-                            <label for="type">
-                                <i class="fa-solid fa-tag"></i> Activity Type
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-circle-dot"></i> Object Observed
                             </label>
-                            <select id="type" required>
-                                <option value="">-- Select Type --</option>
-                                <option value="image">Image Capture</option>
-                                <option value="observation">Scientific Observation</option>
-                                <option value="instrument">Instrument Reading</option>
-                                <option value="maneuver">Spacecraft Maneuver</option>
-                                <option value="sample">Sample Collection</option>
-                            </select>
+                            <input type="text" id="objectObserved" placeholder="e.g., Saturn, Andromeda Galaxy">
+                            <small>What did you observe?</small>
                         </div>
+                    </div>
 
-                        <div>
-                            <label for="date">
-                                <i class="fa-solid fa-calendar"></i> Observation Date
+                    <!-- Row 2: Date, Time, Rating -->
+                    <div class="form-row-triple">
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-calendar"></i> Date <span class="required">*</span>
                             </label>
                             <input type="date" id="date" required>
                         </div>
 
-                        <div>
-                            <label for="title">
-                                <i class="fa-solid fa-heading"></i> Title / Description
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-clock"></i> Time
                             </label>
-                            <input type="text" id="title" placeholder="e.g., Jezero Crater panorama" required>
+                            <input type="time" id="time">
+                        </div>
+
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-star"></i> Rating
+                            </label>
+                            <input type="hidden" id="rating" value="">
+                            <div class="rating-container">
+                                <span class="star" data-rating="1">★</span>
+                                <span class="star" data-rating="2">★</span>
+                                <span class="star" data-rating="3">★</span>
+                                <span class="star" data-rating="4">★</span>
+                                <span class="star" data-rating="5">★</span>
+                                <span style="font-size: 0.75rem; color: #64748b; margin-left: 0.5rem;">(Click to rate)</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Form Actions -->
-                    <div class="btn-group" style="justify-content: flex-start; margin-top: 2rem;">
-                        <button type="submit" class="btn btn-success">
-                            <i class="fa-solid fa-save"></i> Save Activity
+                    <!-- Row 3: Location and Equipment -->
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-location-dot"></i> Location
+                            </label>
+                            <input type="text" id="location" placeholder="e.g., Backyard, Observatory">
+                            <small>Where were you observing?</small>
+                        </div>
+
+                        <div class="form-field">
+                            <label>
+                                <i class="fa-solid fa-screwdriver-wrench"></i> Equipment Used
+                            </label>
+                            <input type="text" id="equipment" placeholder="e.g., 8-inch Dobsonian">
+                            <small>Telescope, camera, binoculars, etc.</small>
+                        </div>
+                    </div>
+
+                    <!-- Row 4: Conditions -->
+                    <div class="form-field form-row-full">
+                        <label>
+                            <i class="fa-solid fa-cloud-sun"></i> Sky Conditions
+                        </label>
+                        <input type="text" id="conditions" placeholder="e.g., Clear sky, 65°F, good seeing">
+                        <small>Weather, visibility, light pollution, etc.</small>
+                    </div>
+
+                    <!-- Title (Full Width) -->
+                    <div class="form-field form-row-full">
+                        <label>
+                            <i class="fa-solid fa-heading"></i> Title <span class="required">*</span>
+                        </label>
+                        <input type="text" id="title" placeholder="e.g., First time seeing Saturn's rings!" required>
+                        <small>Give your observation a memorable title</small>
+                    </div>
+
+                    <!-- Description (Full Width) -->
+                    <div class="form-field form-row-full">
+                        <label>
+                            <i class="fa-solid fa-align-left"></i> Notes & Details
+                        </label>
+                        <textarea id="description" placeholder="Describe what you saw, how it looked, any interesting details..."></textarea>
+                        <small>Your detailed observation notes</small>
+                    </div>
+
+                    <!-- Image Upload - SMALLER SIZE -->
+                    <div class="form-field form-row-full">
+                        <label>
+                            <i class="fa-solid fa-camera"></i> Add Photo (Optional)
+                        </label>
+                        <div class="image-upload-area" id="imageUploadArea">
+                            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <p>Click to upload or drag & drop</p>
+                            <small style="color: #64748b;">PNG, JPG up to 5MB</small>
+                        </div>
+                        <div id="imagePreviewContainer" style="display: none;">
+                            <img id="imagePreview" class="image-preview" alt="Preview">
+                            <div style="text-align: center;">
+                                <button type="button" class="remove-image-btn" onclick="removeImage()">
+                                    <i class="fa-solid fa-xmark"></i> Remove Image
+                                </button>
+                            </div>
+                        </div>
+                        <small>Upload a photo of your observation</small>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="form-buttons">
+                        <button type="submit" class="btn-create">
+                            <i class="fa-solid fa-check"></i> Log Observation
                         </button>
-                        <button type="reset" class="btn btn-outline">
-                            <i class="fa-solid fa-rotate-left"></i> Reset Form
+                        <button type="reset" class="btn-reset">
+                            <i class="fa-solid fa-rotate-left"></i> Clear
                         </button>
-                        <a href="./read.html" class="btn btn-secondary">
-                            <i class="fa-solid fa-eye"></i> View All Activities
-                        </a>
                     </div>
                 </form>
 
-                <!-- Success Message -->
-                <div id="successMsg" class="success" style="display: none; margin-top: 1.5rem;">
-                    <i class="fa-solid fa-check-circle"></i>
-                    <div>
-                        <strong>Activity created successfully!</strong><br>
-                        <small>In the final application, this data will be stored in the database.</small>
-                    </div>
+                <!-- Info Note -->
+                <div class="info-note">
+                    <i class="fa-solid fa-book"></i> <strong>Personal Journal:</strong> Your observations are saved to your personal space journal and can be viewed, edited, or deleted anytime.
                 </div>
             </div>
 
-            <!-- Back to Home Button -->
-            <div class="btn-group">
-                <a class="btn btn-primary" href="../index.html">
-                    <i class="fa-solid fa-home"></i> Back to Home
+            <!-- Navigation Buttons (Standardized Style) -->
+            <div class="nav-buttons">
+                <a href="../index.html" class="nav-btn">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Back to Home</span>
                 </a>
-                <a class="btn btn-secondary" href="../data-visualization.html">
-                    <i class="fa-solid fa-chart-column"></i> View Dashboard
+                <a href="./read.html" class="nav-btn">
+                    <span>View My Journal</span>
+                    <i class="fa-solid fa-arrow-right"></i>
                 </a>
             </div>
         </div>
@@ -155,8 +592,8 @@
             <div class="footer-section">
                 <h4><i class="fa-solid fa-rocket"></i> SpaceTrack</h4>
                 <ul>
-                    <li>NASA Space Data Explorer</li>
-                    <li>Mission Analytics & Visualizations</li>
+                    <li>Personal Space Observation Journal</li>
+                    <li>Track Your Stargazing Journey</li>
                     <li>Built for ISM 6225</li>
                     <li>University of South Florida</li>
                 </ul>
@@ -165,18 +602,18 @@
                 <h4>Navigation</h4>
                 <ul>
                     <li><a href="../index.html">Home</a></li>
+                    <li><a href="../nasa-data.html">NASA Live Data</a></li>
                     <li><a href="../data-visualization.html">Data Dashboard</a></li>
                     <li><a href="../about.html">About Us</a></li>
-                    <li><a href="./read.html">View Activities</a></li>
                 </ul>
             </div>
             <div class="footer-section">
-                <h4>CRUD Operations</h4>
+                <h4>My Journal</h4>
                 <ul>
-                    <li><a href="./create.html">Create Activity</a></li>
-                    <li><a href="./read.html">Read Activities</a></li>
-                    <li><a href="./update.html">Update Activity</a></li>
-                    <li><a href="./delete.html">Delete Activity</a></li>
+                    <li><a href="./create.html">Log Observation</a></li>
+                    <li><a href="./read.html">View Journal</a></li>
+                    <li><a href="./update.html">Edit Entry</a></li>
+                    <li><a href="./delete.html">Remove Entry</a></li>
                 </ul>
             </div>
             <div class="footer-section">
@@ -189,79 +626,251 @@
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2025 SpaceTrack - NASA Space Data Explorer | All rights reserved | ISM 6225 Project
+            &copy; 2025 SpaceTrack - Personal Space Observation Journal | All rights reserved | ISM 6225 Project
         </div>
     </footer>
-
-    <!-- JavaScript -->
-    <script src="../js/main.js"></script>
-    <script>
-        // Populate mission dropdown
-        document.addEventListener('DOMContentLoaded', function() {
-            const missionSelect = document.getElementById('missionId');
-            
-            if (window.CRUD && window.CRUD.Missions) {
-                window.CRUD.Missions.forEach(mission => {
-                    const option = document.createElement('option');
-                    option.value = mission.missionId;
-                    option.textContent = `${mission.name} (${mission.type})`;
-                    missionSelect.appendChild(option);
-                });
-            }
-
-            // Set today's date as default
-            const dateInput = document.getElementById('date');
-            const today = new Date().toISOString().split('T')[0];
-            dateInput.value = today;
-            dateInput.max = today; // Prevent future dates
-        });
-
-        // Handle form submission
-        document.getElementById('createForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const formData = {
-                missionId: parseInt(document.getElementById('missionId').value),
-                type: document.getElementById('type').value,
-                date: document.getElementById('date').value,
-                title: document.getElementById('title').value.trim() || '(untitled)'
-            };
-
-            // Create activity using CRUD simulator
-            if (window.CRUD && window.CRUD.createActivity) {
-                const newId = window.CRUD.createActivity(formData);
-                
-                // Show success message
-                const successMsg = document.getElementById('successMsg');
-                successMsg.innerHTML = `
-                    <i class="fa-solid fa-check-circle"></i>
-                    <div>
-                        <strong>Activity #${newId} created successfully!</strong><br>
-                        <small>In the final application, this data will be stored in the database and visible across all pages.</small>
-                    </div>
-                `;
-                successMsg.style.display = 'flex';
-
-                // Reset form
-                this.reset();
-                
-                // Reset date to today
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('date').value = today;
-
-                // Scroll to success message
-                successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-                // Hide success message after 5 seconds
-                setTimeout(() => {
-                    successMsg.style.display = 'none';
-                }, 5000);
-            }
-        });
-    </script>
 
     <!-- Botpress Chatbot -->
     <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
     <script src="https://files.bpcontent.cloud/2025/10/16/14/20251016142442-JV2BQMNJ.js" defer></script>
+
+    <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+        let selectedImage = null;
+
+        // Rating system
+        let selectedRating = 0;
+        const stars = document.querySelectorAll('.star');
+        
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.getAttribute('data-rating'));
+                document.getElementById('rating').value = selectedRating;
+                updateStars();
+            });
+
+            star.addEventListener('mouseover', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                highlightStars(rating);
+            });
+        });
+
+        document.querySelector('.rating-container').addEventListener('mouseleave', function() {
+            updateStars();
+        });
+
+        function highlightStars(rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+
+        function updateStars() {
+            highlightStars(selectedRating);
+        }
+
+        // Update select color on change
+        document.getElementById('projectId').addEventListener('change', function() {
+            this.classList.toggle('has-value', this.value !== '');
+        });
+
+        document.getElementById('observationType').addEventListener('change', function() {
+            this.classList.toggle('has-value', this.value !== '');
+        });
+
+        // Image upload
+        const imageUploadArea = document.getElementById('imageUploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+
+        imageUploadArea.addEventListener('click', () => imageInput.click());
+
+        imageInput.addEventListener('change', handleImageSelect);
+
+        imageUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.add('dragover');
+        });
+
+        imageUploadArea.addEventListener('dragleave', () => {
+            imageUploadArea.classList.remove('dragover');
+        });
+
+        imageUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                imageInput.files = e.dataTransfer.files;
+                handleImageSelect();
+            }
+        });
+
+        function handleImageSelect() {
+            const file = imageInput.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    showError('Image must be less than 5MB');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    selectedImage = e.target.result;
+                    imagePreview.src = selectedImage;
+                    imageUploadArea.style.display = 'none';
+                    imagePreviewContainer.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeImage() {
+            selectedImage = null;
+            imageInput.value = '';
+            imageUploadArea.style.display = 'block';
+            imagePreviewContainer.style.display = 'none';
+        }
+
+        // Quick project creation
+        function openNewProjectModal() {
+            const projectName = prompt('Enter new project name:');
+            if (projectName && projectName.trim()) {
+                createNewProject(projectName.trim());
+            }
+        }
+
+        async function createNewProject(name) {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/missions`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        category: 'General',
+                        status: 'Active'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    await loadProjects();
+                    document.getElementById('projectId').value = data.data.projectId;
+                    document.getElementById('projectId').classList.add('has-value');
+                    alert(`Project "${name}" created successfully!`);
+                } else {
+                    showError('Failed to create project');
+                }
+            } catch (error) {
+                console.error('Error creating project:', error);
+                showError('Failed to create project. Make sure backend is running.');
+            }
+        }
+
+        // Load projects when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProjects();
+            setDefaultDate();
+        });
+
+        async function loadProjects() {
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/missions`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const select = document.getElementById('projectId');
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">Select Project</option>';
+                    
+                    data.data.forEach(project => {
+                        const option = document.createElement('option');
+                        option.value = project.projectId;
+                        option.textContent = `${project.name} (${project.category})`;
+                        select.appendChild(option);
+                    });
+
+                    if (currentValue) {
+                        select.value = currentValue;
+                        select.classList.add('has-value');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                showError('Failed to load projects. Please refresh the page.');
+            }
+        }
+
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+        }
+
+        document.getElementById('createForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = {
+                projectId: parseInt(document.getElementById('projectId').value),
+                observationType: document.getElementById('observationType').value,
+                date: document.getElementById('date').value,
+                time: document.getElementById('time').value || null,
+                title: document.getElementById('title').value,
+                objectObserved: document.getElementById('objectObserved').value,
+                location: document.getElementById('location').value,
+                equipment: document.getElementById('equipment').value,
+                conditions: document.getElementById('conditions').value,
+                description: document.getElementById('description').value,
+                rating: selectedRating || null,
+                imageUrl: selectedImage || null
+            };
+
+            try {
+                const response = await ActivityAPI.create(formData);
+
+                if (response.success) {
+                    showSuccess();
+                    document.getElementById('createForm').reset();
+                    selectedRating = 0;
+                    updateStars();
+                    removeImage();
+                    setDefaultDate();
+                    document.getElementById('projectId').classList.remove('has-value');
+                    document.getElementById('observationType').classList.remove('has-value');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    showError(response.message || 'Failed to log observation');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to log observation. Make sure backend is running.');
+            }
+        });
+
+        function showSuccess() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.add('show');
+            setTimeout(() => {
+                document.getElementById('successMessage').classList.remove('show');
+            }, 5000);
+        }
+
+        function showError(message) {
+            document.getElementById('successMessage').classList.remove('show');
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.add('show');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        console.log('✅ Log Observation page loaded');
+    </script>
 </body>
 </html>

@@ -251,6 +251,70 @@ body {
 }
 
 /* ——————————————————————————————————————————
+   COMPACT STATISTICS - Modern Minimal Design
+   —————————————————————————————————————————— */
+
+.stats-compact {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(30, 41, 59, 0.6) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 0.5rem;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    transition: all 0.3s ease;
+    flex: 1;
+    min-width: 150px;
+    max-width: 250px;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+    background: rgba(15, 23, 42, 0.6);
+    border-color: rgba(148, 163, 184, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.stat-icon-compact {
+    font-size: 2rem;
+    opacity: 0.9;
+}
+
+.stat-content-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.stat-value-compact {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-light);
+    line-height: 1;
+}
+
+.stat-label-compact {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ——————————————————————————————————————————
    CARDS
    —————————————————————————————————————————— */
 .card-grid {
@@ -585,8 +649,8 @@ textarea {
    —————————————————————————————————————————— */
 .team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
     margin: 2rem 0;
 }
 
@@ -594,10 +658,13 @@ textarea {
     background: rgba(30, 41, 59, 0.8);
     backdrop-filter: blur(10px);
     border-radius: 1rem;
-    padding: 2rem;
+    padding: 1.5rem;
     text-align: center;
     border: 2px solid var(--border-color);
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    min-height: 480px;
 }
 
 .team-member:hover {
@@ -607,17 +674,17 @@ textarea {
 }
 
 .team-photo {
-    width: 180px;
-    height: 180px;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
-    margin: 0 auto 1.5rem;
+    margin: 0 auto 1rem;
     object-fit: cover;
     border: 4px solid var(--secondary);
     box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
 }
 
 .team-member h3 {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     margin-bottom: 0.5rem;
     color: var(--text-light);
 }
@@ -625,22 +692,23 @@ textarea {
 .role {
     color: var(--secondary);
     font-weight: 600;
-    margin-bottom: 0.75rem;
-    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
 }
 
 .enrollment {
     color: var(--text-muted);
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
     font-family: 'Courier New', monospace;
 }
 
 .contributions {
     color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-top: 1rem;
+    font-size: 0.88rem;
+    line-height: 1.5;
+    margin-top: auto;
+    flex-grow: 1;
 }
 
 /* ——————————————————————————————————————————
@@ -845,6 +913,34 @@ footer {
 /* ——————————————————————————————————————————
    RESPONSIVE DESIGN
    —————————————————————————————————————————— */
+@media (max-width: 1024px) {
+    .stats-compact {
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        min-width: 140px;
+        padding: 0.625rem 1rem;
+    }
+    
+    .stat-icon-compact {
+        font-size: 1.5rem;
+    }
+    
+    .stat-value-compact {
+        font-size: 1.5rem;
+    }
+    
+    .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .team-member {
+        min-height: auto;
+    }
+}
+
 @media (max-width: 768px) {
     .nav {
         flex-wrap: wrap;
@@ -899,9 +995,29 @@ footer {
         width: 150px;
         height: 150px;
     }
+    
+    .team-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .team-member {
+        min-height: auto;
+    }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
+    .stats-compact {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+    
+    .stat-item {
+        width: 100%;
+        max-width: 100%;
+    }
+    
     .hero {
         padding: 2rem 1.5rem;
     }
@@ -921,5 +1037,14 @@ footer {
 
     .crud-btn i {
         font-size: 2rem;
+    }
+    
+    .team-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+    
+    .team-member {
+        min-height: auto;
     }
 }
