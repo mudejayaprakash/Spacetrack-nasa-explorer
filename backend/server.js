@@ -1,5 +1,6 @@
 // Load environment variables
 require('dotenv').config();
+const path = require('path');
 
 // Import dependencies
 const express = require('express');
@@ -39,19 +40,32 @@ app.use((req, res, next) => {
     next();
 });
 
+// Serve static files from parent directory
+app.use(express.static(path.join(__dirname, '..')));
+app.use('/css', express.static(path.join(__dirname, '../css')));
+app.use('/js', express.static(path.join(__dirname, '../js')));
+app.use('/images', express.static(path.join(__dirname, '../images')));
+app.use('/assets', express.static(path.join(__dirname, '../assets')));
+app.use('/crud', express.static(path.join(__dirname, '../crud')));
+
 // ============================================
 // ROUTES
 // ============================================
 
-// Health check endpoint
+// Serve homepage
 app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../index.html'));
+});
+
+// API health check endpoint
+app.get('/api/health', (req, res) => {
     res.json({
         message: '🚀 SpaceTrack API is running!',
         version: '1.0.0',
         status: 'healthy',
         timestamp: new Date().toISOString(),
         endpoints: {
-            health: 'GET /',
+            health: 'GET /api/health',
             api_info: 'GET /api',
             activities: 'GET /api/activities',
             missions: 'GET /api/missions',
@@ -105,7 +119,7 @@ app.use((req, res) => {
         success: false,
         error: 'Route not found',
         message: `Cannot ${req.method} ${req.url}`,
-        availableEndpoints: 'Visit GET / or GET /api for documentation'
+        availableEndpoints: 'Visit GET /api/health or GET /api for documentation'
     });
 });
 
@@ -118,10 +132,6 @@ app.use((err, req, res, next) => {
         message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
     });
 });
-
-// ============================================
-// START SERVER
-// ============================================
 
 // ============================================
 // START SERVER WITH DATABASE CONNECTION
@@ -156,7 +166,7 @@ async function startServer() {
             console.log('=================================');
             console.log(`📡 Server running on: http://localhost:${PORT}`);
             console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
-            console.log(`🔗 Health check: http://localhost:${PORT}/`);
+            console.log(`🔗 Homepage: http://localhost:${PORT}/`);
             console.log(`📊 API docs: http://localhost:${PORT}/api`);
             console.log('=================================');
             console.log('📍 Available Endpoints:');
